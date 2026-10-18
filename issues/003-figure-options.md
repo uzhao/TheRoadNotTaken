@@ -4,7 +4,7 @@ title: "数学插图方案调研"
 labels: [wayfinder:research]
 parent: 1
 blocked_by: []
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

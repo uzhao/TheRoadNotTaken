@@ -4,7 +4,7 @@ title: "提议清单合并流程"
 labels: [wayfinder:grilling]
 parent: 1
 blocked_by: [5]
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

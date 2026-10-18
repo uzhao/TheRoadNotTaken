@@ -1,0 +1,609 @@
+<!-- PROTOTYPE（工单 010）：三种结构不同的主界面方案，底部悬浮条或 #a / #b / #c 切换；假数据，无持久化，用完即弃。 -->
+<title>TheRoadNotTaken 主界面原型</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;600&display=swap">
+<style>
+/* 布局概念：三套壳 —— A 领域看板（侧栏 + 网格）、B 地图（全幅分层图 + 抽屉）、C 前沿清单（单列 feed + 矩阵） */
+:root{
+  --bg:#f5f6f2; --panel:#ffffff; --fg:#1b221e; --muted:#5f6b64; --line:#d9ded8;
+  --accent:#0d6b63; --accent-ink:#ffffff;
+  --mastered:#2f7d4f; --mastered-bg:#dcefe2;
+  --learning:#b4730b; --learning-bg:#fbeccd;
+  --claimed:#6b4fc1; --claimed-bg:#e8e1fa;
+  --deferred:#7b847e; --deferred-bg:#e9ebe8;
+  --unlearned:#c7cdc8; --unlearned-bg:#ffffff;
+  --sans:"Noto Sans SC",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  --serif:"Noto Serif SC","Songti SC","SimSun",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141916; --panel:#1d2420; --fg:#e6ebe7; --muted:#9aa69f; --line:#2f3934;
+  --accent:#4fb3a8; --accent-ink:#0d1512;
+  --mastered:#6fcf97; --mastered-bg:#1f3a2b; --learning:#f0b35a; --learning-bg:#3d2e14;
+  --claimed:#b9a4f5; --claimed-bg:#2e2650; --deferred:#9aa69f; --deferred-bg:#2a302c;
+  --unlearned:#3b453f; --unlearned-bg:#1d2420; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141916; --panel:#1d2420; --fg:#e6ebe7; --muted:#9aa69f; --line:#2f3934;
+  --accent:#4fb3a8; --accent-ink:#0d1512;
+  --mastered:#6fcf97; --mastered-bg:#1f3a2b; --learning:#f0b35a; --learning-bg:#3d2e14;
+  --claimed:#b9a4f5; --claimed-bg:#2e2650; --deferred:#9aa69f; --deferred-bg:#2a302c;
+  --unlearned:#3b453f; --unlearned-bg:#1d2420; color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.6}
+*{box-sizing:border-box}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:6px;padding:6px 12px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.ghost{background:transparent}
+button:focus-visible,a:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+textarea{font:inherit;width:100%;min-height:90px;border:1px solid var(--line);border-radius:6px;padding:8px;background:var(--panel);color:var(--fg)}
+h1,h2,h3{text-wrap:balance;margin:0}
+a{color:var(--accent)}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-size:12px}
+.tag{display:inline-block;white-space:nowrap;font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid transparent;letter-spacing:.02em}
+.tag.mastered{background:var(--mastered-bg);color:var(--mastered)}
+.tag.learning{background:var(--learning-bg);color:var(--learning)}
+.tag.claimed{background:var(--claimed-bg);color:var(--claimed)}
+.tag.deferred{background:var(--deferred-bg);color:var(--deferred)}
+.tag.unlearned{background:var(--unlearned-bg);color:var(--muted);border-color:var(--line)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:middle}
+.dot.mastered{background:var(--mastered)} .dot.learning{background:var(--learning)} .dot.claimed{background:var(--claimed)} .dot.deferred{background:var(--deferred)} .dot.unlearned{background:transparent;border:1.5px solid var(--unlearned)}
+#app{min-height:100%}
+.gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* 切换条 */
+#switcher{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;align-items:center;background:#111;color:#fff;border-radius:999px;padding:6px 10px;box-shadow:0 6px 24px rgba(0,0,0,.35);z-index:50;font-size:13px}
+#switcher button{background:#333;color:#fff;border:none;border-radius:999px;padding:3px 10px}
+#switcher b{font-weight:500}
+/* 顶栏 */
+.topbar{display:flex;align-items:center;gap:14px;padding-block:10px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.topbar .brand{font-weight:700;letter-spacing:.04em}
+.topbar nav{display:flex;gap:4px}
+.topbar nav button{border:none;background:transparent;padding:4px 10px;border-radius:999px}
+.topbar nav button.on{background:var(--accent);color:var(--accent-ink)}
+/* 推荐卡 */
+.rec{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rec .kind{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rec .title{font-weight:600;font-size:15px}
+.rec .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.rec.hero{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+/* ===== A ===== */
+.A .shell{display:grid;grid-template-columns:260px 1fr;min-height:calc(100% - 50px)}
+.A .side{border-right:1px solid var(--line);background:var(--panel);padding:12px 10px;overflow:auto}
+.A .side h3{font-size:11px;letter-spacing:.1em;color:var(--muted);margin:10px 8px 6px}
+.A .frow{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center;padding:6px 8px;border-radius:6px;cursor:pointer}
+.A .frow:hover,.A .frow.on{background:var(--bg)}
+.A .frow .name{font-size:13px;line-height:1.3}
+.A .frow .n{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.A .bar{grid-column:1/-1;height:4px;border-radius:2px;background:var(--line);overflow:hidden;display:flex}
+.A .bar i{display:block;height:100%}
+.A .main{padding:16px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.A .recs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.A .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.A .tcard{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;cursor:pointer;border-left-width:4px}
+.A .tcard.mastered{border-left-color:var(--mastered)} .A .tcard.learning{border-left-color:var(--learning)} .A .tcard.claimed{border-left-color:var(--claimed)} .A .tcard.deferred{border-left-color:var(--deferred)} .A .tcard.unlearned{border-left-color:var(--line)}
+.A .tcard .nm{font-weight:500;line-height:1.35}
+.A .tcard .cc{font-size:12px;color:var(--muted);line-height:1.4}
+.A .tcard.locked{opacity:.55}
+@media (max-width:800px){.A .shell{grid-template-columns:1fr}.A .side{border-right:none;border-bottom:1px solid var(--line);max-height:200px}}
+/* 学习页 A：讲义 + 右侧追问 */
+.A .learn{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;padding:16px 20px;align-items:start}
+.A .chat{position:sticky;top:60px;border:1px solid var(--line);background:var(--panel);border-radius:10px;display:flex;flex-direction:column;max-height:calc(100vh - 90px)}
+@media (max-width:900px){.A .learn{grid-template-columns:1fr}.A .chat{position:static;max-height:none}}
+/* 讲义正文通用 */
+.lecture{font-family:var(--serif);font-size:16px;line-height:1.85;max-width:68ch;min-width:0}
+.lecture h1{font-size:26px;line-height:1.3;margin-bottom:6px;font-weight:600}
+.lecture h2{font-size:19px;margin:22px 0 6px;font-weight:600}
+.lecture p{margin:8px 0}
+.lecture .fig{border:1px dashed var(--line);border-radius:8px;padding:12px;margin:12px 0;background:var(--panel);text-align:center;color:var(--muted);font-family:var(--sans);font-size:13px}
+.lecture .fig .box{height:180px;border-radius:6px;background:repeating-linear-gradient(135deg,var(--bg) 0 8px,var(--panel) 8px 16px);display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.lecture .fig.pending .box{animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.lecture .fig.pending .box{animation:none}}
+.lecture .example{border-left:3px solid var(--accent);padding:4px 12px;margin:10px 0;background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.lecture .cursor::after{content:"▍";color:var(--accent);animation:pulse .8s infinite}
+.lhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-family:var(--sans);font-size:13px;color:var(--muted);margin-bottom:8px}
+.steps{display:flex;gap:6px;flex-wrap:wrap;font-family:var(--sans);font-size:12px}
+.steps span{padding:2px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.steps span.on{border-color:var(--learning);color:var(--learning)}
+.steps span.done{color:var(--mastered)}
+/* 追问 */
+.chat .log{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:120px}
+.chat .msg{padding:8px 10px;border-radius:8px;max-width:95%;font-size:13px;line-height:1.5}
+.chat .msg.q{align-self:flex-end;background:var(--accent);color:var(--accent-ink)}
+.chat .msg.a{align-self:flex-start;background:var(--bg)}
+.chat .in{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line)}
+.chat .in textarea{min-height:40px;flex:1}
+.chat .hd{padding:10px 12px;border-bottom:1px solid var(--line);font-weight:500;display:flex;justify-content:space-between;align-items:center}
+/* 验证通用 */
+.q{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.q .qt{font-weight:500}
+.q .ref{font-size:13px;background:var(--bg);border-radius:6px;padding:8px 10px;color:var(--muted)}
+.score{font-variant-numeric:tabular-nums;font-weight:600}
+.verdict{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.verdict.pass{background:var(--mastered-bg);color:var(--mastered)}
+.verdict.fail{background:var(--learning-bg);color:var(--learning)}
+.verdict .acts{display:flex;gap:8px;flex-wrap:wrap}
+.verdict .acts button{color:var(--fg)}
+/* ===== B ===== */
+.B .map{position:relative;height:calc(100vh - 50px);overflow:hidden;background:var(--bg)}
+.B svg{width:100%;height:100%;cursor:grab;touch-action:none}
+.B svg:active{cursor:grabbing}
+.B .node{cursor:pointer}
+.B .node rect{stroke-width:1.2}
+.B .node text{font-size:10px;font-family:var(--sans);fill:var(--fg);pointer-events:none}
+.B .node.mastered rect{fill:var(--mastered-bg);stroke:var(--mastered)} .B .node.learning rect{fill:var(--learning-bg);stroke:var(--learning)} .B .node.claimed rect{fill:var(--claimed-bg);stroke:var(--claimed)} .B .node.deferred rect{fill:var(--deferred-bg);stroke:var(--deferred)} .B .node.unlearned rect{fill:var(--panel);stroke:var(--unlearned)}
+.B .node.frontier rect{stroke-width:2.5;stroke:var(--accent)}
+.B .edge{stroke:var(--line);fill:none;stroke-width:1}
+.B .edge.hl{stroke:var(--accent);stroke-width:2}
+.B .band{fill:var(--muted);font-size:11px;font-family:var(--sans);letter-spacing:.06em}
+.B .float{position:absolute;top:12px;left:12px;width:280px;display:flex;flex-direction:column;gap:8px;z-index:3}
+.B .legend{position:absolute;right:12px;bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;display:flex;flex-direction:column;gap:3px;z-index:3}
+.B .zoom{position:absolute;right:12px;top:12px;background:var(--panel);padding:4px;border-radius:8px;display:flex;gap:4px;z-index:3}
+.B .drawer{position:absolute;top:0;right:0;bottom:0;width:360px;max-width:100%;background:var(--panel);border-left:1px solid var(--line);padding:16px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:4;box-shadow:-8px 0 24px rgba(0,0,0,.12)}
+@media (max-width:700px){.B .float{width:calc(100% - 24px)}}
+.B .learnwrap{padding:16px 20px;padding-bottom:140px;display:flex;justify-content:center}
+.B .bottom{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);z-index:6;transition:height .2s;height:52px;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.B .bottom.open{height:min(60vh,480px)}
+.B .bottom .hd{padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;flex:none}
+.B .bottom .chat{flex:1;min-height:0;display:flex;flex-direction:column}
+.B .wiz{max-width:720px;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.B .dots{display:flex;gap:6px;align-items:center}
+.B .dots i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+.B .dots i.on{background:var(--accent)} .B .dots i.done{background:var(--mastered)}
+/* ===== C ===== */
+.C .col{max-width:860px;margin:0 auto;padding-block:16px;display:flex;flex-direction:column;gap:18px}
+.C .frontier{display:flex;flex-direction:column;gap:8px}
+.C .frow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.C .frow .acts{display:flex;gap:6px}
+.C .frow .nm{font-weight:500}
+.C .frow .fd{font-size:12px;color:var(--muted)}
+.C .matrix{display:grid;grid-template-columns:max-content 1fr;gap:6px 12px;align-items:center;font-size:12px}
+.C .matrix .cells{display:flex;gap:3px;flex-wrap:wrap}
+.C .cell{width:14px;height:14px;border-radius:3px;border:1px solid var(--line);cursor:pointer}
+.C .cell.mastered{background:var(--mastered);border-color:var(--mastered)} .C .cell.learning{background:var(--learning);border-color:var(--learning)} .C .cell.claimed{background:var(--claimed);border-color:var(--claimed)} .C .cell.deferred{background:var(--deferred-bg)} .C .cell.unlearned{background:var(--panel)}
+.C .cell.frontier{box-shadow:0 0 0 2px var(--accent)}
+.C .matrix .fl{cursor:pointer;color:var(--muted)}
+.C .matrix .fl.on{color:var(--fg);font-weight:500}
+.C .outline{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:8px 12px}
+.C .outline li{display:flex;gap:8px;align-items:center;padding:4px 0;cursor:pointer}
+.C .outline ol{margin:0;padding-left:22px}
+.C .learn{max-width:760px;margin:0 auto;padding-block:16px}
+.C .thread{margin-top:24px;border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:10px}
+.C .ask{position:sticky;bottom:calc(70px + env(safe-area-inset-bottom,0px));background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;gap:6px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.C .ask textarea{min-height:40px;flex:1}
+.C .split{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:1100px;margin:0 auto;padding-block:16px}
+@media (max-width:800px){.C .split{grid-template-columns:1fr}}
+/* ===== D 合并方案 ===== */
+.D .vtoggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.D .vtoggle button{border:none;border-radius:0;padding:4px 12px;background:transparent}
+.D .vtoggle button.on{background:var(--fg);color:var(--bg)}
+.D .vmap{position:relative;height:calc(100vh - 230px);min-height:420px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+.D .vmap svg{width:100%;height:100%;cursor:grab;touch-action:none}
+.D .vmap .node{cursor:pointer}
+.D .vmap .node rect{stroke-width:1.2}
+.D .vmap .node text{font-size:10px;font-family:var(--sans);fill:var(--fg);pointer-events:none}
+.D .vmap .node.mastered rect{fill:var(--mastered-bg);stroke:var(--mastered)} .D .vmap .node.learning rect{fill:var(--learning-bg);stroke:var(--learning)} .D .vmap .node.claimed rect{fill:var(--claimed-bg);stroke:var(--claimed)} .D .vmap .node.deferred rect{fill:var(--deferred-bg);stroke:var(--deferred)} .D .vmap .node.unlearned rect{fill:var(--bg);stroke:var(--unlearned)}
+.D .vmap .node.frontier rect{stroke-width:2.5;stroke:var(--accent)}
+.D .vmap .edge{stroke:var(--line);fill:none;stroke-width:1}
+.D .vmap .edge.cross{stroke:color-mix(in srgb,var(--accent) 45%,var(--line));stroke-dasharray:3 3}
+.D .vmap .fhead{font-size:11px;font-family:var(--sans);fill:var(--muted)}
+.D .vmap .fhead.branch{fill:var(--claimed)}
+.D .vmap .ctl{position:absolute;right:10px;top:10px;display:flex;gap:4px;background:var(--panel);padding:4px;border-radius:8px;z-index:2}
+.D .vmap .lg{position:absolute;left:10px;bottom:10px;font-size:12px;display:flex;gap:10px;background:var(--panel);padding:4px 8px;border-radius:8px;border:1px solid var(--line)}
+.D .mcq{display:flex;flex-direction:column;gap:6px}
+.D .opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.D .opt:hover{background:var(--bg)}
+.D .opt.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.D .opt.right{border-color:var(--mastered);background:var(--mastered-bg)}
+.D .opt.wrong{border-color:var(--learning);background:var(--learning-bg)}
+.D .opt .k{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:16px}
+.D .opt .ex{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+.D .vlayout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;padding:16px 20px;align-items:start}
+@media (max-width:900px){.D .vlayout{grid-template-columns:1fr}}
+.D .appeal{border:1px dashed var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;z-index:60;font-size:13px}
+</style>
+
+<div id="app"></div>
+<div id="switcher" aria-label="原型方案切换">
+  <button id="prev" aria-label="上一个方案">←</button>
+  <b id="vlabel"></b>
+  <button id="next" aria-label="下一个方案">→</button>
+</div>
+
+<script>
+const DATA = {"fields": [{"id": "c01", "name": "数学语言、集合与数论基础", "kind": "core"}, {"id": "c02", "name": "单变量微积分与数学分析基础", "kind": "core"}, {"id": "c03", "name": "多元微积分与向量分析", "kind": "core"}, {"id": "c04", "name": "线性代数 I", "kind": "core"}, {"id": "c05", "name": "线性代数 II", "kind": "core"}, {"id": "c06", "name": "常微分方程与动力系统初步", "kind": "core"}, {"id": "c07", "name": "抽象代数 I", "kind": "core"}, {"id": "c08", "name": "抽象代数 II", "kind": "core"}, {"id": "c09", "name": "度量空间与点集拓扑", "kind": "core"}, {"id": "c10", "name": "复分析", "kind": "core"}, {"id": "c11", "name": "实变函数与测度论", "kind": "core"}, {"id": "c12", "name": "泛函分析", "kind": "core"}, {"id": "c13", "name": "微分几何与流形初步", "kind": "core"}, {"id": "c14", "name": "概率论基础", "kind": "core"}, {"id": "b01", "name": "偏微分方程与数学物理方法", "kind": "branch"}, {"id": "b02", "name": "数理统计与统计推断", "kind": "branch"}, {"id": "b03", "name": "随机过程与马尔可夫链", "kind": "branch"}, {"id": "b04", "name": "数值分析", "kind": "branch"}, {"id": "b05", "name": "数值线性代数与数据矩阵方法", "kind": "branch"}, {"id": "b06", "name": "最优化方法与凸优化", "kind": "branch"}, {"id": "b07", "name": "统计建模、回归分析与统计学习", "kind": "branch"}, {"id": "b08", "name": "组合数学、图论与计算理论", "kind": "branch"}], "topics": [{"id": "c01-01", "name": "命题逻辑与证明方法", "field": "c01", "concepts": ["蕴含与量词", "逆否命题", "反证法", "数学归纳法与强归纳法"], "prerequisites": []}, {"id": "c01-02", "name": "集合、关系与映射", "field": "c01", "concepts": ["集合运算", "单射/满射/双射", "逆映射", "像与原像"], "prerequisites": ["c01-01"]}, {"id": "c01-03", "name": "等价关系与商集", "field": "c01", "concepts": ["等价类", "集合划分", "商映射", "容斥原理"], "prerequisites": ["c01-02"]}, {"id": "c01-04", "name": "整除与 Euclid 算法", "field": "c01", "concepts": ["带余除法", "最大公因子", "Bézout 等式", "线性丢番图方程"], "prerequisites": ["c01-03"]}, {"id": "c01-05", "name": "素数与算术基本定理", "field": "c01", "concepts": ["唯一分解定理", "Euclid 素数无穷性证明", "素数分布初探"], "prerequisites": ["c01-04"]}, {"id": "c01-06", "name": "同余与模算术", "field": "c01", "concepts": ["同余类环", "线性同余方程", "中国剩余定理"], "prerequisites": ["c01-05"]}, {"id": "c01-07", "name": "Fermat 小定理、Euler 定理与 Wilson 定理", "field": "c01", "concepts": ["Euler  函数", "模幂运算", "RSA 公钥密码动机"], "prerequisites": ["c01-06"]}, {"id": "c01-08", "name": "原根与二次剩余", "field": "c01", "concepts": ["模  乘法群的循环性", "Legendre 符号", "二次互反律"], "prerequisites": ["c01-07"]}, {"id": "c01-09", "name": "有理数、无理数与上确界公理", "field": "c01", "concepts": ["与  的无理性", "有序域", "上确界公理与 Archimedes 性质"], "prerequisites": ["c01-08"]}, {"id": "c01-10", "name": "可数集与不可数集", "field": "c01", "concepts": ["基数比较", "的可数性", "Cantor 对角线法与  的不可数性", "Schröder–Bernstein 定理"], "prerequisites": ["c01-09"]}, {"id": "c02-01", "name": "实数完备性与确界原理", "field": "c02", "concepts": ["Dedekind 分割/Cauchy 基本列直观", "确界存在定理", "区间套定理"], "prerequisites": ["c01-03"]}, {"id": "c02-02", "name": "数列极限与收敛准则", "field": "c02", "concepts": ["定义", "极限四则运算", "夹逼定理", "单调有界定理与数"], "prerequisites": ["c02-01"]}, {"id": "c02-03", "name": "子列、Bolzano–Weierstrass 定理与 Cauchy 收敛原理", "field": "c02", "concepts": ["上下极限", "列紧性", "实数完备性等价命题"], "prerequisites": ["c02-02"]}, {"id": "c02-04", "name": "函数极限与连续函数", "field": "c02", "concepts": ["定义", "单侧极限", "连续函数局部性质", "间断点分类"], "prerequisites": ["c02-03"]}, {"id": "c02-05", "name": "闭区间上连续函数的整体性质", "field": "c02", "concepts": ["介值定理", "有界性与最值定理", "一致连续性与 Cantor 定理"], "prerequisites": ["c02-04"]}, {"id": "c02-06", "name": "导数、微分与求导法则", "field": "c02", "concepts": ["切线与瞬时变化率", "链式法则", "反函数与隐函数求导", "高阶导数与 Leibniz 公式"], "prerequisites": ["c02-05"]}, {"id": "c02-07", "name": "微分中值定理（Rolle, Lagrange, Cauchy）", "field": "c02", "concepts": ["费马引理", "三大中值定理", "Darboux 导数介值定理"], "prerequisites": ["c02-06"]}, {"id": "c02-08", "name": "L'Hôpital 法则、Taylor 公式与凸函数", "field": "c02", "concepts": ["Peano/Lagrange 余项 Taylor 定理", "极值判别", "凸函数与 Jensen 不等式"], "prerequisites": ["c02-07"]}, {"id": "c02-09", "name": "Riemann 积分的定义与可积性判别", "field": "c02", "concepts": ["Darboux 上下和", "振幅与可积充要条件", "连续函数与单调函数的可积性"], "prerequisites": ["c02-08"]}, {"id": "c02-10", "name": "微积分基本定理与积分计算方法", "field": "c02", "concepts": ["变上限积分", "Newton–Leibniz 公式", "换元积分法", "分部积分法", "有理函数积分"], "prerequisites": ["c02-09"]}, {"id": "c02-11", "name": "反常积分及其收敛性判别", "field": "c02", "concepts": ["无穷区间反常积分", "无界函数瑕积分", "比较判别法", "Dirichlet 与 Abel 判别法"], "prerequisites": ["c02-10"]}, {"id": "c02-12", "name": "数项级数收敛性", "field": "c02", "concepts": ["正项级数比值/根值/积分判别法", "交错级数 Leibniz 判别法", "绝对收敛与条件收敛", "Riemann 重排定理"], "prerequisites": ["c02-11"]}, {"id": "c02-13", "name": "函数项级数与一致收敛", "field": "c02", "concepts": ["逐点收敛与一致收敛", "Weierstrass -判别法", "极限与微积分交换次序定理"], "prerequisites": ["c02-12"]}, {"id": "c02-14", "name": "幂级数、解析性与 Fourier 级数初步", "field": "c02", "concepts": ["收敛半径与 Abel 定理", "Taylor 级数展开", "三角正交系", "Fourier 级数收敛与 Parseval 等式"], "prerequisites": ["c02-13"]}, {"id": "c03-01", "name": "ℝⁿ 的欧氏结构、内积与外积", "field": "c03", "concepts": ["范数与 Cauchy–Schwarz 不等式", "叉积与混合积", "柱坐标与球坐标"], "prerequisites": ["c02-03", "c04-03"]}, {"id": "c03-02", "name": "空间曲线与参数化运动", "field": "c03", "concepts": ["弧长参数化", "切向量", "曲率", "速度与加速度分解"], "prerequisites": ["c03-01"]}, {"id": "c03-03", "name": "多元函数的极限与连续性", "field": "c03", "concepts": ["中的开集与闭集", "重极限与累次极限", "多元连续函数性质"], "prerequisites": ["c03-02"]}, {"id": "c03-04", "name": "偏导数、全微分与梯度", "field": "c03", "concepts": ["可微性的线性逼近定义", "偏导数与可微的关系", "方向导数与梯度"], "prerequisites": ["c03-03"]}, {"id": "c03-05", "name": "复合映射链式法则与 Jacobi 矩阵", "field": "c03", "concepts": ["向量值映射的微分", "Jacobi 行列式", "多元 Taylor 公式"], "prerequisites": ["c03-04"]}, {"id": "c03-06", "name": "多元极值、Hessian 矩阵与 Lagrange 乘子法", "field": "c03", "concepts": ["无约束极值的二阶充分条件", "等式约束极值与 Lagrange 乘子几何意义"], "prerequisites": ["c03-05"]}, {"id": "c03-07", "name": "隐函数定理与逆映射定理", "field": "c03", "concepts": ["局部可逆性判据", "隐函数存在性与求导", "流形局部坐标化的基础"], "prerequisites": ["c03-06"]}, {"id": "c03-08", "name": "重积分与变量替换公式", "field": "c03", "concepts": ["有界域上的二重/三重积分", "Fubini 累次积分", "Jacobi 行列式变量替换"], "prerequisites": ["c03-07"]}, {"id": "c03-09", "name": "曲线积分与保守向量场", "field": "c03", "concepts": ["第一型与第二型曲线积分", "梯度场", "路径无关性与势函数重构"], "prerequisites": ["c03-08"]}, {"id": "c03-10", "name": "曲面积分与散度、旋度算子", "field": "c03", "concepts": ["参数曲面面积元", "第一型与第二型曲面积分", "通量", "散度  与旋度"], "prerequisites": ["c03-09"]}, {"id": "c03-11", "name": "Green 公式、Stokes 公式与 Gauss 散度定理", "field": "c03", "concepts": ["三大积分公式的物理与几何含义", "外微分形式  统一视角"], "prerequisites": ["c03-10"]}, {"id": "c04-01", "name": "线性方程组与 Gauss 消元法", "field": "c04", "concepts": ["行阶梯形", "主元", "初等矩阵", "矩阵乘法与分块矩阵", "分解"], "prerequisites": ["c01-03"]}, {"id": "c04-02", "name": "向量空间、子空间与四个基本子空间", "field": "c04", "concepts": ["列空间", "零空间", "行空间", "左零空间"], "prerequisites": ["c04-01"]}, {"id": "c04-03", "name": "线性无关、基与维数", "field": "c04", "concepts": ["生成集", "Steinitz 替换定理", "矩阵的秩", "秩-零化度定理"], "prerequisites": ["c04-02"]}, {"id": "c04-04", "name": "线性变换及其矩阵表示", "field": "c04", "concepts": ["旋转/反射/投影的几何作用", "基变换公式", "相似矩阵"], "prerequisites": ["c04-03"]}, {"id": "c04-05", "name": "行列式及其几何与代数性质", "field": "c04", "concepts": ["多重线性反对称性", "有向体积缩放因子", "Laplace 展开", "Cramer 法则"], "prerequisites": ["c04-04"]}, {"id": "c04-06", "name": "内积、正交性与正交投影", "field": "c04", "concepts": ["正交补子空间", "正交投影矩阵", "最小二乘法的几何解释"], "prerequisites": ["c04-05"]}, {"id": "c04-07", "name": "Gram–Schmidt 正交化与 QR 分解", "field": "c04", "concepts": ["标准正交基构造", "正交矩阵", "分解"], "prerequisites": ["c04-06"]}, {"id": "c04-08", "name": "特征值、特征向量与矩阵对角化", "field": "c04", "concepts": ["特征多项式", "迹与行列式", "几何重数与代数重数", "可对角化判据", "矩阵幂"], "prerequisites": ["c04-07"]}, {"id": "c04-09", "name": "实对称矩阵、Hermite 矩阵与正定二次型", "field": "c04", "concepts": ["实对称矩阵正交对角化", "主轴定理", "正定矩阵等价判据", "Sylvester 惯性定理"], "prerequisites": ["c04-08"]}, {"id": "c04-10", "name": "奇异值分解（SVD）与伪逆初步", "field": "c04", "concepts": ["的几何意义", "四个基本子空间的标准正交基", "Moore–Penrose 伪逆"], "prerequisites": ["c04-09"]}, {"id": "c05-01", "name": "一般域上的向量空间与商空间", "field": "c05", "concepts": ["任意域  上的向量空间", "子空间直和分解", "商空间  与同构定理"], "prerequisites": ["c04-03"]}, {"id": "c05-02", "name": "对偶空间与对偶映射", "field": "c05", "concepts": ["线性泛函", "对偶基", "零化子", "有限维自反性", "转置映射"], "prerequisites": ["c05-01"]}, {"id": "c05-03", "name": "多项式环与算子极小多项式", "field": "c05", "concepts": ["多项式带余除法与唯一分解", "Cayley–Hamilton 定理", "极小多项式与不变子空间"], "prerequisites": ["c05-02"]}, {"id": "c05-04", "name": "广义特征子空间与主分解定理", "field": "c05", "concepts": ["零化多项式互素分解", "可对角化充要条件", "可交换算子组同时对角化", "幂零算子"], "prerequisites": ["c05-03"]}, {"id": "c05-05", "name": "Jordan 标准形与有理标准形", "field": "c05", "concepts": ["Jordan 块", "循环子空间分解", "相似不变量与 -矩阵 Smith 标准形"], "prerequisites": ["c05-04"]}, {"id": "c05-06", "name": "双线性型与二次型的一般理论", "field": "c05", "concepts": ["对称与交错双线性型", "合同变换", "正交几何与辛几何初步"], "prerequisites": ["c05-05"]}, {"id": "c05-07", "name": "有限维内积空间上的伴随算子与正规算子", "field": "c05", "concepts": ["Riesz 表示定理有限维版", "伴随算子", "正规算子", "酉算子与正交算子"], "prerequisites": ["c05-06"]}, {"id": "c05-08", "name": "有限维谱定理与算子极分解", "field": "c05", "concepts": ["复正规算子与实对称算子的谱分解定理", "正算子平方根", "极分解"], "prerequisites": ["c05-07"]}, {"id": "c06-01", "name": "一阶常微分方程与方向场", "field": "c06", "concepts": ["分离变量法", "一阶线性方程与积分因子", "恰当方程", "方向场与积分曲线"], "prerequisites": ["c02-03", "c04-03"]}, {"id": "c06-02", "name": "初值问题的存在唯一性定理", "field": "c06", "concepts": ["Picard 逐次逼近法", "Lipschitz 条件", "局部存在唯一性", "解对初值的连续依赖性与最大存在区间"], "prerequisites": ["c06-01"]}, {"id": "c06-03", "name": "二阶与高阶常系数线性微分方程", "field": "c06", "concepts": ["线性微分算子", "Wronski 行列式与解空间维数", "特征方程", "复指数解"], "prerequisites": ["c06-02"]}, {"id": "c06-04", "name": "非齐次线性方程解法与振动模型", "field": "c06", "concepts": ["待定系数法", "常数变易法", "阻尼谐振子", "受迫振动与共振现象"], "prerequisites": ["c06-03"]}, {"id": "c06-05", "name": "幂级数解法与正则奇点", "field": "c06", "concepts": ["常点幂级数展开", "Frobenius 方法", "Legendre 方程与 Bessel 方程初步"], "prerequisites": ["c06-04"]}, {"id": "c06-06", "name": "Laplace 变换与脉冲响应", "field": "c06", "concepts": ["Laplace 变换性质", "阶跃函数与 Dirac  函数", "传递函数", "卷积定理与 Green 函数"], "prerequisites": ["c06-05"]}, {"id": "c06-07", "name": "一阶线性微分方程组与矩阵指数", "field": "c06", "concepts": ["高阶方程化一阶系统", "特征值法求解", "矩阵指数  与基解矩阵"], "prerequisites": ["c06-06"]}, {"id": "c06-08", "name": "平面自治系统与相平面分析", "field": "c06", "concepts": ["平衡点分类：结点/鞍点/焦点/中心", "局部线性化 Hartman–Grobman 直观", "相图绘制"], "prerequisites": ["c06-07"]}, {"id": "c06-09", "name": "Lyapunov 稳定性与极限环初步", "field": "c06", "concepts": ["Lyapunov 函数直接法", "守恒系统", "Poincaré–Bendixson 定理与 Lotka–Volterra 模型"], "prerequisites": ["c06-08"]}, {"id": "c07-01", "name": "群的公理、子群与循环群", "field": "c07", "concepts": ["群的定义", "子群判据", "元素阶", "循环群结构与生成元"], "prerequisites": ["c01-03", "c04-03"]}, {"id": "c07-02", "name": "置换群与对称性", "field": "c07", "concepts": ["对称群", "轮换分解", "奇偶置换与交错群", "正多面体对称群"], "prerequisites": ["c07-01"]}, {"id": "c07-03", "name": "陪集、Lagrange 定理与正规子群", "field": "c07", "concepts": ["左右陪集分解", "指数", "Lagrange 定理", "正规子群"], "prerequisites": ["c07-02"]}, {"id": "c07-04", "name": "商群、群同态与同构基本定理", "field": "c07", "concepts": ["商群", "核与像", "群的第一/第二/第三同构定理"], "prerequisites": ["c07-03"]}, {"id": "c07-05", "name": "群作用、轨道-稳定子定理与计数应用", "field": "c07", "concepts": ["群作用", "轨道与稳定化子", "共轭作用与类方程", "Burnside 计数引理"], "prerequisites": ["c07-04"]}, {"id": "c07-06", "name": "有限群结构：有限生成交换群与 Sylow 定理", "field": "c07", "concepts": ["-群性质", "Sylow 三大定理", "小阶群同构分类", "单群概念与  的单性"], "prerequisites": ["c07-05"]}, {"id": "c07-07", "name": "环、整环与除环", "field": "c07", "concepts": ["环的定义", "零因子与可逆元", "特征", "Gauss 整数环  与多项式环"], "prerequisites": ["c07-06"]}, {"id": "c07-08", "name": "理想、商环与环同态基本定理", "field": "c07", "concepts": ["理想", "主理想", "商环", "环同态定理", "整环的分式域构造"], "prerequisites": ["c07-07"]}, {"id": "c07-09", "name": "素理想与极大理想", "field": "c07", "concepts": ["为整环  为素理想， 为域  为极大理想，Krull/Zorn 极大理想存在性"], "prerequisites": ["c07-08"]}, {"id": "c07-10", "name": "整环中的因子分解：ED、PID 与 UFD", "field": "c07", "concepts": ["Euclid 整环  主理想整环  唯一分解整环", "Gauss 引理与  唯一分解性", "Eisenstein 不可约判别法"], "prerequisites": ["c07-09"]}, {"id": "c08-01", "name": "环上的模、子模与自由模", "field": "c08", "concepts": ["模与模同态", "商模", "自由模与秩", "Noether 环与 Hilbert 基定理"], "prerequisites": ["c07-03", "c05-03"]}, {"id": "c08-02", "name": "主理想整环（PID）上的有限生成模结构定理", "field": "c08", "concepts": ["不变因子与初等因子分解", "统一导出有限生成交换群结构与矩阵 Jordan 标准形"], "prerequisites": ["c08-01"]}, {"id": "c08-03", "name": "张量积与外代数", "field": "c08", "concepts": ["模与向量空间的张量积", "泛性质", "对称代数与外代数"], "prerequisites": ["c08-02"]}, {"id": "c08-04", "name": "域扩张、代数元与分裂域", "field": "c08", "concepts": ["扩域次数与塔律", "代数元极小多项式", "尺规作图不可能性证明", "分裂域存在唯一性"], "prerequisites": ["c08-03"]}, {"id": "c08-05", "name": "可分扩张、正规扩张与有限域", "field": "c08", "concepts": ["重根与形式导数", "可分性与正规性", "有限域  的结构与 Frobenius 自同构"], "prerequisites": ["c08-04"]}, {"id": "c08-06", "name": "Galois 群与 Galois 基本定理", "field": "c08", "concepts": ["域自同构群", "Galois 扩张", "中间域与 Galois 群子群的反演一一对应"], "prerequisites": ["c08-05"]}, {"id": "c08-07", "name": "可解群与高次方程根式可解性（Abel–Ruffini 定理）", "field": "c08", "concepts": ["分圆扩张", "循环扩张", "可解群", "五次及以上一般方程无根式解"], "prerequisites": ["c08-06"]}, {"id": "c08-08", "name": "有限群的线性表示与 Maschke 定理", "field": "c08", "concepts": ["群表示与 -模", "不变子空间与不可约表示", "Maschke 完全可约定理", "Schur 引理"], "prerequisites": ["c08-07"]}, {"id": "c08-09", "name": "特征标理论与正交关系", "field": "c08", "concepts": ["特征标表", "第一与第二正交关系", "正则表示分解", "Fourier 分析在有限群上的体现"], "prerequisites": ["c08-08"]}, {"id": "c09-01", "name": "度量空间、开集与闭集", "field": "c09", "concepts": ["度量公理", "开球", "内点/聚点/闭包/边界", "度量空间中的收敛与连续"], "prerequisites": ["c02-03"]}, {"id": "c09-02", "name": "完备度量空间与压缩映射原理", "field": "c09", "concepts": ["Cauchy 列", "完备性", "Banach 不动点定理及其在微分/积分方程中的应用"], "prerequisites": ["c09-01"]}, {"id": "c09-03", "name": "拓扑空间、拓扑基与连续映射", "field": "c09", "concepts": ["开集公理", "拓扑基与子基", "连续映射的开集/闭集刻画", "同胚映射"], "prerequisites": ["c09-02"]}, {"id": "c09-04", "name": "子空间拓扑、积拓扑与商拓扑", "field": "c09", "concepts": ["诱导子空间", "乘积拓扑", "商拓扑与粘合构造：环面", "射影平面", "Möbius 带"], "prerequisites": ["c09-03"]}, {"id": "c09-05", "name": "连通性与道路连通性", "field": "c09", "concepts": ["连通空间的等价刻画", "连续像的连通性", "连通分支", "道路连通与局部连通"], "prerequisites": ["c09-04"]}, {"id": "c09-06", "name": "紧致性（Compactness）", "field": "c09", "concepts": ["开覆盖与有限子覆盖", "紧集与闭集的关系", "紧空间上的连续函数极值与一致连续", "Tychonoff 定理导引"], "prerequisites": ["c09-05"]}, {"id": "c09-07", "name": "度量空间中的紧致性与 Heine–Borel 定理", "field": "c09", "concepts": ["紧致  列紧  完备且完全有界", "Lebesgue 覆盖引理", "Arzelà–Ascoli 定理初步"], "prerequisites": ["c09-06"]}, {"id": "c09-08", "name": "分离公理与 Urysohn 引理", "field": "c09", "concepts": ["Hausdorff 空间", "正则与正规空间", "Urysohn 引理与 Tietze 扩张定理"], "prerequisites": ["c09-07"]}, {"id": "c09-09", "name": "道路同伦与基本群（\\pi_1）", "field": "c09", "concepts": ["映射同伦", "道路乘积", "基本群  的定义与函子性质", "同伦等价与形变收缩"], "prerequisites": ["c09-08"]}, {"id": "c09-10", "name": "覆叠空间、π₁(S¹) ≅ℤ 与 Seifert–van Kampen 定理初步", "field": "c09", "concepts": ["道路提升与同伦提升", "圆周基本群", "Brouwer 不动点定理", "van Kampen 定理计算曲面基本群"], "prerequisites": ["c09-09"]}, {"id": "c10-01", "name": "复平面、Riemann 球面与全纯函数（Cauchy–Riemann 方程）", "field": "c10", "concepts": ["复可微性", "Cauchy–Riemann 方程", "全纯函数与调和共轭"], "prerequisites": ["c03-03"]}, {"id": "c10-02", "name": "复幂级数与初等超越函数", "field": "c10", "concepts": ["收敛圆", "复指数/三角/双曲函数", "多值对数函数  与支点/支割线"], "prerequisites": ["c10-01"]}, {"id": "c10-03", "name": "复积分、Cauchy 积分定理与原函数", "field": "c10", "concepts": ["围道积分", "ML 模估计不等式", "Goursat 定理", "单连通域 Cauchy 积分定理"], "prerequisites": ["c10-02"]}, {"id": "c10-04", "name": "Cauchy 积分公式、高阶导数与解析性", "field": "c10", "concepts": ["Cauchy 积分公式", "无穷可微性与幂级数展开", "Cauchy 不等式", "Liouville 定理与代数基本定理", "Morera 定理"], "prerequisites": ["c10-03"]}, {"id": "c10-05", "name": "唯一性定理、最大模原理与 Schwarz 引理", "field": "c10", "concepts": ["零点孤立性与解析延拓", "最大模原理", "Schwarz 引理与单位圆盘自同构"], "prerequisites": ["c10-04"]}, {"id": "c10-06", "name": "Laurent 级数与孤立奇点分类", "field": "c10", "concepts": ["圆环上的 Laurent 展开", "可去奇点/极点/本质奇点", "Casorati–Weierstrass 定理", "亚纯函数"], "prerequisites": ["c10-05"]}, {"id": "c10-07", "name": "留数定理与实定积分计算", "field": "c10", "concepts": ["留数计算", "Cauchy 留数定理", "三角积分与广义有理积分", "Jordan 引理", "含支割线围道积分"], "prerequisites": ["c10-06"]}, {"id": "c10-08", "name": "辐角原理与 Rouché 定理", "field": "c10", "concepts": ["对数导数", "环绕数", "辐角原理计数零点与极点", "Rouché 定理", "开映射定理"], "prerequisites": ["c10-07"]}, {"id": "c10-09", "name": "共形映射（保角变换）、Möbius 变换与 Riemann 映射定理", "field": "c10", "concepts": ["保角性", "分式线性变换/Möbius 变换保圆性", "Riemann 映射定理与平面位势问题"], "prerequisites": ["c10-08"]}, {"id": "c11-01", "name": "Riemann 积分的局限与 Lebesgue 外测度", "field": "c11", "concepts": ["Dirichlet 函数", "Cantor 三分集", "外测度  的定义与次可加性"], "prerequisites": ["c09-03"]}, {"id": "c11-02", "name": "σ-代数、可测集与测度空间", "field": "c11", "concepts": ["Carathéodory 条件", "Lebesgue 可测集与 Borel 集", "测度的可数可加性", "不可测集 Vitali 构造"], "prerequisites": ["c11-01"]}, {"id": "c11-03", "name": "可测函数及其收敛性", "field": "c11", "concepts": ["可测函数与简单函数逼近", "几乎处处成立 a.e.", "依测度收敛", "Riesz 定理", "Egorov 定理与 Lusin 定理"], "prerequisites": ["c11-02"]}, {"id": "c11-04", "name": "Lebesgue 积分的构造与基本性质", "field": "c11", "concepts": ["非负简单函数积分  非负可测函数积分  一般可积函数积分", "线性性与绝对连续性"], "prerequisites": ["c11-03"]}, {"id": "c11-05", "name": "三大极限定理（单调收敛、Fatou 引理、控制收敛）", "field": "c11", "concepts": ["Levi 单调收敛定理 MCT", "Fatou 引理", "Lebesgue 控制收敛定理 DCT", "微积分号下求导"], "prerequisites": ["c11-04"]}, {"id": "c11-06", "name": "乘积测度与 Fubini–Tonelli 定理", "field": "c11", "concepts": ["乘积 -代数", "Tonelli 非负重积分定理", "Fubini 可积函数累次积分交换定理"], "prerequisites": ["c11-05"]}, {"id": "c11-07", "name": "有界变差函数、绝对连续函数与 Lebesgue 微分定理", "field": "c11", "concepts": ["Vitali 覆盖引理", "单调函数 a.e. 可微", "绝对连续函数与 Lebesgue 牛顿-莱布尼茨公式"], "prerequisites": ["c11-06"]}, {"id": "c11-08", "name": "Lᵖ 空间与完备性（Riesz–Fischer 定理）", "field": "c11", "concepts": ["Hölder 不等式", "Minkowski 不等式", "完备性", "连续函数在  中的稠密性"], "prerequisites": ["c11-07"]}, {"id": "c11-09", "name": "符号测度、Hahn–Jordan 分解与 Radon–Nikodym 定理", "field": "c11", "concepts": ["绝对连续测度  与奇异测度", "Radon–Nikodym 导数"], "prerequisites": ["c11-08"]}, {"id": "c12-01", "name": "赋范线性空间与 Banach 空间", "field": "c12", "concepts": ["范数", "有限维范数等价性与 Riesz 引理", "无穷维空间示例："], "prerequisites": ["c11-03", "c05-03"]}, {"id": "c12-02", "name": "有界线性算子与算子范数", "field": "c12", "concepts": ["线性算子连续性  有界性", "算子空间  的完备性", "对偶空间"], "prerequisites": ["c12-01"]}, {"id": "c12-03", "name": "Hilbert 空间、正交投影与正交系", "field": "c12", "concepts": ["内积与平行四边形法则", "闭凸集最佳逼近与正交分解", "标准正交基与 Parseval 等式"], "prerequisites": ["c12-02"]}, {"id": "c12-04", "name": "Hilbert 空间 Riesz 表示定理与伴随算子", "field": "c12", "concepts": ["连续线性泛函内积表示", "Hilbert 伴随算子", "自伴算子与 Lax–Milgram 定理初步"], "prerequisites": ["c12-03"]}, {"id": "c12-05", "name": "Hahn–Banach 延拓与分离定理", "field": "c12", "concepts": ["分析延拓形式", "凸集超平面分离几何形式", "二次对偶嵌入  与自反空间"], "prerequisites": ["c12-04"]}, {"id": "c12-06", "name": "Baire 纲定理与一致有界原理（Banach–Steinhaus 定理）", "field": "c12", "concepts": ["完备度量空间 Baire 纲定理", "共鸣定理/一致有界原理及其应用"], "prerequisites": ["c12-05"]}, {"id": "c12-07", "name": "开映射定理、逆算子定理与闭图像定理", "field": "c12", "concepts": ["开映射定理", "Banach 逆算子定理", "闭算子与闭图像定理"], "prerequisites": ["c12-06"]}, {"id": "c12-08", "name": "弱收敛、弱*收敛与 Banach–Alaoglu 定理", "field": "c12", "concepts": ["弱拓扑与弱*拓扑", "对偶空间单位闭球弱*紧致性", "自反空间有界列弱列紧性"], "prerequisites": ["c12-07"]}, {"id": "c12-09", "name": "紧算子与自伴紧算子谱定理（Hilbert–Schmidt 定理）", "field": "c12", "concepts": ["算子谱  与预解集", "紧算子性质", "Fredholm 二择一", "紧自伴算子正交特征基展开"], "prerequisites": ["c12-08"]}, {"id": "c13-01", "name": "空间正则曲线与 Frenet–Serret 标架", "field": "c13", "concepts": ["弧长参数化", "切/主法/副法向量", "曲率  与挠率", "Frenet–Serret 公式与曲线基本定理"], "prerequisites": ["c03-03", "c05-03"]}, {"id": "c13-02", "name": "ℝ³ 中的正则曲面与切平面", "field": "c13", "concepts": ["局部坐标卡", "切平面", "曲面间光滑映射的切映射"], "prerequisites": ["c13-01"]}, {"id": "c13-03", "name": "第一基本形式（诱导度量）与内蕴几何", "field": "c13", "concepts": ["第一基本形式", "曲面弧长与面积", "等距与共形映射"], "prerequisites": ["c13-02"]}, {"id": "c13-04", "name": "Gauss 映射、第二基本形式与曲率", "field": "c13", "concepts": ["单位法向量与 Gauss 映射", "Weingarten 形状算子", "第二基本形式", "主曲率", "Gauss 曲率  与平均曲率"], "prerequisites": ["c13-03"]}, {"id": "c13-05", "name": "Gauss 绝妙定理（Theorema Egregium）与曲面基本方程", "field": "c13", "concepts": ["Christoffel 符号", "Gauss 方程与 Codazzi 方程", "Gauss 曲率的内蕴性"], "prerequisites": ["c13-04"]}, {"id": "c13-06", "name": "测地线（Geodesics）、平行移动与指数映射", "field": "c13", "concepts": ["协变导数", "测地曲率", "测地线微分方程与局部最短性", "Levi-Civita 平行移动"], "prerequisites": ["c13-05"]}, {"id": "c13-07", "name": "Gauss–Bonnet 定理（局部与整体）", "field": "c13", "concepts": ["测地三角形角盈公式", "曲面 Euler 示性数", "整体 Gauss–Bonnet 定理"], "prerequisites": ["c13-06"]}, {"id": "c13-08", "name": "抽象光滑流形、切丛与向量场", "field": "c13", "concepts": ["光滑图册与流形定义", "切空间与切丛", "光滑向量场", "积分曲线流与 Lie 括号"], "prerequisites": ["c13-07"]}, {"id": "c13-09", "name": "微分形式、外微分与流形上的 Stokes 定理", "field": "c13", "concepts": ["余切丛与 -形式", "楔积", "外微分  与", "定向流形广义 Stokes 公式與 de Rham 上同调导引"], "prerequisites": ["c13-08"]}, {"id": "c14-01", "name": "概率空间、公理化体系与组合概型", "field": "c14", "concepts": ["样本空间", "事件域", "Kolmogorov 概率公理", "容斥原理与古典抽样"], "prerequisites": ["c03-03"]}, {"id": "c14-02", "name": "条件概率、全概率公式、Bayes 公式与独立性", "field": "c14", "concepts": ["条件概率", "事件独立性", "全概率分解与 Bayes 后验推断"], "prerequisites": ["c14-01"]}, {"id": "c14-03", "name": "离散型随机变量与经典分布", "field": "c14", "concepts": ["分布列 PMF", "累积分布函数 CDF", "Bernoulli/二项分布", "几何分布无记忆性", "Poisson 分布稀有事件极限"], "prerequisites": ["c14-02"]}, {"id": "c14-04", "name": "连续型随机变量与密度函数", "field": "c14", "concepts": ["概率密度函数 PDF", "均匀分布", "指数分布", "Gamma 分布", "正态分布"], "prerequisites": ["c14-03"]}, {"id": "c14-05", "name": "数学期望、方差与高阶矩", "field": "c14", "concepts": ["期望线性性", "指示变量法", "方差", "尾概率积分求期望"], "prerequisites": ["c14-04"]}, {"id": "c14-06", "name": "多维随机变量、联合分布与边缘分布", "field": "c14", "concepts": ["联合与边缘分布", "随机变量独立性", "多维变量变换 Jacobi 行列式", "独立和卷积公式"], "prerequisites": ["c14-05"]}, {"id": "c14-07", "name": "协方差、相关系数与多元正态分布", "field": "c14", "concepts": ["协方差与 Pearson 相关系数", "协方差矩阵正定性", "多元正态分布与线性变换性质"], "prerequisites": ["c14-06"]}, {"id": "c14-08", "name": "条件分布与条件期望（全期望与全方差定律）", "field": "c14", "concepts": ["条件密度", "条件期望", "重期望公式", "全方差分解"], "prerequisites": ["c14-07"]}, {"id": "c14-09", "name": "母函数、矩母函数与特征函数", "field": "c14", "concepts": ["概率母函数 PGF", "矩母函数 MGF", "特征函数", "唯一性与连续性定理"], "prerequisites": ["c14-08"]}, {"id": "c14-10", "name": "概率不等式、大数定律与中心极限定理", "field": "c14", "concepts": ["Markov/Chebyshev/Jensen 不等式", "依概率收敛与几乎必然收敛", "弱/强大数定律", "Lindeberg–Lévy 中心极限定理"], "prerequisites": ["c14-09"]}, {"id": "b01-01", "name": "一阶偏微分方程与特征线法", "field": "b01", "concepts": ["传输方程", "拟线性一阶方程", "特征曲线", "Burgers 方程与激波形成初步"], "prerequisites": ["c06-03", "c03-03"]}, {"id": "b01-02", "name": "二阶线性偏微分方程分类与定解问题适定性", "field": "b01", "concepts": ["椭圆/抛物/双曲型分类", "三大典型方程物理背景", "Hadamard 适定性"], "prerequisites": ["b01-01"]}, {"id": "b01-03", "name": "一维波动方程：d'Alembert 公式与特征区域", "field": "b01", "concepts": ["行波解", "依赖区间与影响区域", "Duhamel 齐次化原理", "能量法证明唯一性"], "prerequisites": ["b01-02"]}, {"id": "b01-04", "name": "分离变量法与 Fourier 级数求解有界域问题", "field": "b01", "concepts": ["弦振动与有限杆热传导", "Dirichlet/Neumann 边界条件", "本征频率与驻波模态"], "prerequisites": ["b01-03"]}, {"id": "b01-05", "name": "Sturm–Liouville 本征值问题与正交特殊函数", "field": "b01", "concepts": ["自伴微分算子", "实本征值与正交完备性", "Bessel 函数与 Legendre 多项式"], "prerequisites": ["b01-04"]}, {"id": "b01-06", "name": "热传导方程：Fourier 变换与热核（基本解）", "field": "b01", "concepts": ["全空间 Fourier 变换", "Gauss 热核卷积解", "平滑效应与极值原理"], "prerequisites": ["b01-05"]}, {"id": "b01-07", "name": "Laplace 方程与调和函数性质", "field": "b01", "concepts": ["平均值定理", "强极值原理", "圆盘 Poisson 积分公式", "Harnack 不等式"], "prerequisites": ["b01-06"]}, {"id": "b01-08", "name": "位势理论与 Green 函数法", "field": "b01", "concepts": ["基本解与牛顿位势", "Green 第一/第二恒等式", "镜像法构造半空间与球域 Green 函数"], "prerequisites": ["b01-07"]}, {"id": "b01-09", "name": "高维波动方程：球平均法与 Huygens 原理", "field": "b01", "concepts": ["三维 Kirchhoff 公式与惠更斯原理", "二维 Poisson 降维法与波尾现象"], "prerequisites": ["b01-08"]}, {"id": "b01-10", "name": "变分原理、Euler–Lagrange 方程与弱解导引", "field": "b01", "concepts": ["泛函一阶变分", "Euler–Lagrange 方程", "Dirichlet 原理与 Sobolev 弱解思想"], "prerequisites": ["b01-09"]}, {"id": "b02-01", "name": "统计模型、样本、经验分布与次序统计量", "field": "b02", "concepts": ["统计量", "样本均值与样本方差", "经验分布函数与分位数"], "prerequisites": ["c14-03"]}, {"id": "b02-02", "name": "正态总体三大抽样分布（\\chi^2, t, F）", "field": "b02", "concepts": ["Cochran 定理", "样本均值与样本方差独立性", "Student's  分布与  分布"], "prerequisites": ["b02-01"]}, {"id": "b02-03", "name": "点估计：矩估计（MoM）与极大似然估计（MLE）", "field": "b02", "concepts": ["似然函数与对数似然", "极大似然估计不变性", "指数族分布"], "prerequisites": ["b02-02"]}, {"id": "b02-04", "name": "充分统计量、完备统计量与 Rao–Blackwell 定理", "field": "b02", "concepts": ["Neyman 因子分解定理", "Rao–Blackwell 方差缩减", "Lehmann–Scheffé UMVUE 定理"], "prerequisites": ["b02-03"]}, {"id": "b02-05", "name": "估计量评价、Fisher 信息量与 Cramér–Rao 下界", "field": "b02", "concepts": ["无偏性", "均方误差 MSE", "Fisher 信息矩阵", "Cramér–Rao 不等式"], "prerequisites": ["b02-04"]}, {"id": "b02-06", "name": "大样本渐近理论与 MLE 渐近正态性", "field": "b02", "concepts": ["相合性", "Delta 方法"], "prerequisites": ["b02-05"]}, {"id": "b02-07", "name": "区间估计与枢轴量法", "field": "b02", "concepts": ["置信区间与覆盖率", "正态总体精确置信区间", "基于渐近正态的近似置信区间"], "prerequisites": ["b02-06"]}, {"id": "b02-08", "name": "假设检验基础、两类错误与 Neyman–Pearson 引理", "field": "b02", "concepts": ["原假设与备择假设", "第 I/II 类错误与功效函数", "值", "最优势检验 Neyman–Pearson 引理"], "prerequisites": ["b02-07"]}, {"id": "b02-09", "name": "似然比检验（LRT）、拟合优度检验与 Bayes 推断", "field": "b02", "concepts": ["广义似然比与 Wilks 定理", "拟合优度与独立性检验", "先验/共轭先验与后验分布"], "prerequisites": ["b02-08"]}, {"id": "b03-01", "name": "离散时间马尔可夫链（DTMC）与转移矩阵", "field": "b03", "concepts": ["Markov 无后效性", "步转移概率", "Chapman–Kolmogorov 方程"], "prerequisites": ["c14-03"]}, {"id": "b03-02", "name": "状态分类：互通、常返（Recurrence）与暂留（Transience）", "field": "b03", "concepts": ["互通类", "首达时间", "常返判据", "随机游走 Pólya 常返定理"], "prerequisites": ["b03-01"]}, {"id": "b03-03", "name": "平稳分布、正常返与遍历定理", "field": "b03", "concepts": ["非周期性", "平稳分布  存在唯一性", "细致平衡与时间可逆性", "遍历大数定律"], "prerequisites": ["b03-02"]}, {"id": "b03-04", "name": "吸收链、首中时与分支过程（Galton–Watson 过程）", "field": "b03", "concepts": ["吸收概率与平均吸收时间", "赌徒破产问题", "生成函数求灭绝概率"], "prerequisites": ["b03-03"]}, {"id": "b03-05", "name": "Poisson 过程与更新过程初步", "field": "b03", "concepts": ["齐次 Poisson 过程三种等价定义", "到达间隔指数分布", "稀有事件合流与分解"], "prerequisites": ["b03-04"]}, {"id": "b03-06", "name": "连续时间马尔可夫链（CTMC）与生灭过程", "field": "b03", "concepts": ["指数停留时间", "转移速率矩阵", "Kolmogorov 向前/向后方程", "排队论 M/M/1 模型"], "prerequisites": ["b03-05"]}, {"id": "b03-07", "name": "离散时间鞅（Martingales）与停时定理", "field": "b03", "concepts": ["滤子", "鞅定义", "Doob 可选停时定理及其应用", "鞅收敛定理初步"], "prerequisites": ["b03-06"]}, {"id": "b03-08", "name": "Brown 运动（Wiener 过程）初步", "field": "b03", "concepts": ["独立正态增量", "连续非可微路径", "反射原理与首中时分布", "几何 Brown 运动导引"], "prerequisites": ["b03-07"]}, {"id": "b04-01", "name": "浮点运算、舍入误差、条件数与数值稳定性", "field": "b04", "concepts": ["IEEE 754 浮点数", "机器精度", "相近数相减灾难", "问题条件数 vs 算法向后稳定性"], "prerequisites": ["c03-03", "c04-03"]}, {"id": "b04-02", "name": "非线性方程（组）求根算法", "field": "b04", "concepts": ["二分法", "不动点迭代与收敛阶", "Newton–Raphson 二次收敛", "割线法", "多元 Newton 法"], "prerequisites": ["b04-01"]}, {"id": "b04-03", "name": "多项式插值与分段样条插值", "field": "b04", "concepts": ["Lagrange 与 Newton 均差插值", "插值余项", "Runge 现象与 Chebyshev 节点", "三次样条插值"], "prerequisites": ["b04-02"]}, {"id": "b04-04", "name": "正交多项式与最佳平方逼近", "field": "b04", "concepts": ["Legendre 与 Chebyshev 正交多项式", "三项递推", "函数空间最小二乘逼近"], "prerequisites": ["b04-03"]}, {"id": "b04-05", "name": "数值微分与数值积分（Newton–Cotes 与外推）", "field": "b04", "concepts": ["有限差分截断与舍入权衡", "梯形与 Simpson 公式", "Richardson 外推与 Romberg 积分"], "prerequisites": ["b04-04"]}, {"id": "b04-06", "name": "Gauss 求积公式", "field": "b04", "concepts": ["节点与权重联合待定", "正交多项式零点构造  阶最高代数精度 Gauss 求积"], "prerequisites": ["b04-05"]}, {"id": "b04-07", "name": "常微分方程数值解：单步法与 Runge–Kutta 法", "field": "b04", "concepts": ["显式/隐式 Euler 法", "局部截断误差与整体收敛阶", "经典四阶 RK4"], "prerequisites": ["b04-06"]}, {"id": "b04-08", "name": "线性多步法、零稳定性与刚性方程（Stiffness）", "field": "b04", "concepts": ["Adams 多步法", "Dahlquist 等价定理", "绝对稳定域与 -稳定性", "刚性系统隐式求解"], "prerequisites": ["b04-07"]}, {"id": "b04-09", "name": "偏微分方程有限差分法初步", "field": "b04", "concepts": ["Poisson 方程五点差分", "热传导显式与 Crank–Nicolson 格式", "CFL 条件与 von Neumann 稳定性分析"], "prerequisites": ["b04-08"]}, {"id": "b05-01", "name": "向量与矩阵范数、条件数与扰动分析", "field": "b05", "concepts": ["诱导算子范数  与 Frobenius 范数", "条件数  与解的扰动界"], "prerequisites": ["c04-03", "c05-03"]}, {"id": "b05-02", "name": "选主元 LU 分解、Cholesky 分解与稀疏直接法", "field": "b05", "concepts": ["列主元消元稳定性", "对称正定矩阵  Cholesky 分解", "三对角追赶法"], "prerequisites": ["b05-01"]}, {"id": "b05-03", "name": "Householder 反射、Givens 旋转与最小二乘 QR 算法", "field": "b05", "concepts": ["正交反射构造", "避免法方程  条件数平方恶化"], "prerequisites": ["b05-02"]}, {"id": "b05-04", "name": "奇异值分解（SVD）、Eckart–Young 低秩逼近与 PCA", "field": "b05", "concepts": ["矩阵最佳 -秩逼近定理", "样本协方差矩阵与主成分分析 PCA 降维"], "prerequisites": ["b05-03"]}, {"id": "b05-05", "name": "特征值计算：幂法、反幂法、瑞利商迭代与 QR 算法", "field": "b05", "concepts": ["幂法与反幂法", "Rayleigh 商三次收敛", "Hessenberg 化约与带位移 QR 迭代"], "prerequisites": ["b05-04"]}, {"id": "b05-06", "name": "大型稀疏线性系统的定常迭代法", "field": "b05", "concepts": ["Jacobi", "Gauss–Seidel 与超松弛 SOR 迭代", "谱半径  收敛充要条件"], "prerequisites": ["b05-05"]}, {"id": "b05-07", "name": "Krylov 子空间方法与共轭梯度法（CG）", "field": "b05", "concepts": ["Krylov 子空间", "对称正定系统共轭梯度法与  收敛率", "预条件"], "prerequisites": ["b05-06"]}, {"id": "b05-08", "name": "矩阵微积分与自动微分/反向传播", "field": "b05", "concepts": ["标量对向量与矩阵求导", "迹技巧", "计算图逆向模式自动微分与 Backpropagation"], "prerequisites": ["b05-07"]}, {"id": "b05-09", "name": "图拉普拉斯矩阵、谱聚类与随机矩阵算法初步", "field": "b05", "concepts": ["图 Laplacian  半正定性", "Fiedler 向量与谱聚类", "PageRank", "随机 SVD"], "prerequisites": ["b05-08"]}, {"id": "b06-01", "name": "凸集与凸函数", "field": "b06", "concepts": ["仿射集与凸集", "超平面分离与支撑定理", "凸函数一阶/二阶判据", "保凸运算与次梯度"], "prerequisites": ["c03-03", "c04-03"]}, {"id": "b06-02", "name": "线性规划（LP）标准形、多面体顶点与基本可行解", "field": "b06", "concepts": ["LP 建模", "凸多面体几何", "极点与基本可行解等价性", "线性规划基本定理"], "prerequisites": ["b06-01"]}, {"id": "b06-03", "name": "单纯形法（Simplex Algorithm）", "field": "b06", "concepts": ["基变换与枢轴旋转", "检验数与最优判据", "退化与 Bland 规则", "两阶段法"], "prerequisites": ["b06-02"]}, {"id": "b06-04", "name": "线性规划对偶理论、互补松弛与灵敏度分析", "field": "b06", "concepts": ["弱对偶与强对偶定理", "Farkas 引理", "互补松弛与影子价格", "零和博弈 Minimax 定理"], "prerequisites": ["b06-03"]}, {"id": "b06-05", "name": "网络流优化：最短路、最大流最小割与匹配", "field": "b06", "concepts": ["全单模矩阵整性", "Ford–Fulkerson 最大流最小割定理", "运输问题"], "prerequisites": ["b06-04"]}, {"id": "b06-06", "name": "无约束优化算法：梯度下降、线搜索与牛顿/拟牛顿法", "field": "b06", "concepts": ["Armijo 回溯线搜索", "梯度下降收敛率与条件数", "Newton 法与 BFGS 拟牛顿法"], "prerequisites": ["b06-05"]}, {"id": "b06-07", "name": "约束非线性优化、Lagrange 对偶与 KKT 条件", "field": "b06", "concepts": ["Lagrange 对偶函数", "Slater 条件与强对偶", "Karush–Kuhn–Tucker 最优性条件"], "prerequisites": ["b06-06"]}, {"id": "b06-08", "name": "机器学习一阶优化：SGD、动量法与近端梯度法", "field": "b06", "concepts": ["经验风险最小化", "随机梯度下降方差与步长", "Nesterov 加速梯度", "正则近端梯度 ISTA"], "prerequisites": ["b06-07"]}, {"id": "b06-09", "name": "动态规划（Dynamic Programming）与 Bellman 最优性原理", "field": "b06", "concepts": ["多阶段决策", "Bellman 方程", "离散动态规划与马尔可夫决策过程 MDP 导引"], "prerequisites": ["b06-08"]}, {"id": "b07-01", "name": "多元线性回归与普通最小二乘（OLS）几何", "field": "b07", "concepts": ["线性模型", "列空间投影矩阵", "残差正交分解"], "prerequisites": ["b02-03", "c04-03"]}, {"id": "b07-02", "name": "Gauss–Markov 定理与正态线性模型精确推断", "field": "b07", "concepts": ["最佳线性无偏估计 BLUE", "回归系数  检验", "整体  检验", "预测区间"], "prerequisites": ["b07-01"]}, {"id": "b07-03", "name": "方差分析（ANOVA）、模型诊断与多重共线性", "field": "b07", "concepts": ["平方和分解", "残差图", "杠杆值与 Cook 距离", "方差膨胀因子 VIF"], "prerequisites": ["b07-02"]}, {"id": "b07-04", "name": "正则化回归与偏差-方差权衡", "field": "b07", "concepts": ["均方误差  分解", "Ridge  岭回归", "Lasso  稀疏回归"], "prerequisites": ["b07-03"]}, {"id": "b07-05", "name": "模型选择与交叉验证（AIC, BIC, CV）", "field": "b07", "concepts": ["训练误差与泛化误差", "AIC 与 BIC 信息准则", "-折交叉验证"], "prerequisites": ["b07-04"]}, {"id": "b07-06", "name": "广义线性模型（GLM）与 Logistic 回归", "field": "b07", "concepts": ["指数族分布与连接函数", "Logistic 二分类回归", "Poisson 回归", "迭代重加权最小二乘 IWLS"], "prerequisites": ["b07-05"]}, {"id": "b07-07", "name": "非参数统计与核方法初步", "field": "b07", "concepts": ["Bootstrap 自助法", "核密度估计 KDE", "再生核希尔伯特空间直观与核技巧 Kernel Trick"], "prerequisites": ["b07-06"]}, {"id": "b07-08", "name": "统计学习基础：线性判别（LDA）、SVM 与泛化界直观", "field": "b07", "concepts": ["Bayes 最优分类器", "最大间隔分类器与 SVM 对偶", "经验风险最小化与 VC 维直观"], "prerequisites": ["b07-07"]}, {"id": "b08-01", "name": "枚举组合学：双射证明、二项式恒等式与容斥原理", "field": "b08", "concepts": ["组合恒等式", "错排问题与一般容斥公式", "鸽巢原理与 Ramsey 定理初步"], "prerequisites": ["c01-03", "c07-03"]}, {"id": "b08-02", "name": "生成函数与递推关系", "field": "b08", "concepts": ["普通生成函数 OGF 与指数生成函数 EGF", "常系数递推数列求解", "Catalan 数与分拆数"], "prerequisites": ["b08-01"]}, {"id": "b08-03", "name": "图的基本概念、树、连通性与 Euler/Hamilton 回路", "field": "b08", "concepts": ["握手定理", "生成树 Cayley 公式", "Euler 回路充要条件", "Hamilton 圈与连通度"], "prerequisites": ["b08-02"]}, {"id": "b08-04", "name": "二分图匹配、Hall 婚姻定理与覆盖", "field": "b08", "concepts": ["交错路与增广路", "Hall 相异代表系定理", "König 匹配-点覆盖定理"], "prerequisites": ["b08-03"]}, {"id": "b08-05", "name": "平面图、Euler 多面体公式与图着色", "field": "b08", "concepts": ["平面图", "Kuratowski 定理", "点着色色数", "五色定理与色多项式"], "prerequisites": ["b08-04"]}, {"id": "b08-06", "name": "极值图论与概率方法初步", "field": "b08", "concepts": ["Mantel 与 Turán 定理", "Erdős 概率方法：期望线性性与删去法证明存在性"], "prerequisites": ["b08-05"]}, {"id": "b08-07", "name": "信息论与编码理论初步", "field": "b08", "concepts": ["Shannon 信息熵", "互信息与 KL 散度", "信源编码与信道容量直观", "Hamming 纠错码与有限域编码"], "prerequisites": ["b08-06"]}, {"id": "b08-08", "name": "形式语言、有限自动机与上下文无关文法", "field": "b08", "concepts": ["DFA 与 NFA 等价性", "正则表达式", "泵引理", "上下文无关文法"], "prerequisites": ["b08-07"]}, {"id": "b08-09", "name": "Turing 机、可计算性与停机问题不可判定性", "field": "b08", "concepts": ["Turing 机与 Church–Turing 论题", "通用 Turing 机", "对角化证明停机问题不可判定", "归约法"], "prerequisites": ["b08-08"]}, {"id": "b08-10", "name": "计算复杂性（P, NP 与 NP-完全性）与 Gödel 不完备性导引", "field": "b08", "concepts": ["时间复杂度类 P 与 NP", "多项式归约与 Cook–Levin 定理", "一阶逻辑完备性与 Gödel 不完备性定理思想"], "prerequisites": ["b08-09"]}], "state": {"c01-01": "mastered", "c01-02": "mastered", "c01-03": "mastered", "c01-04": "mastered", "c01-05": "mastered", "c01-06": "mastered", "c01-07": "mastered", "c01-08": "mastered", "c01-09": "mastered", "c01-10": "mastered", "c02-01": "mastered", "c02-02": "mastered", "c02-03": "mastered", "c02-04": "mastered", "c02-05": "mastered", "c02-06": "mastered", "c02-07": "mastered", "c02-08": "mastered", "c02-09": "mastered", "c02-10": "learning", "c02-11": "unlearned", "c02-12": "unlearned", "c02-13": "unlearned", "c02-14": "unlearned", "c03-01": "learning", "c03-02": "unlearned", "c03-03": "unlearned", "c03-04": "unlearned", "c03-05": "unlearned", "c03-06": "unlearned", "c03-07": "unlearned", "c03-08": "unlearned", "c03-09": "unlearned", "c03-10": "unlearned", "c03-11": "unlearned", "c04-01": "mastered", "c04-02": "mastered", "c04-03": "mastered", "c04-04": "mastered", "c04-05": "mastered", "c04-06": "claimed", "c04-07": "unlearned", "c04-08": "unlearned", "c04-09": "unlearned", "c04-10": "unlearned", "c05-01": "unlearned", "c05-02": "unlearned", "c05-03": "unlearned", "c05-04": "unlearned", "c05-05": "unlearned", "c05-06": "unlearned", "c05-07": "unlearned", "c05-08": "unlearned", "c06-01": "mastered", "c06-02": "unlearned", "c06-03": "unlearned", "c06-04": "unlearned", "c06-05": "unlearned", "c06-06": "unlearned", "c06-07": "unlearned", "c06-08": "unlearned", "c06-09": "unlearned", "c07-01": "deferred", "c07-02": "unlearned", "c07-03": "unlearned", "c07-04": "unlearned", "c07-05": "unlearned", "c07-06": "unlearned", "c07-07": "unlearned", "c07-08": "unlearned", "c07-09": "unlearned", "c07-10": "unlearned", "c08-01": "unlearned", "c08-02": "unlearned", "c08-03": "unlearned", "c08-04": "unlearned", "c08-05": "unlearned", "c08-06": "unlearned", "c08-07": "unlearned", "c08-08": "unlearned", "c08-09": "unlearned", "c09-01": "unlearned", "c09-02": "unlearned", "c09-03": "unlearned", "c09-04": "unlearned", "c09-05": "unlearned", "c09-06": "unlearned", "c09-07": "unlearned", "c09-08": "unlearned", "c09-09": "unlearned", "c09-10": "unlearned", "c10-01": "unlearned", "c10-02": "unlearned", "c10-03": "unlearned", "c10-04": "unlearned", "c10-05": "unlearned", "c10-06": "unlearned", "c10-07": "unlearned", "c10-08": "unlearned", "c10-09": "unlearned", "c11-01": "unlearned", "c11-02": "unlearned", "c11-03": "unlearned", "c11-04": "unlearned", "c11-05": "unlearned", "c11-06": "unlearned", "c11-07": "unlearned", "c11-08": "unlearned", "c11-09": "unlearned", "c12-01": "unlearned", "c12-02": "unlearned", "c12-03": "unlearned", "c12-04": "unlearned", "c12-05": "unlearned", "c12-06": "unlearned", "c12-07": "unlearned", "c12-08": "unlearned", "c12-09": "unlearned", "c13-01": "unlearned", "c13-02": "unlearned", "c13-03": "unlearned", "c13-04": "unlearned", "c13-05": "unlearned", "c13-06": "unlearned", "c13-07": "unlearned", "c13-08": "unlearned", "c13-09": "unlearned", "c14-01": "unlearned", "c14-02": "unlearned", "c14-03": "unlearned", "c14-04": "unlearned", "c14-05": "unlearned", "c14-06": "unlearned", "c14-07": "unlearned", "c14-08": "unlearned", "c14-09": "unlearned", "c14-10": "unlearned", "b01-01": "unlearned", "b01-02": "unlearned", "b01-03": "unlearned", "b01-04": "unlearned", "b01-05": "unlearned", "b01-06": "unlearned", "b01-07": "unlearned", "b01-08": "unlearned", "b01-09": "unlearned", "b01-10": "unlearned", "b02-01": "unlearned", "b02-02": "unlearned", "b02-03": "unlearned", "b02-04": "unlearned", "b02-05": "unlearned", "b02-06": "unlearned", "b02-07": "unlearned", "b02-08": "unlearned", "b02-09": "unlearned", "b03-01": "unlearned", "b03-02": "unlearned", "b03-03": "unlearned", "b03-04": "unlearned", "b03-05": "unlearned", "b03-06": "unlearned", "b03-07": "unlearned", "b03-08": "unlearned", "b04-01": "unlearned", "b04-02": "unlearned", "b04-03": "unlearned", "b04-04": "unlearned", "b04-05": "unlearned", "b04-06": "unlearned", "b04-07": "unlearned", "b04-08": "unlearned", "b04-09": "unlearned", "b05-01": "unlearned", "b05-02": "unlearned", "b05-03": "unlearned", "b05-04": "unlearned", "b05-05": "unlearned", "b05-06": "unlearned", "b05-07": "unlearned", "b05-08": "unlearned", "b05-09": "unlearned", "b06-01": "unlearned", "b06-02": "unlearned", "b06-03": "unlearned", "b06-04": "unlearned", "b06-05": "unlearned", "b06-06": "unlearned", "b06-07": "unlearned", "b06-08": "unlearned", "b06-09": "unlearned", "b07-01": "unlearned", "b07-02": "unlearned", "b07-03": "unlearned", "b07-04": "unlearned", "b07-05": "unlearned", "b07-06": "unlearned", "b07-07": "unlearned", "b07-08": "unlearned", "b08-01": "unlearned", "b08-02": "unlearned", "b08-03": "unlearned", "b08-04": "unlearned", "b08-05": "unlearned", "b08-06": "unlearned", "b08-07": "unlearned", "b08-08": "unlearned", "b08-09": "unlearned", "b08-10": "unlearned"}, "weak": {"c02-10": ["换元积分中上下限的处理", "分部积分的选择顺序"], "c03-01": ["偏导数与方向导数的区别"]}};
+const VARIANTS = {d:'D 合并方案（A 为底）', a:'A 领域看板', b:'B 分层地图', c:'C 前沿清单'};
+const STATE_NAME = {unlearned:'未学',learning:'学习中',deferred:'暂不学',claimed:'声称掌握',mastered:'已掌握'};
+const T = Object.fromEntries(DATA.topics.map(t=>[t.id,t]));
+const F = Object.fromEntries(DATA.fields.map(f=>[f.id,f]));
+const byField = {}; DATA.topics.forEach(t=>(byField[t.field] ??= []).push(t));
+const S = {...DATA.state};
+const weak = {...DATA.weak};
+let variant = (location.hash.replace('#','') || 'd'); if(!VARIANTS[variant]) variant='d';
+let page = 'web';            // web | learn | verify
+let topicId = null;
+let fieldSel = 'c02';
+let toastT = null;
+
+/* ---------- 领域模型 ---------- */
+const isM = id => S[id]==='mastered';
+const unlocked = t => t.prerequisites.every(isM);
+const frontier = () => DATA.topics.filter(t => ['unlearned','learning'].includes(S[t.id]) && unlocked(t));
+function recommendations(n=3){
+  const out=[];
+  DATA.topics.filter(t=>S[t.id]==='claimed').forEach(t=>out.push({kind:'verify',t}));
+  const fr = frontier().sort((a,b)=>{
+    const ka=(F[a.field].kind==='core'?0:1), kb=(F[b.field].kind==='core'?0:1);
+    if(ka!==kb) return ka-kb;
+    if((S[a.id]==='learning')!==(S[b.id]==='learning')) return S[a.id]==='learning'?-1:1;
+    return a.id<b.id?-1:1;
+  });
+  fr.forEach(t=>out.push({kind:'learn',t}));
+  return out.slice(0,n);
+}
+function fieldStats(fid){
+  const ts=byField[fid]; const c={mastered:0,learning:0,claimed:0,deferred:0,unlearned:0};
+  ts.forEach(t=>c[S[t.id]]++); return {n:ts.length,...c};
+}
+function setState(id,s,msg){ S[id]=s; if(msg) toast(msg); render(); }
+function toast(m){ let el=document.querySelector('.toast'); if(!el){el=document.createElement('div');el.className='toast';document.body.appendChild(el);} el.textContent=m; clearTimeout(toastT); toastT=setTimeout(()=>el.remove(),2200); }
+
+/* ---------- 假讲义 ---------- */
+function lectureSegments(t){
+  const f=F[t.field];
+  return [
+    {tag:'h1',text:t.name},
+    {tag:'meta'},
+    {tag:'h2',text:'一、历史动机'},
+    {tag:'p',text:`十七世纪中叶，${f.name.slice(0,4)}领域的核心难题之一正是「${t.concepts[0]}」。在牛顿与莱布尼茨之前，人们只能逐个问题地构造特殊方法；而一旦把「${t.concepts[1]||t.concepts[0]}」看作一个统一的运算，原本彼此无关的几何、运动与求和问题便被同一条线索串起。这个主题要讲的，就是这条线索如何被发现、又为何需要「${t.concepts[2]||t.concepts[0]}」来把它说严格。`},
+    {tag:'h2',text:'二、核心概念'},
+    {tag:'p',text:`设 f 在区间 [a, b] 上连续，定义 F(x) = ∫ₐˣ f(t) dt。那么 F 在 [a, b] 上可导，并且 F′(x) = f(x)。这就是说：「变上限积分」对上限求导，得到的正是被积函数本身。它把两个看上去方向相反的运算——求面积与求切线——接在了一起。`},
+    {tag:'fig',name:'ftc-area-under-curve.svg',caption:'曲线 y = f(t) 下从 a 到 x 的面积随 x 变化；阴影增量 ΔF 近似为 f(x)·Δx。',attempts:1},
+    {tag:'p',text:`由此立刻得到计算定积分的办法：只要找到 f 的任意一个原函数 G，就有 ∫ₐᵇ f(x) dx = G(b) − G(a)。这条公式把「无穷多个小矩形求和」化为「两次代入相减」，是整个微积分最重要的计算工具。`},
+    {tag:'h2',text:'三、例题'},
+    {tag:'ex',text:`例 1　计算 ∫₀¹ x² dx。\n解　取 G(x) = x³/3，则 G′(x) = x²。于是 ∫₀¹ x² dx = G(1) − G(0) = 1/3。\n注意不必回到 Riemann 和的定义：原函数一旦找到，计算就结束了。`},
+    {tag:'fig',name:'substitution-limits.svg',caption:'换元 u = 2x 时积分上下限随之变为 0 与 2，图中两条数轴标出了对应关系。',attempts:2},
+    {tag:'ex',text:`例 2　计算 ∫₀¹ 2x·cos(x²) dx。\n解　令 u = x²，du = 2x dx，当 x 从 0 到 1 时 u 从 0 到 1。原式 = ∫₀¹ cos u du = sin 1 − sin 0 = sin 1。\n这里最容易出错的是忘记同步改写上下限——这正是你上次验证时暴露的薄弱点之一。`},
+    {tag:'h2',text:'四、常见误区'},
+    {tag:'p',text:`「可积」与「有原函数」是两回事：有的函数 Riemann 可积却没有初等原函数（如 e^(−x²)），有的函数有原函数却不可积。基本定理的两个方向各有前提，务必分清。`},
+  ];
+}
+const QUESTIONS = t => [
+  {q:`用自己的话说明「${t.concepts[0]}」解决了什么问题，并给出一个最简单的例子。`, ref:`要点：说清它统一了哪两类运算或对象；例子正确；不要求严格证明。`},
+  {q:`叙述与「${t.concepts[1]||t.concepts[0]}」相关的主要定理的条件与结论。缺少哪个条件会失效？举一个反例。`, ref:`要点：条件完整；结论准确；反例能说明条件必要。`},
+  {q:`计算或推导：针对「${t.concepts[2]||t.concepts[0]}」给出一道两步内的具体计算，并解释每一步依据。`, ref:`要点：结果正确；每步有依据；若用换元须改写上下限。`},
+];
+function gradeAnswer(a){ const n=a.trim().length; return n>40?1:n>12?0.5:0; }
+
+/* ---------- 渲染入口 ---------- */
+function render(){
+  const app=document.getElementById('app');
+  app.className = variant==='d' ? 'A D' : variant.toUpperCase();
+  document.getElementById('vlabel').textContent = VARIANTS[variant];
+  app.innerHTML = ({a:renderA,b:renderB,c:renderC,d:renderD})[variant]();
+  bindCommon(app);
+  if(variant==='b' && page==='web') initMap();
+  if(variant==='d' && page==='web' && dView==='graph') initVMap();
+  if(page==='learn') startStream();
+}
+function topbar(extra=''){
+  return `<header class="topbar gutter"><span class="brand">TheRoadNotTaken</span>
+  <nav><button data-go="web" class="${page==='web'?'on':''}">知识网</button>
+  <button data-go="learn" class="${page==='learn'?'on':''}" ${topicId?'':'disabled'}>学习</button>
+  <button data-go="verify" class="${page==='verify'?'on':''}" ${topicId?'':'disabled'}>验证</button></nav>
+  <span class="muted" style="margin-left:auto;font-size:12px">${extra}</span></header>`;
+}
+function recCard(r,hero=false){
+  const t=r.t;
+  const acts = r.kind==='verify'
+    ? `<button class="primary" data-verify="${t.id}">开始验证</button><button data-set="${t.id}:unlearned">其实没学过</button>`
+    : `<button class="primary" data-learn="${t.id}">${S[t.id]==='learning'?'继续学习':'开始学习'}</button><button data-set="${t.id}:claimed">我已掌握</button><button class="ghost" data-set="${t.id}:deferred">暂不学</button>`;
+  return `<div class="rec ${hero?'hero':''}"><span class="kind">${r.kind==='verify'?'待验证 · 你声称已掌握':'下一步 · '+F[t.field].name}</span>
+  <span class="title">${t.name}</span><span class="muted" style="font-size:12px">${t.concepts.join(' · ')}</span><div class="acts">${acts}</div></div>`;
+}
+function topicActions(t){
+  const s=S[t.id];
+  if(s==='mastered') return `<span class="tag mastered">已掌握</span>`;
+  if(!unlocked(t)) return `<span class="muted" style="font-size:12px">前置未掌握：${t.prerequisites.filter(p=>!isM(p)).map(p=>T[p].name).join('、')}</span>`;
+  return `<button class="primary" data-learn="${t.id}">${s==='learning'?'继续学习':'开始学习'}</button>
+    ${s==='claimed'?`<button data-verify="${t.id}">去验证</button>`:`<button data-set="${t.id}:claimed">我已掌握</button>`}
+    ${s==='deferred'?`<button data-set="${t.id}:unlearned">恢复推荐</button>`:`<button class="ghost" data-set="${t.id}:deferred">暂不学</button>`}`;
+}
+function bindCommon(root){
+  root.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{page=b.dataset.go;render();});
+  root.querySelectorAll('[data-learn]').forEach(b=>b.onclick=()=>{topicId=b.dataset.learn; if(S[topicId]==='unlearned'||S[topicId]==='deferred') S[topicId]='learning'; page='learn'; render();});
+  root.querySelectorAll('[data-verify]').forEach(b=>b.onclick=()=>{topicId=b.dataset.verify; page='verify'; render();});
+  root.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const [id,s]=b.dataset.set.split(':'); setState(id,s,`${T[id].name} → ${STATE_NAME[s]}`);});
+  root.querySelectorAll('[data-field]').forEach(b=>b.onclick=()=>{fieldSel=b.dataset.field;render();});
+  root.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{openTopic(b.dataset.open);});
+}
+function openTopic(id){
+  topicId=id; const t=T[id];
+  if(variant==='b'){ drawerOpen=id; render(); return; }
+  if(variant==='c'){ page='learn'; if(S[id]==='unlearned') S[id]='learning'; render(); return; }
+  fieldSel=t.field; if(variant==='d') dView='board'; render();
+}
+
+/* ---------- 流式模拟 ---------- */
+let streamTimer=null, skipStream=false;
+function startStream(){
+  clearTimeout(streamTimer); skipStream=false;
+  const host=document.getElementById('lecture'); if(!host) return;
+  const t=T[topicId]; const segs=lectureSegments(t);
+  const stepsEl=document.getElementById('steps');
+  const skipBtn=document.getElementById('skip'); if(skipBtn) skipBtn.onclick=()=>{skipStream=true;};
+  let i=0;
+  const metaHtml=`<div class="lhead"><span class="tag ${S[t.id]}">${STATE_NAME[S[t.id]]}</span><span>${F[t.field].name}</span><span class="mono">${t.id}</span>${weak[t.id]?`<span style="color:var(--learning)">薄弱点：${weak[t.id].join('；')}</span>`:''}</div>`;
+  function stepTag(s,cls){ if(!stepsEl) return; stepsEl.innerHTML += `<span class="${cls}">${s}</span>`; }
+  function next(){
+    if(i>=segs.length){ host.querySelectorAll('.cursor').forEach(e=>e.classList.remove('cursor')); stepTag('讲义已缓存','done'); return; }
+    const sg=segs[i++];
+    if(sg.tag==='meta'){ host.insertAdjacentHTML('beforeend',metaHtml); return next(); }
+    if(sg.tag==='fig'){
+      const fig=document.createElement('div'); fig.className='fig pending';
+      fig.innerHTML=`<div class="box">正在画图…（尝试 1/${sg.attempts}）</div><div>${sg.caption}</div><div class="mono">figures/${sg.name}</div>`;
+      host.appendChild(fig); stepTag(`画图 ${sg.name}`,'on');
+      let a=1; const tick=()=>{ if(skipStream||a>=sg.attempts){ fig.classList.remove('pending'); fig.querySelector('.box').textContent='[ 插图占位：'+sg.name+' ]'; stepsEl && (stepsEl.lastElementChild.className='done'); return next(); } a++; fig.querySelector('.box').textContent=`脚本报错，正在重试…（尝试 ${a}/${sg.attempts}）`; streamTimer=setTimeout(tick,1400); };
+      streamTimer=setTimeout(tick,skipStream?0:1400); return;
+    }
+    const el=document.createElement(sg.tag==='ex'?'div':sg.tag); if(sg.tag==='ex') el.className='example';
+    el.classList.add('cursor'); host.appendChild(el);
+    if(i===3) stepTag('生成正文','on');
+    const text=sg.text; let k=0;
+    const type=()=>{ if(skipStream){k=text.length;} k=Math.min(text.length,k+6); el.innerHTML=text.slice(0,k).replace(/\n/g,'<br>'); if(k<text.length){streamTimer=setTimeout(type,40);} else {el.classList.remove('cursor'); next();} };
+    type();
+  }
+  next();
+}
+
+/* ---------- 验证流程（共用状态） ---------- */
+let vz={answers:['','',''],graded:null,appealed:false,step:0};
+function resetVerify(){ vz={answers:['','',''],graded:null,appealed:false,step:0}; }
+function doGrade(){
+  const sc=vz.answers.map(gradeAnswer); const avg=sc.reduce((a,b)=>a+b,0)/3;
+  vz.graded={scores:sc,pass:avg>=0.6,comments:sc.map(s=>s===1?'要点完整。':s===0.5?'说到了核心，但缺少条件或例子。':'没有作答或过于简略。')};
+  if(vz.graded.pass){ S[topicId]='mastered'; delete weak[topicId]; }
+  else { S[topicId]='learning'; weak[topicId]=sc.map((s,i)=>s<1?`第 ${i+1} 题涉及的「${T[topicId].concepts[i]||T[topicId].concepts[0]}」`:null).filter(Boolean); }
+}
+function doAppeal(){ vz.appealed=true; const i=vz.graded.scores.findIndex((s,k)=>s<1&&vz.answers[k].trim()); if(i>=0){vz.graded.scores[i]=Math.min(1,vz.graded.scores[i]+0.5); vz.graded.comments[i]+='（申诉后复核：采纳你的解释，上调评分）'; const avg=vz.graded.scores.reduce((a,b)=>a+b,0)/3; if(avg>=0.6){vz.graded.pass=true;S[topicId]='mastered';delete weak[topicId];}} }
+function verdictHtml(){
+  const g=vz.graded; const t=T[topicId];
+  return `<div class="verdict ${g.pass?'pass':'fail'}"><b>${g.pass?'通过 · 该主题标记为已掌握':'未通过 · 回到学习中'}</b>
+  <span>总分 <span class="score">${g.scores.reduce((a,b)=>a+b,0).toFixed(1)} / 3</span>${g.pass?'':'，薄弱点已记录：'+(weak[t.id]||[]).join('；')}</span>
+  <div class="acts">${!vz.appealed?`<button data-appeal>申诉一次</button>`:`<span class="muted">已申诉</span>`}
+  ${g.pass?`<button class="primary" data-go="web">回到知识网</button>`:`<button class="primary" data-learn="${t.id}">带着薄弱点重读讲义</button><button data-go="web">回到知识网</button>`}</div></div>`;
+}
+function bindVerify(root){
+  root.querySelectorAll('textarea[data-ans]').forEach(ta=>ta.oninput=()=>{vz.answers[+ta.dataset.ans]=ta.value;});
+  const g=root.querySelector('[data-grade]'); if(g) g.onclick=()=>{ g.disabled=true; g.textContent='agent 评分中…'; setTimeout(()=>{doGrade();render();},1200); };
+  const ap=root.querySelector('[data-appeal]'); if(ap) ap.onclick=()=>{ap.disabled=true;ap.textContent='复核中…';setTimeout(()=>{doAppeal();render();},1200);};
+  const nx=root.querySelector('[data-step]'); if(nx) nx.onclick=()=>{vz.step++;render();};
+  const pv=root.querySelector('[data-prev]'); if(pv) pv.onclick=()=>{vz.step--;render();};
+}
+function chatHtml(){
+  return `<div class="chat"><div class="hd"><span>追问</span><span class="muted" style="font-size:12px">与讲义共享会话</span></div>
+  <div class="log"><div class="msg a">这是本主题的追问区。你问的每个问题都会续接同一个主题会话，agent 知道你刚读到哪里。</div>
+  <div class="msg q">例 2 为什么上限变成了 1 而不是 2？</div>
+  <div class="msg a">因为换元 u = x²，当 x = 1 时 u = 1²= 1。上限跟着 u 走，而不是跟着系数 2 走。你上次的薄弱点正是这里，我把它记进本次讲义了。</div></div>
+  <div class="in"><textarea id="ask" placeholder="就这一段继续问…"></textarea><button class="primary">发送</button></div></div>`;
+}
+
+/* ================= A 领域看板 ================= */
+function renderA(){
+  if(page==='learn') return topbar()+`<div class="learn"><div><div class="steps" id="steps"></div><button id="skip" class="ghost" style="float:right;font-size:12px">跳过动画</button><article class="lecture" id="lecture"></article>
+    <p style="margin-top:20px"><button class="primary" data-verify="${topicId}">我学完了，去验证</button> <button data-go="web">稍后再学</button></p></div>${chatHtml()}</div>`;
+  if(page==='verify') return topbar()+renderVerifyA();
+  const recs=recommendations(3);
+  const st=fieldStats(fieldSel);
+  const fieldRows=kind=>DATA.fields.filter(f=>f.kind===kind).map(f=>{const s=fieldStats(f.id);return `<div class="frow ${f.id===fieldSel?'on':''}" data-field="${f.id}"><span class="name">${f.name}</span><span class="n">${s.mastered}/${s.n}</span>
+    <span class="bar"><i style="width:${s.mastered/s.n*100}%;background:var(--mastered)"></i><i style="width:${s.learning/s.n*100}%;background:var(--learning)"></i><i style="width:${s.claimed/s.n*100}%;background:var(--claimed)"></i></span></div>`;}).join('');
+  return topbar(`已掌握 ${DATA.topics.filter(t=>isM(t.id)).length} / ${DATA.topics.length} 个主题`)+`<div class="shell">
+  <aside class="side"><h3>主干</h3>${fieldRows('core')}<h3>分支</h3>${fieldRows('branch')}</aside>
+  <main class="main">
+    <section><h2 style="font-size:13px;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">推荐</h2><div class="recs">${recs.map((r,i)=>recCard(r,i===0)).join('')}</div></section>
+    <section><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px"><h2 style="font-size:18px">${F[fieldSel].name}</h2><span class="muted">${F[fieldSel].kind==='core'?'主干':'分支'} · ${st.n} 个主题 · 已掌握 ${st.mastered}</span></div>
+    <div class="grid">${byField[fieldSel].map(t=>`<div class="tcard ${S[t.id]} ${unlocked(t)||isM(t.id)?'':'locked'}" data-open="${t.id}"><div style="display:flex;justify-content:space-between;gap:6px"><span class="nm">${t.name}</span><span class="tag ${S[t.id]}">${STATE_NAME[S[t.id]]}</span></div><span class="cc">${t.concepts.join(' · ')}</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${topicActions(t)}</div></div>`).join('')}</div></section>
+  </main></div>`;
+}
+function renderVerifyA(){
+  const t=T[topicId]; const qs=QUESTIONS(t);
+  if(vz.graded) return `<div class="gutter" style="max-width:760px;margin:0 auto;padding-block:16px;display:flex;flex-direction:column;gap:12px"><h2>${t.name} · 验证结果</h2>${verdictHtml()}
+    ${qs.map((q,i)=>`<div class="q"><span class="qt">${i+1}. ${q.q}</span><span class="muted" style="font-size:13px">你的作答：${vz.answers[i]||'（空）'}</span><span class="score">得分 ${vz.graded.scores[i]}</span><span>${vz.graded.comments[i]}</span><span class="ref">参考要点：${q.ref}</span></div>`).join('')}</div>`;
+  return `<div class="gutter" style="max-width:760px;margin:0 auto;padding-block:16px;display:flex;flex-direction:column;gap:12px"><h2>${t.name} · 验证</h2><p class="muted">三道简答题，由 agent 评分。通过即标记为已掌握；未通过回到学习中，并记录薄弱点。评分后可申诉一次。</p>
+    ${qs.map((q,i)=>`<div class="q"><span class="qt">${i+1}. ${q.q}</span><textarea data-ans="${i}" placeholder="在这里作答…">${vz.answers[i]}</textarea></div>`).join('')}
+    <div><button class="primary" data-grade>提交评分</button> <button data-go="learn">回去再看看讲义</button></div></div>`;
+}
+
+/* ================= B 分层地图 ================= */
+let drawerOpen=null, view={x:320,y:70,k:1}, layout=null;
+function computeLayout(){
+  const depth={}; const d=t=>{ if(depth[t.id]!=null) return depth[t.id]; depth[t.id]= t.prerequisites.length? 1+Math.max(...t.prerequisites.map(p=>d(T[p]))) : 0; return depth[t.id]; };
+  DATA.topics.forEach(d);
+  const cols={}; DATA.topics.forEach(t=>(cols[depth[t.id]] ??= []).push(t));
+  const pos={}; const W=150,H=34,GX=60,GY=10;
+  Object.keys(cols).sort((a,b)=>a-b).forEach(c=>{ cols[c].sort((a,b)=>a.field<b.field?-1:1); cols[c].forEach((t,r)=>{pos[t.id]={x:c*(W+GX),y:r*(H+GY)};}); });
+  layout={pos,W,H,maxCol:Math.max(...Object.keys(cols).map(Number)),maxRow:Math.max(...Object.values(cols).map(c=>c.length))};
+}
+function mapSvg(){
+  if(!layout) computeLayout(); const {pos,W,H}=layout;
+  const fr=new Set(frontier().map(t=>t.id));
+  const edges=DATA.topics.flatMap(t=>t.prerequisites.map(p=>{const a=pos[p],b=pos[t.id];const hl=drawerOpen&&(drawerOpen===t.id||drawerOpen===p);return `<path class="edge ${hl?'hl':''}" d="M${a.x+W},${a.y+H/2} C${a.x+W+30},${a.y+H/2} ${b.x-30},${b.y+H/2} ${b.x},${b.y+H/2}"/>`;}));
+  const nodes=DATA.topics.map(t=>{const p=pos[t.id];const nm=t.name.length>11?t.name.slice(0,11)+'…':t.name;return `<g class="node ${S[t.id]} ${fr.has(t.id)?'frontier':''}" transform="translate(${p.x},${p.y})" data-node="${t.id}"><title>${t.name}（${F[t.field].name}）· ${STATE_NAME[S[t.id]]}</title><rect width="${W}" height="${H}" rx="6"/><text x="8" y="14">${nm}</text><text x="8" y="27" class="band">${F[t.field].name.slice(0,8)}</text></g>`;});
+  const bands=Array.from({length:layout.maxCol+1},(_,c)=>`<text class="band" x="${c*(W+60)}" y="-14">第 ${c} 层</text>`);
+  return `<svg id="map" viewBox="0 0 1200 700"><g id="vp" transform="translate(${view.x},${view.y}) scale(${view.k})">${bands.join('')}${edges.join('')}${nodes.join('')}</g></svg>`;
+}
+function initMap(){
+  const svg=document.getElementById('map'); if(!svg) return; const vp=document.getElementById('vp');
+  const apply=()=>vp.setAttribute('transform',`translate(${view.x},${view.y}) scale(${view.k})`);
+  let drag=null;
+  svg.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};svg.setPointerCapture(e.pointerId);});
+  svg.addEventListener('pointermove',e=>{if(!drag)return;const r=svg.getBoundingClientRect();const s=1200/r.width;view.x=drag.vx+(e.clientX-drag.x)*s;view.y=drag.vy+(e.clientY-drag.y)*s;apply();});
+  svg.addEventListener('pointerup',e=>{if(drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<4){const g=e.target.closest('[data-node]');if(g){drawerOpen=g.dataset.node;topicId=drawerOpen;render();}}drag=null;});
+  svg.addEventListener('wheel',e=>{e.preventDefault();const k=Math.min(3,Math.max(.3,view.k*(e.deltaY<0?1.1:0.9)));view.k=k;apply();},{passive:false});
+  document.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{view.k=b.dataset.zoom==='+'?Math.min(3,view.k*1.25):b.dataset.zoom==='-'?Math.max(.3,view.k/1.25):1;if(b.dataset.zoom==='0'){view.x=320;view.y=70;}apply();});
+  const focus=document.querySelector('[data-focus]'); if(focus) focus.onclick=()=>{const id=focus.dataset.focus;const p=layout.pos[id];view.k=1.2;view.x=600-(p.x+75)*1.2;view.y=350-(p.y+17)*1.2;apply();};
+}
+function renderB(){
+  if(page==='learn') return topbar()+`<div class="learnwrap"><div style="max-width:68ch;width:100%"><div class="steps" id="steps"></div><button id="skip" class="ghost" style="float:right;font-size:12px">跳过动画</button><article class="lecture" id="lecture"></article>
+    <p style="margin-top:20px"><button class="primary" data-verify="${topicId}">我学完了，去验证</button> <button data-go="web">回到地图</button></p></div></div>
+    <div class="bottom ${chatOpen?'open':''}" id="bottom"><div class="hd" data-toggle><span><b>追问</b> <span class="muted" style="font-size:12px">· 与讲义共享会话</span></span><span>${chatOpen?'收起 ▾':'展开 ▴'}</span></div>${chatHtml()}</div>`;
+  if(page==='verify') return topbar()+renderVerifyB();
+  const recs=recommendations(2); const t=drawerOpen?T[drawerOpen]:null;
+  return topbar(`${DATA.topics.length} 个主题 · 按前置深度分层 · 拖动平移，滚轮缩放`)+`<div class="map">
+    <div class="float">${recs.map((r,i)=>recCard(r,i===0)).join('')}<button class="ghost" data-focus="${recs[0]?.t.id}" style="align-self:flex-start;font-size:12px">在图上定位推荐 →</button></div>
+    <div class="zoom"><button data-zoom="+">＋</button><button data-zoom="-">－</button><button data-zoom="0">重置</button></div>
+    ${mapSvg()}
+    <div class="legend"><span><i class="dot mastered"></i> 已掌握</span><span><i class="dot learning"></i> 学习中</span><span><i class="dot claimed"></i> 声称掌握</span><span><i class="dot deferred"></i> 暂不学</span><span><i class="dot unlearned"></i> 未学</span><span style="color:var(--accent)">粗边 = 现在可学</span></div>
+    ${t?`<aside class="drawer"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tag ${S[t.id]}">${STATE_NAME[S[t.id]]}</span><button class="ghost" data-close>✕</button></div>
+      <h2 style="font-size:18px">${t.name}</h2><span class="muted">${F[t.field].name} · <span class="mono">${t.id}</span></span>
+      <div><b style="font-size:12px;letter-spacing:.06em;color:var(--muted)">概念提纲</b><ol style="margin:4px 0;padding-left:20px">${t.concepts.map(c=>`<li>${c}</li>`).join('')}</ol></div>
+      <div><b style="font-size:12px;letter-spacing:.06em;color:var(--muted)">前置</b><div>${t.prerequisites.length?t.prerequisites.map(p=>`<div><i class="dot ${S[p]}"></i> <a href="#" data-open="${p}">${T[p].name}</a></div>`).join(''):'<span class="muted">无（高中数学基线）</span>'}</div></div>
+      <div><b style="font-size:12px;letter-spacing:.06em;color:var(--muted)">解锁</b><div>${DATA.topics.filter(x=>x.prerequisites.includes(t.id)).map(x=>`<div><i class="dot ${S[x.id]}"></i> <a href="#" data-open="${x.id}">${x.name}</a></div>`).join('')||'<span class="muted">无</span>'}</div></div>
+      ${weak[t.id]?`<div style="color:var(--learning)">薄弱点：${weak[t.id].join('；')}</div>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${topicActions(t)}</div></aside>`:''}
+  </div>`;
+}
+let chatOpen=false;
+function renderVerifyB(){
+  const t=T[topicId]; const qs=QUESTIONS(t);
+  if(vz.graded) return `<div class="wiz"><h2>${t.name} · 验证结果</h2>${verdictHtml()}${qs.map((q,i)=>`<div class="q"><span class="qt">${i+1}. ${q.q}</span><span class="score">得分 ${vz.graded.scores[i]}</span><span>${vz.graded.comments[i]}</span><span class="ref">参考要点：${q.ref}</span></div>`).join('')}</div>`;
+  const i=vz.step; const q=qs[i];
+  return `<div class="wiz"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="font-size:18px">${t.name} · 验证 ${i+1}/3</h2><div class="dots">${qs.map((_,k)=>`<i class="${k<i?'done':k===i?'on':''}"></i>`).join('')}</div></div>
+    <div class="q"><span class="qt">${q.q}</span><textarea data-ans="${i}" style="min-height:160px" placeholder="在这里作答…">${vz.answers[i]}</textarea></div>
+    <div style="display:flex;gap:8px;justify-content:space-between"><button ${i===0?'disabled':''} data-prev>上一题</button>${i<2?`<button class="primary" data-step>下一题</button>`:`<button class="primary" data-grade>提交评分</button>`}</div></div>`;
+}
+
+/* ================= C 前沿清单 ================= */
+let outlineField=null;
+function renderC(){
+  if(page==='learn'){ const t=T[topicId]; return topbar()+`<div class="learn gutter"><div class="steps" id="steps"></div><button id="skip" class="ghost" style="float:right;font-size:12px">跳过动画</button><article class="lecture" id="lecture"></article>
+    <div class="thread"><b>追问记录</b><div class="chat" style="border:none"><div class="log" style="padding:0"><div class="msg q">例 2 为什么上限变成了 1 而不是 2？</div><div class="msg a">因为换元 u = x²，当 x = 1 时 u = 1。上限跟着 u 走，而不是跟着系数 2 走。</div></div></div></div>
+    <div class="ask"><textarea id="ask" placeholder="边读边问，回答会接在这段记录后面…"></textarea><button class="primary">发送</button></div>
+    <p style="margin-top:20px"><button class="primary" data-verify="${t.id}">我学完了，去验证</button> <button data-go="web">回到清单</button></p></div>`; }
+  if(page==='verify') return topbar()+renderVerifyC();
+  const recs=recommendations(8); const hero=recs[0]; const rest=recs.slice(1);
+  const fr=new Set(frontier().map(t=>t.id));
+  const matrix=DATA.fields.map(f=>`<span class="fl ${outlineField===f.id?'on':''}" data-outline="${f.id}">${f.kind==='branch'?'↳ ':''}${f.name}</span><span class="cells">${byField[f.id].map(t=>`<span class="cell ${S[t.id]} ${fr.has(t.id)?'frontier':''}" data-open="${t.id}" title="${t.name} · ${STATE_NAME[S[t.id]]}"></span>`).join('')}</span>`).join('');
+  const outline=outlineField?`<div class="outline"><b>${F[outlineField].name}</b><ol>${byField[outlineField].map(t=>`<li data-open="${t.id}"><i class="dot ${S[t.id]}"></i><span style="flex:1">${t.name}</span><span class="muted" style="font-size:12px">${unlocked(t)||isM(t.id)?STATE_NAME[S[t.id]]:'待前置'}</span></li>`).join('')}</ol></div>`:'';
+  return topbar(`已掌握 ${DATA.topics.filter(t=>isM(t.id)).length} / ${DATA.topics.length}`)+`<div class="col gutter">
+    <section><h2 style="font-size:13px;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">现在就可以做的一件事</h2>${hero?recCard(hero,true):'<p class="muted">没有可推荐的主题。</p>'}</section>
+    <section class="frontier"><h2 style="font-size:13px;letter-spacing:.08em;color:var(--muted)">其它可学的主题（前置都已掌握）</h2>
+      ${rest.map(r=>`<div class="frow"><i class="dot ${S[r.t.id]}"></i><div><div class="nm">${r.kind==='verify'?'验证：':''}${r.t.name}</div><div class="fd">${F[r.t.field].name}${S[r.t.id]==='learning'?' · 上次没学完':''}</div></div><div class="acts">${r.kind==='verify'?`<button data-verify="${r.t.id}">验证</button>`:`<button data-learn="${r.t.id}">学</button><button class="ghost" data-set="${r.t.id}:claimed">会了</button><button class="ghost" data-set="${r.t.id}:deferred">以后</button>`}</div></div>`).join('')}
+    </section>
+    <section><h2 style="font-size:13px;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">整张知识网（每格一个主题，点领域名展开）</h2><div class="matrix">${matrix}</div>${outline}</section>
+  </div>`;
+}
+function renderVerifyC(){
+  const t=T[topicId]; const qs=QUESTIONS(t);
+  return `<div class="split gutter"><div style="display:flex;flex-direction:column;gap:12px"><h2 style="font-size:18px">${t.name} · 验证</h2>${vz.graded?verdictHtml():'<p class="muted">左边题目，右边作答；评分后参考要点与评语出现在题目下方。</p>'}
+    ${qs.map((q,i)=>`<div class="q"><span class="qt">${i+1}. ${q.q}</span>${vz.graded?`<span class="score">得分 ${vz.graded.scores[i]}</span><span>${vz.graded.comments[i]}</span><span class="ref">参考要点：${q.ref}</span>`:''}</div>`).join('')}</div>
+    <div style="display:flex;flex-direction:column;gap:12px"><h2 style="font-size:18px;visibility:hidden">作答</h2>${qs.map((q,i)=>`<div class="q"><span class="muted" style="font-size:12px">第 ${i+1} 题作答</span><textarea data-ans="${i}" ${vz.graded?'disabled':''}>${vz.answers[i]}</textarea></div>`).join('')}
+    ${vz.graded?'':`<div><button class="primary" data-grade>提交评分</button> <button data-go="learn">回去看讲义</button></div>`}</div></div>`;
+}
+
+
+/* ================= D 合并方案 ================= */
+let dView='board', vmapView={x:20,y:30,k:1}, vlayout=null;
+function renderD(){
+  if(page==='learn') return topbar()+`<div class="learn"><div><div class="steps" id="steps"></div><button id="skip" class="ghost" style="float:right;font-size:12px">跳过动画</button><article class="lecture" id="lecture"></article>
+    <p style="margin-top:20px"><button class="primary" data-verify="${topicId}">我学完了，去验证</button> <button data-go="web">稍后再学</button></p></div>${chatHtml()}</div>`;
+  if(page==='verify') return topbar()+renderVerifyD();
+  const rec=recommendations(1)[0];
+  const fieldRows=kind=>DATA.fields.filter(f=>f.kind===kind).map(f=>{const s=fieldStats(f.id);return `<div class="frow ${f.id===fieldSel&&dView==='board'?'on':''}" data-field="${f.id}"><span class="name">${f.name}</span><span class="n">${s.mastered}/${s.n}</span>
+    <span class="bar"><i style="width:${s.mastered/s.n*100}%;background:var(--mastered)"></i><i style="width:${s.learning/s.n*100}%;background:var(--learning)"></i><i style="width:${s.claimed/s.n*100}%;background:var(--claimed)"></i></span></div>`;}).join('');
+  const st=fieldStats(fieldSel);
+  const board=`<section><div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px"><h2 style="font-size:18px">${F[fieldSel].name}</h2><span class="muted">${F[fieldSel].kind==='core'?'主干':'分支'} · ${st.n} 个主题 · 已掌握 ${st.mastered}</span></div>
+    <div class="grid">${byField[fieldSel].map(t=>`<div class="tcard ${S[t.id]} ${unlocked(t)||isM(t.id)?'':'locked'}" id="card-${t.id}"><div style="display:flex;justify-content:space-between;gap:6px"><span class="nm">${t.name}</span><span class="tag ${S[t.id]}">${STATE_NAME[S[t.id]]}</span></div><span class="cc">${t.concepts.join(' · ')}</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${topicActions(t)}</div></div>`).join('')}</div></section>`;
+  const graph=`<section><div class="vmap">${vmapSvg()}<div class="ctl"><button data-vz="+">＋</button><button data-vz="-">－</button><button data-vz="fit">适应宽度</button></div>
+    <div class="lg"><span><i class="dot mastered"></i> 已掌握</span><span><i class="dot learning"></i> 学习中</span><span><i class="dot claimed"></i> 声称掌握</span><span><i class="dot unlearned"></i> 未学</span><span style="color:var(--accent)">粗边 = 现在可学</span><span class="muted">虚线 = 跨领域前置</span></div></div>
+    <p class="muted" style="font-size:12px;margin:6px 0 0">每一列是一个领域，自上而下按前置深度排列；点节点回到看板。只读。</p></section>`;
+  return topbar(`已掌握 ${DATA.topics.filter(t=>isM(t.id)).length} / ${DATA.topics.length} 个主题`)+`<div class="shell">
+  <aside class="side"><h3>主干</h3>${fieldRows('core')}<h3>分支</h3>${fieldRows('branch')}</aside>
+  <main class="main">
+    <section style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start"><div>${rec?recCard(rec,true):'<p class="muted">暂无推荐。</p>'}</div>
+      <div class="vtoggle"><button data-dview="board" class="${dView==='board'?'on':''}">看板</button><button data-dview="graph" class="${dView==='graph'?'on':''}">全图</button></div></section>
+    ${dView==='board'?board:graph}
+  </main></div>`;
+}
+function computeVLayout(){
+  const depth={}; const d=t=>{ if(depth[t.id]!=null) return depth[t.id]; depth[t.id]= t.prerequisites.length? 1+Math.max(...t.prerequisites.map(p=>d(T[p]))) : 0; return depth[t.id]; };
+  DATA.topics.forEach(d);
+  const W=108,H=30,GX=22,GY=16,TOP=24; const pos={};
+  DATA.fields.forEach((f,ci)=>{ byField[f.id].forEach(t=>{ pos[t.id]={x:ci*(W+GX),y:TOP+depth[t.id]*(H+GY)}; }); });
+  // 同列同层冲突：顺序下移
+  DATA.fields.forEach(f=>{ const used=new Set(); byField[f.id].forEach(t=>{ while(used.has(pos[t.id].y)) pos[t.id].y+=H+GY; used.add(pos[t.id].y); }); });
+  vlayout={pos,W,H,width:DATA.fields.length*(W+GX),height:Math.max(...Object.values(pos).map(p=>p.y))+H+20};
+}
+function vmapSvg(){
+  if(!vlayout) computeVLayout(); const {pos,W,H}=vlayout; const fr=new Set(frontier().map(t=>t.id));
+  const heads=DATA.fields.map((f,ci)=>`<text class="fhead ${f.kind}" x="${ci*(W+22)}" y="12">${f.id.toUpperCase()} ${f.name.slice(0,6)}</text>`);
+  const edges=DATA.topics.flatMap(t=>t.prerequisites.map(p=>{const a=pos[p],b=pos[t.id];const cross=T[p].field!==t.field;return `<path class="edge ${cross?'cross':''}" d="M${a.x+W/2},${a.y+H} C${a.x+W/2},${a.y+H+24} ${b.x+W/2},${b.y-24} ${b.x+W/2},${b.y}"/>`;}));
+  const nodes=DATA.topics.map(t=>{const p=pos[t.id];const nm=t.name.length>8?t.name.slice(0,8)+'…':t.name;return `<g class="node ${S[t.id]} ${fr.has(t.id)?'frontier':''}" transform="translate(${p.x},${p.y})" data-vnode="${t.id}"><title>${t.name} · ${STATE_NAME[S[t.id]]}</title><rect width="${W}" height="${H}" rx="5"/><text x="6" y="19">${nm}</text></g>`;});
+  return `<svg id="vmap" viewBox="0 0 1200 600"><g id="vvp" transform="translate(${vmapView.x},${vmapView.y}) scale(${vmapView.k})">${heads.join('')}${edges.join('')}${nodes.join('')}</g></svg>`;
+}
+function initVMap(){
+  const svg=document.getElementById('vmap'); if(!svg) return; const vp=document.getElementById('vvp');
+  const apply=()=>vp.setAttribute('transform',`translate(${vmapView.x},${vmapView.y}) scale(${vmapView.k})`);
+  let drag=null;
+  svg.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,vx:vmapView.x,vy:vmapView.y};svg.setPointerCapture(e.pointerId);});
+  svg.addEventListener('pointermove',e=>{if(!drag)return;const r=svg.getBoundingClientRect();const s=1200/r.width;vmapView.x=drag.vx+(e.clientX-drag.x)*s;vmapView.y=drag.vy+(e.clientY-drag.y)*s;apply();});
+  svg.addEventListener('pointerup',e=>{if(drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<4){const g=e.target.closest('[data-vnode]');if(g){const id=g.dataset.vnode;fieldSel=T[id].field;dView='board';render();setTimeout(()=>{const c=document.getElementById('card-'+id);if(c){c.scrollIntoView({block:'center'});c.style.outline='2px solid var(--accent)';}},0);}}drag=null;});
+  svg.addEventListener('wheel',e=>{e.preventDefault();vmapView.k=Math.min(3,Math.max(.25,vmapView.k*(e.deltaY<0?1.1:0.9)));apply();},{passive:false});
+  document.querySelectorAll('[data-vz]').forEach(b=>b.onclick=()=>{const z=b.dataset.vz;if(z==='+')vmapView.k=Math.min(3,vmapView.k*1.25);else if(z==='-')vmapView.k=Math.max(.25,vmapView.k/1.25);else{vmapView.k=1160/vlayout.width;vmapView.x=20;vmapView.y=10;}apply();});
+}
+/* 选择题 */
+function MCQ(t){
+  const c=i=>t.concepts[i%t.concepts.length];
+  return [0,1,2,3,4].map(i=>({concept:c(i),q:`关于「${c(i)}」，下列哪个说法是正确的？`,
+    opts:[`它只在有限情形下成立，一般情形需要额外的紧性假设。`,`它是「${c(i+1)}」的直接推论，无需单独证明。`,`它的结论在去掉连续性（或相应的正则性）条件后仍然成立。`,`它把两个原本独立的对象联系起来，并给出了可计算的判别方法。`],
+    ans:3, ex:[`不对：这个说法把结论的适用范围说窄了。`,`不对：两者的逻辑关系反了。`,`不对：这正是最常见的误区，条件不可省略。`,`正确：这是该概念存在的意义。`]}));
+}
+let mq={picks:[null,null,null,null,null],graded:null,appealed:false,voided:null};
+function renderVerifyD(){
+  const t=T[topicId]; const qs=MCQ(t); const g=mq.graded;
+  const qHtml=qs.map((q,i)=>`<div class="q"><span class="qt">${i+1}. ${q.q} <span class="muted" style="font-weight:400;font-size:12px">· ${q.concept}</span></span>
+    <div class="mcq">${q.opts.map((o,k)=>{let cls='opt';if(!g){if(mq.picks[i]===k)cls+=' sel';}else{if(k===q.ans)cls+=' right';else if(mq.picks[i]===k)cls+=' wrong';}
+      return `<div class="${cls}" ${g?'':`data-pick="${i}:${k}"`}><span class="k">${'ABCD'[k]}</span><span>${o}${g?`<span class="ex">${q.ex[k]}</span>`:''}</span></div>`;}).join('')}</div>
+    ${g&&mq.voided===i?'<span class="muted">已申诉作废，不计入</span>':''}</div>`).join('');
+  if(!g) return `<div class="gutter" style="max-width:760px;margin:0 auto;padding-block:16px;display:flex;flex-direction:column;gap:12px"><h2>${t.name} · 验证</h2><p class="muted">5 道单选题，答对 4 题通过。程序判分，提交后可查看每个选项的解析、申诉一道题，并与 agent 讨论。</p>${qHtml}
+    <div><button class="primary" data-mgrade ${mq.picks.includes(null)?'disabled':''}>提交（${mq.picks.filter(p=>p!==null).length}/5 已作答）</button> <button data-go="learn">回去再看看讲义</button></div></div>`;
+  const right=g.right, denom=g.denom;
+  const verdict=`<div class="verdict ${g.pass?'pass':'fail'}"><b>${g.pass?'通过 · 该主题标记为已掌握':'未通过 · 回到学习中'}</b><span>答对 <span class="score">${right} / ${denom}</span>${g.pass?'':'，薄弱点已记录：'+(weak[t.id]||[]).join('；')}</span>
+    <div class="acts">${g.pass?`<button class="primary" data-go="web">回到知识网</button>`:`<button class="primary" data-learn="${t.id}">带着薄弱点重读讲义</button><button data-go="web">回到知识网</button>`}</div></div>`;
+  const appeal=mq.appealed?`<div class="appeal"><b>申诉结果</b><span>${mq.appealMsg}</span></div>`:`<div class="appeal"><b>申诉一道题</b><span class="muted" style="font-size:12px">如果你认为某题答案键有误或题目有歧义，选题并写一句理由，agent 会复核；每次验证只能申诉一次。</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><select id="apq" style="font:inherit;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--fg)">${qs.map((_,i)=>`<option value="${i}">第 ${i+1} 题</option>`).join('')}</select><textarea id="apr" style="flex:1;min-height:40px" placeholder="理由…"></textarea><button data-mappeal>提交申诉</button></div></div>`;
+  return `<div class="vlayout"><div style="display:flex;flex-direction:column;gap:12px;min-width:0"><h2>${t.name} · 验证结果</h2>${verdict}${appeal}${qHtml}</div>
+    <div class="chat" style="position:sticky;top:60px"><div class="hd"><span>和 agent 讨论这次验证</span><span class="muted" style="font-size:12px">验证会话</span></div><div class="log"><div class="msg a">评分已出。想讨论哪道题？我可以解释为什么某个选项不对，或者给你一道同概念的变式题。</div>${right<denom?`<div class="msg q">第 ${g.wrongIdx[0]+1} 题我选 ${'ABCD'[mq.picks[g.wrongIdx[0]]]} 是怎么想的……</div><div class="msg a">这个选项常见的误解是把条件当成了可省略的。回到「${qs[g.wrongIdx[0]].concept}」的定义看一下条件出现的位置。</div>`:''}</div><div class="in"><textarea placeholder="就某道题继续问…"></textarea><button class="primary">发送</button></div></div></div>`;
+}
+function mGrade(){ const qs=MCQ(T[topicId]); const wrong=[]; qs.forEach((q,i)=>{ if(mq.picks[i]!==q.ans) wrong.push(i); }); const right=5-wrong.length; mq.graded={right,denom:5,pass:right>=4,wrongIdx:wrong};
+  if(mq.graded.pass){S[topicId]='mastered';delete weak[topicId];} else {S[topicId]='learning';weak[topicId]=wrong.map(i=>`${qs[i].concept}（误选 ${'ABCD'[mq.picks[i]]}：${qs[i].ex[mq.picks[i]].replace('不对：','')}）`);} }
+function mAppeal(i,reason){ mq.appealed=true; if(reason.trim().length>=10 && mq.graded.wrongIdx.includes(i)){ mq.voided=i; const denom=4, right=mq.graded.right; mq.graded={right,denom,pass:right>=Math.ceil(denom*0.8),wrongIdx:mq.graded.wrongIdx.filter(k=>k!==i)}; mq.appealMsg=`agent 复核：第 ${i+1} 题题意确有歧义，已作废，不计入分母（${right}/${denom}）。`; if(mq.graded.pass){S[topicId]='mastered';delete weak[topicId];} } else mq.appealMsg=`agent 复核：第 ${i+1} 题答案键无误，维持原判。`; }
+document.getElementById('app').addEventListener('click',e=>{
+  const dv=e.target.closest('[data-dview]'); if(dv){dView=dv.dataset.dview;render();}
+  const pk=e.target.closest('[data-pick]'); if(pk){const [i,k]=pk.dataset.pick.split(':').map(Number);mq.picks[i]=k;render();}
+  const mg=e.target.closest('[data-mgrade]'); if(mg){mGrade();render();}
+  const ma=e.target.closest('[data-mappeal]'); if(ma){mAppeal(+document.getElementById('apq').value,document.getElementById('apr').value);render();}
+  if(e.target.closest('[data-verify]')) mq={picks:[null,null,null,null,null],graded:null,appealed:false,voided:null};
+},true);
+
+/* ---------- 全局事件 ---------- */
+document.getElementById('app').addEventListener('click',e=>{
+  const c=e.target.closest('[data-close]'); if(c){drawerOpen=null;render();}
+  const tg=e.target.closest('[data-toggle]'); if(tg){chatOpen=!chatOpen;render();}
+  const ol=e.target.closest('[data-outline]'); if(ol){outlineField=outlineField===ol.dataset.outline?null:ol.dataset.outline;render();}
+  if(e.target.closest('[data-open]')) e.preventDefault();
+});
+const origRender=render;
+render=function(){ origRender(); bindVerify(document.getElementById('app')); };
+function setVariant(v){ variant=v; location.hash=v; page='web'; drawerOpen=null; render(); }
+const keys=Object.keys(VARIANTS);
+document.getElementById('prev').onclick=()=>setVariant(keys[(keys.indexOf(variant)+keys.length-1)%keys.length]);
+document.getElementById('next').onclick=()=>setVariant(keys[(keys.indexOf(variant)+1)%keys.length]);
+document.addEventListener('keydown',e=>{ if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)||document.activeElement.isContentEditable) return; if(e.key==='ArrowLeft') document.getElementById('prev').click(); if(e.key==='ArrowRight') document.getElementById('next').click(); });
+window.addEventListener('hashchange',()=>{const v=location.hash.replace('#','');if(VARIANTS[v]&&v!==variant)setVariant(v);});
+const _go=page; // 进入验证页时重置作答
+document.getElementById('app').addEventListener('click',e=>{ if(e.target.closest('[data-verify]')) resetVerify(); },true);
+render();
+</script>

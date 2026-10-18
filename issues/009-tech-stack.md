@@ -25,3 +25,7 @@ v1 用什么技术栈？需要定下：前端框架（或原生）、数学公�
 7. **插图静态路由**：`/data/lectures/<主题id>/figures/<文件>`，后端做路径包含检查。
 
 假设：作者机器已有 node、pnpm、uv、git，实施第一步核对版本。
+
+## Comments
+
+- [主界面原型](./010-ui-prototype.md) 否决了 Cytoscape.js：全图用手写 SVG 的按领域分列布局，不引入图库。

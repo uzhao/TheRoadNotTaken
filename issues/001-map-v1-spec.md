@@ -37,6 +37,7 @@ status: open
 - [插图方案选型](./006-figure-choice.md): v1 只有静态插图——agent 在生成任务目录用 matplotlib 产出 SVG（例外 PNG），脚本并排保存，后端统一给 `matplotlibrc`（CJK 字体、mathtext）；每讲 0–4 张、≤ 500 KB、中文图注；前端 `<img>` 显示、不执行 agent 代码；失败重试时允许"修图或删引用"；不做交互插图、不做视觉自检；记为 [ADR-0002](../docs/adr/0002-static-figures-no-frontend-code-execution.md)。
 - [第一版骨架](./007-first-skeleton.md): v1 全收 22 领域约 209 主题；主题 = 1–2 讲、3–5 概念；YAML 两层（`version`、`fields[id,name,kind,order]`、`topics[id,name,field,concepts,prerequisites,history,references]`），前置为主题级直接边、主干不依赖分支、初始前沿可达；高中数学不建节点；agy 按领域用 `--json-schema` 出初稿 + 校验脚本 + 逐领域人工审；种子骨架进仓库、首启复制到数据目录；实际生成留作规格的第一项实施任务。
 - [提议清单合并流程](./008-proposal-merge.md): agent 的提议经生成任务目录校验后由后端追加（≤ 3 条/次），学习者走表单；合并在启动门槛的"待处理提议"页逐条做，agy 起草改动、学习者确认、007 校验脚本把关、`version` 加一；`split` 后旧主题已掌握则新主题置 `claimed`，退役 id 记入 `retired[]` 永不复用；新增 `remove` 类型；被拒提议只存不回灌。
+- [技术栈](./009-tech-stack.md): Python + FastAPI（uv、pydantic、ruamel.yaml）后端，React + TypeScript + Vite（pnpm、react-markdown + KaTeX 离线）前端；长任务经 SSE 推 `text_delta` 与工具步状态，其余 REST；每任务一个 `agy --output-format stream-json` 子进程、硬超时、并发 2、不做常驻；知识网图库候选 Cytoscape.js 待 010 验证；monorepo `backend/ frontend/ skeleton/`，一条命令运行；记为 [ADR-0003](../docs/adr/0003-tech-stack.md)。
 
 ## Not yet specified
 

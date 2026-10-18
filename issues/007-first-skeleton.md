@@ -4,7 +4,7 @@ title: "第一版骨架"
 labels: [wayfinder:grilling]
 parent: 1
 blocked_by: [4]
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

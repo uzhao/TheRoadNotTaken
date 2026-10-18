@@ -4,7 +4,7 @@ title: "数据目录与状态归属"
 labels: [wayfinder:grilling]
 parent: 1
 blocked_by: [2]
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

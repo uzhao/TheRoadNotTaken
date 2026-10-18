@@ -44,3 +44,4 @@ agy 作为能操作数据的 agent，与网页后端共享哪些数据、如何�
 ## Comments
 
 - [插图方案选型](./006-figure-choice.md) 对第 3 条搬运校验的补充：`figures/` 内除 svg/png 外放行同名 `.py` 生成脚本；SVG 需可被 XML 解析且根元素为 `<svg>`，PNG 需文件头正确；每份讲义插图 0–4 张、追问单次 ≤ 2 张、每张 ≤ 500 KB，超限视为校验失败。
+- [提议清单合并流程](./008-proposal-merge.md) 对第 2、12 条的补充：agent 的提议经生成任务目录校验后由后端追加，`proposals.yaml` 实际只有后端写；`kind` 增加 `remove`；`skeleton.yaml` 增加 `retired[]`，`state.json` 增加 `archived` 段。

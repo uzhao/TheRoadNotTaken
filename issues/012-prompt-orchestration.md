@@ -5,7 +5,7 @@ labels: [wayfinder:grilling]
 parent: 1
 blocked_by: []
 assignee: Jianyang Zhao
-status: open
+status: closed
 ---
 
 ## Question
@@ -20,3 +20,21 @@ status: open
 - **验证后对话**：提交评分后右侧对话面板续接验证会话，附带哪些上下文（题目、作答、解析）。
 - **薄弱点回流**：薄弱点如何进入下一次讲义生成与追问的 prompt；验证通过后清空（005 已定）之外是否有部分清除。
 - **模型选择**：以上各类调用分别用哪个模型与 effort（见 [agy print 模式实测](./002-agy-print-mode.md) 的模型清单与延迟数据）。
+
+## Resolution
+
+经一轮 grilling 定下（无需 ADR；prompt 模板本身在实施阶段编写）：
+
+1. **讲义生成**：
+   - 输入（后端拼进 prompt）：学习者画像一句话（中文、大学数学自学、高中数学为基线）；主题名、所属领域、概念提纲；直接前置主题名称并说明已掌握可直接引用；当前薄弱点（要求正文与例题重点覆盖）；`history` 历史动机索引；006 插图契约；008 提议规则；输出格式要求。
+   - 输出：**agy 的最终回复就是讲义 markdown**，不加 `--json-schema`、不要前言后记；后端把 `result.response` 写为任务目录的 `lecture.md`（这样正文能经 `text_delta` 流式）；插图由 agy 写到 `figures/`，提议写到任务目录 `proposals.yaml`。搬运校验加一条：回复非空且以一级标题开头。
+   - 结构（只靠 prompt 约束，后端不解析）：`# 主题名` → `## 历史动机`（200–400 字）→ 每个概念一节 `## <概念>` → `## 例题`（2 道完整解答）→ `## 常见误区`（可选）→ `## 小结`（3–5 条）；全文 1500–3000 字。
+   - prompt 模板放 `backend/prompts/*.md`，带版本号，`meta.json` 记录模板版本。
+2. **追问**：`--conversation` 续接主题会话，不重发讲义。每条消息由后端包装：学习者问题 + 当前所在节标题（前端上报，可空）+ 薄弱点（仅当自讲义生成后有变化）+ 约束（默认 ≤ 300 字，学习者要求展开则不限；插图 ≤ 2 张走任务目录；可写提议）。
+3. **验证出题**：每次验证新开独立会话。输入：主题定义与概念提纲、薄弱点、最近两次验证的题干（避免重复）。输出 `--json-schema`：恰好 5 题，每题 `concept`（必须属于提纲）、`stem`、`options`（4 个互不相同）、`answer`（0–3）、`explanations`（4 条）。覆盖规则：每个概念至少 1 题；有薄弱点则至少 2 题针对之；干扰项须为常见误解；禁止"以上都对/都不对"。后端校验结构并在展示前**打乱选项顺序**。
+4. **评分**：程序按答案键判分，不调用 agent。通过判定：**至多错一题**（5 题 ≥ 4；作废一题后 4 题 ≥ 3）。
+5. **验证记录**：`state.json` 每次验证 `{at, conversation_id, questions:[{concept, stem, options, answer, picked, explanations}], right, denom, passed, appeal: null | {question, reason, verdict, explanation, at}}`；薄弱点字符串 `"<概念>：<错选项的解析>"`。
+6. **申诉**：续接该次验证会话；输入题号、学习者所选项、理由；输出 `--json-schema` `{verdict: "uphold" | "overturn" | "void", explanation}`；`overturn` 记为答对，`void` 移出分母，按第 4 条重新判定。
+7. **验证后对话**：续接验证会话；首条消息由后端附上作答与判分结果，之后只传问题；约束同追问但插图 ≤ 1 张；记录追加到该主题 `followups.jsonl`，条目带 `kind: verification` 与验证序号。
+8. **薄弱点回流**：进入重新生成讲义、追问消息（有变化时）、出题三处 prompt；不做部分清除，只在验证通过时整体清空。
+9. **模型选择**：所有调用用同一个可配置默认模型（当前为 agy 默认 Gemini 4 Argon）；effort 两档：讲义与出题 `high`，追问、申诉、验证后对话 `medium`；一个会话内不换模型；不默认用 Claude 系列；配额耗尽的降级留给 [故障处理](./015-failure-handling.md)。

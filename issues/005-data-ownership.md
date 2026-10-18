@@ -40,3 +40,7 @@ agy 作为能操作数据的 agent，与网页后端共享哪些数据、如何�
 12. **提议清单格式**：`proposals.yaml` 追加式条目：`id`、`created_at`、`source`（`agent | learner`）、`topic`（可空）、`kind`（`new-topic | change-prerequisite | rename | split | other`）、`text`、`status`（`pending | merged | rejected`）。谁写、怎么合并留给 [提议清单合并流程](./008-proposal-merge.md)。
 
 术语新增：数据目录、主题会话、生成任务（见 [GLOSSARY.md](../GLOSSARY.md)）。
+
+## Comments
+
+- [插图方案选型](./006-figure-choice.md) 对第 3 条搬运校验的补充：`figures/` 内除 svg/png 外放行同名 `.py` 生成脚本；SVG 需可被 XML 解析且根元素为 `<svg>`，PNG 需文件头正确；每份讲义插图 0–4 张、追问单次 ≤ 2 张、每张 ≤ 500 KB，超限视为校验失败。

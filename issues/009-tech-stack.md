@@ -4,7 +4,7 @@ title: "技术栈"
 labels: [wayfinder:grilling]
 parent: 1
 blocked_by: [2, 5]
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

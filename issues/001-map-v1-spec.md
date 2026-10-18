@@ -44,6 +44,7 @@ status: open
 - [讲义缓存失效](./014-cache-invalidation.md): 主题定义变化只把讲义标为「过时」并给重新生成按钮，不自动重生成；验证失败给"重读现有讲义 / 针对薄弱点重新生成"两个选择；模板与模型改版不算失效；手动重生成有页内确认、生成期间可看旧版、失败保留旧版；单张插图可在主题会话里改脚本重画而不算失效。
 - [故障处理](./015-failure-handling.md): 可重试的 `AGY_ERROR` 自动重试一次、超时不重试、无 `structured_output` 同会话补一次、`denied_actions` 视为配置错误；不自动换模型但可手动一次性覆盖；失败不写任何状态且申诉不消耗次数；超时保留部分正文不缓存；agy 不可用时全局横幅、缓存可读、生成类操作置灰；失败任务目录保留 7 天/20 个；任务可排队与取消。
 - [学习历史与复习](./016-learning-history-review.md): 回看放在学习页右侧"历史"页签（验证记录、追问记录、重生成次数）；不做自动间隔复验，保留手动"再验一次"且未通过退回学习中、不级联；统计只保留现有计数；不做事件日志，靠数据目录 git 历史。
+- [agy 权限规则配置实测](./011-agy-permission-rules.md): 唯一生效的规则文件是 `~/.gemini/antigravity-cli/settings.json`（无项目级配置）；最小 allow 集 `command(python3)`、`command(python3 *)`、`command(mkdir)`、`write_file(*)` 可跑通整条画图链路，规则外的网络工具在 headless 下自动拒绝；deny 优先于 `--dangerously-skip-permissions`；v1 后端不用 skip 参数、启动时校验并可一键写入规则、不写 deny（见 [research/agy-print-mode.md 第九节](../research/agy-print-mode.md)）。
 
 ## Not yet specified
 

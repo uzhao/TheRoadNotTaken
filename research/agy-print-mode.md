@@ -204,3 +204,45 @@ agy --output-format json --json-schema=schema.json --print='…'
 # 常驻进程（尚未找到正确的 event 名）
 printf '%s\n' '{"event":"?","…":"…"}' | agy --input-format stream-json --output-format stream-json
 ```
+
+---
+
+## 九、补充实测：权限规则配置（2026-10-18，工单 011）
+
+两轮脚本（`~/agy-test-4.log`、`~/agy-test-5.log`），结论：
+
+### 1. 规则文件位置
+
+| 文件 | 是否被读取 |
+| :--- | :--- |
+| **`~/.gemini/antigravity-cli/settings.json`** | **是**。顶层键：`allowNonWorkspaceAccess`、`gcp`、`model`、`permissions`（含 `allow[]`，可加 `deny[]`）、`statusLine`、`trustedWorkspaces`；日志里 `CLI settings initialized: permissions=…` 打印的就是它 |
+| `~/.gemini/settings.json` | 否（内容为 `{}`，写入规则无效） |
+| `~/.gemini/config/config.json` | 否（日志：`no shared config permissions`） |
+| 工作目录下的 `.agy/`、`.gemini/`、`.antigravity/settings.json` | 否（三种都试过，规则不生效） |
+| `~/.config/antigravity/` | 目录不存在（002 日志里的 `plugin-secrets.json` 路径是密钥存储，与规则无关） |
+
+### 2. 允许规则的匹配
+
+写入 `permissions.allow`：`command(python3)`、`command(python3 *)`、`command(mkdir)`、`write_file(*)` 后：
+
+| 场景 | 结果 |
+| :--- | :--- |
+| `python3 -c "print(6*7)"` | 通过 |
+| `python3 - <<EOF … EOF`（heredoc） | 通过 |
+| `mkdir -p figures && python3 -c …`（复合命令） | 通过 |
+| `write_to_file` 工具写 `note.txt` | 通过（需要 `write_file(*)`，它与 `command` 是两类权限） |
+| 完整流程：写 `figures/x2.py` 并运行 matplotlib 产出 `figures/x2.svg`（22 KB） | 通过 |
+| `curl -sI https://example.com`（规则外命令） | 自动拒绝 |
+| `read_url_content`（规则外工具，默认"询问"） | 自动拒绝 |
+
+未区分 heredoc / 复合命令究竟匹配了 `command(python3)` 还是 `command(python3 *)`，建议两条都写。
+
+### 3. Deny 规则
+
+在同一文件加 `permissions.deny`：`read_url`、`search_web`、`read_url(*)`、`search_web(*)`、`command(curl)` 后，**即使带 `--dangerously-skip-permissions`**，`read_url` 与 `curl` 仍被拦：`Permission denied for read_url(example.com). Matches user-configured deny rule.`、`Permission denied for unsandboxed(curl -sI …). Matches user-configured deny rule.`。即 deny > skip-permissions > allow > 默认询问（headless 下等于拒绝）。
+
+### 4. 对 v1 的建议
+
+- 后端**不使用** `--dangerously-skip-permissions`。要求 `~/.gemini/antigravity-cli/settings.json` 的 `permissions.allow` 含上述四条规则；后端启动时读取该文件校验，缺失则在顶栏横幅给出要追加的 JSON 片段，并提供"写入规则"按钮（页内确认后追加、不覆盖其它键）。
+- **不写 deny**：网络类工具在 headless 下默认即被拒，而 deny 是全局的，会影响作者交互使用 agy。代价是 agent 仍可用 `python3` 访问网络，单用户场景接受。
+- `allowNonWorkspaceAccess`、`trustedWorkspaces` 两个键未测试，留作将来收紧读范围的线索。

@@ -4,7 +4,7 @@ title: "主界面原型"
 labels: [wayfinder:prototype]
 parent: 1
 blocked_by: []
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

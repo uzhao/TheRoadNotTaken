@@ -32,6 +32,7 @@ status: open
 
 - [参考课程体系与历史素材调研](./004-curriculum-references.md): 归纳 MIT/剑桥 Tripos/普林斯顿/北大复旦课程为 14 个主干领域与 8 个分支领域（209 个 30–60 分钟主题）及前置 DAG；建立《古今数学思想》51 章映射并补齐概率统计、数值、优化、图论与 ML 数学的 20 世纪史料来源；明确结合 Lean Mathlib `undergrad.yaml`（Apache-2.0）与 Metacademy（CC BY-SA 3.0）结构自建骨架（见 [research/curriculum-references.md](../research/curriculum-references.md)）。
 - [数学插图方案调研](./003-figure-options.md): 按「谁来渲染」把 14 个候选插图方案分为 agy 产静态文件 / 前端渲染声明式规格 / 浏览器内编译 TeX / 手写 SVG 四类，整理 17 维对比总表与 LLM 正确率一手证据（有执行反馈的 matplotlib、TikZ 远比手写 SVG 可靠，但都需重试机制）；初步建议主方案 matplotlib 静态 SVG、交互备选 JSXGraph 围栏块，不建议 Desmos/GeoGebra/Mafs/手写 SVG 作主方案（见 [research/figure-options.md](../research/figure-options.md)）。
+- [agy print 模式实测](./002-agy-print-mode.md): prompt 须写成 `--print='…'`；json 顶层与 stream-json 首行 `init` 给出 `conversation_id`，`--conversation <id>` 续接稳定而 `--continue` 不可用；stream-json 的 `agent_response` 步带 `text_delta` 可流式；短 prompt 6–8 s、讲义 50–90 s、agent 画图无上界且 `--print-timeout` 不可靠；权限拒绝不挂起而是 exit 0 自动拒绝，放行靠 `permissions.allow` 或 `--dangerously-skip-permissions`；`--sandbox`/`--add-dir` 均不限制文件写入；`--json-schema` 可用但输出混入 `toolAction`/`toolSummary` 且失败时仍 `SUCCESS`；常驻 stream-json 输入格式未打通，v1 每请求一个子进程（见 [research/agy-print-mode.md](../research/agy-print-mode.md)）。
 
 ## Not yet specified
 
@@ -39,6 +40,8 @@ status: open
 - **推荐排序**：没有目标时，前沿上多个候选主题如何排序（主干优先？解锁最多？领域交替？）；暂不学的主题何时重新推荐。
 - **缓存失效**：讲义缓存何时失效；骨架修改后旧缓存怎么处理。
 - **故障处理**：agy 调用失败、超时、输出不合 schema 时的行为。
+- **模型与配额**：默认 Gemini 4 Argon，Claude 系列有个人配额；讲义、评分各用哪个模型与 effort，撞配额时如何降级。
+- **agy 权限配置**：`permissions.allow` 所在的 settings 文件位置、`command(python3)` 能否匹配 heredoc 形式，以及是否用 `--dangerously-skip-permissions` 替代。
 - **学习历史与复习**：是否对已掌握主题做间隔复验；学习记录如何回看。
 
 ## Out of scope

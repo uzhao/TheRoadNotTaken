@@ -40,6 +40,7 @@ status: open
 - [技术栈](./009-tech-stack.md): Python + FastAPI（uv、pydantic、ruamel.yaml）后端，React + TypeScript + Vite（pnpm、react-markdown + KaTeX 离线）前端；长任务经 SSE 推 `text_delta` 与工具步状态，其余 REST；每任务一个 `agy --output-format stream-json` 子进程、硬超时、并发 2、不做常驻；知识网图库候选 Cytoscape.js 待 010 验证；monorepo `backend/ frontend/ skeleton/`，一条命令运行；记为 [ADR-0003](../docs/adr/0003-tech-stack.md)。
 - [主界面原型](./010-ui-prototype.md): 选定以 A 为底的合并方案——领域侧栏 + 主题卡片看板为主视图，附只读的按领域分列、自上而下分层的全图（手写 SVG，否决 Cytoscape.js）；推荐只给一张卡；讲义居中、追问固定右侧；验证改为 5 道单选题、程序判分、≥ 4 通过、可申诉一题、评分后可与 agent 讨论（原型见 [research/prototypes/010-ui-prototype.html](../research/prototypes/010-ui-prototype.html)）。
 - [prompt 与会话编排](./012-prompt-orchestration.md): 讲义 = agent 最终回复的 markdown（后端落盘为 `lecture.md`，固定节序：历史动机 → 每概念一节 → 例题 → 误区 → 小结），输入由后端拼装（画像、主题定义、前置名、薄弱点、历史索引、插图与提议契约）；追问续接主题会话不重发讲义；验证出题独立会话、`--json-schema` 恰好 5 题含选项解析与绑定概念、后端打乱选项；程序判分"至多错一题"；申诉续接验证会话输出 uphold/overturn/void；验证后对话续接同会话、记入 `followups.jsonl`；薄弱点回流三处；单一默认模型、讲义与出题 high、其余 medium。
+- [推荐排序](./013-recommendation-ordering.md): 候选 = 前置全掌握的未学/学习中主题 + 声称掌握主题；确定性字典序取唯一推荐：待验证 > 学习中 > 主干 > 与最近主题同领域 > 后继多 > id；分支领域按领域开关、默认不参与；暂不学的主题在候选耗尽时回归；卡片显示命中规则的一句理由。
 
 ## Not yet specified
 

@@ -5,7 +5,7 @@ labels: [wayfinder:map]
 parent:
 blocked_by: []
 assignee:
-status: open
+status: closed
 ---
 
 ## Destination
@@ -58,3 +58,7 @@ status: open
 - 原生 LLM API 调用。
 - 按目标倒推路径、按历史顺序学习的"路线"：学习者无固定目标，历史只作为讲义中的动机出现。
 - 实现本身：本地图只产出规格。
+
+## Resolution
+
+目的地已到达：16 张子工单全部关闭、雾区为空，所有决定合成为 [规格：交互式数学学习工具 v1](./017-spec-v1.md)（`ready-for-agent`）。后续实施以该规格为准，本地图只保留作决策索引。

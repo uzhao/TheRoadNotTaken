@@ -4,7 +4,7 @@ title: "插图方案选型"
 labels: [wayfinder:grilling]
 parent: 1
 blocked_by: [2, 3]
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

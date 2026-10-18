@@ -4,7 +4,7 @@ title: "学习历史与复习"
 labels: [wayfinder:grilling]
 parent: 1
 blocked_by: [13]
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

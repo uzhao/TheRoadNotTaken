@@ -4,7 +4,7 @@ title: "故障处理"
 labels: [wayfinder:grilling]
 parent: 1
 blocked_by: [12]
-assignee:
+assignee: Jianyang Zhao
 status: open
 ---
 

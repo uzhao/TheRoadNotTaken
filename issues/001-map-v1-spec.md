@@ -31,6 +31,7 @@ status: open
 <!-- 每张已关闭工单一行 -->
 
 - [参考课程体系与历史素材调研](./004-curriculum-references.md): 归纳 MIT/剑桥 Tripos/普林斯顿/北大复旦课程为 14 个主干领域与 8 个分支领域（209 个 30–60 分钟主题）及前置 DAG；建立《古今数学思想》51 章映射并补齐概率统计、数值、优化、图论与 ML 数学的 20 世纪史料来源；明确结合 Lean Mathlib `undergrad.yaml`（Apache-2.0）与 Metacademy（CC BY-SA 3.0）结构自建骨架（见 [research/curriculum-references.md](../research/curriculum-references.md)）。
+- [数学插图方案调研](./003-figure-options.md): 按「谁来渲染」把 14 个候选插图方案分为 agy 产静态文件 / 前端渲染声明式规格 / 浏览器内编译 TeX / 手写 SVG 四类，整理 17 维对比总表与 LLM 正确率一手证据（有执行反馈的 matplotlib、TikZ 远比手写 SVG 可靠，但都需重试机制）；初步建议主方案 matplotlib 静态 SVG、交互备选 JSXGraph 围栏块，不建议 Desmos/GeoGebra/Mafs/手写 SVG 作主方案（见 [research/figure-options.md](../research/figure-options.md)）。
 
 ## Not yet specified
 

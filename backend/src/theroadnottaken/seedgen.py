@@ -2,18 +2,20 @@
 
 独立命令 `theroadnottaken-seed <子命令>`，供作者在本机配合真实 agy 逐领域生成并审核（工单 020）：
 
-- `extract`：从调研报告 `research/curriculum-references.md` 提取领域、主题清单、概念提示、领域间
-  先修关系与历史素材来源，写成 `seed/gen/input.yaml`（生成的唯一输入，勿手改）。
+- `extract`：从调研报告 `research/curriculum-references.md` 提取领域、主题清单、概念提示、领域级
+  前置（上游领域）与历史素材来源，写成 `seed/gen/input.yaml`（生成的唯一输入，勿手改）。
 - `prompt FIELD`：渲染某领域的 prompt 与 JSON schema 到 `seed/gen/work/FIELD/`，打印 agy 命令行。
 - `run FIELD`：调用 agy（`--json-schema`）产出该领域的主题 id、概念、领域内前置与历史动机索引，
   本地校验后写成可单独校验、可手改的骨架片段 `seed/gen/fields/FIELD.yaml`，并打印前置清单。
-- `cross FIELD`：再调用一次 agy，为该领域补跨领域直接前置（候选限于课程体系中的直接先修领域），
-  写回片段并打印带领域标注的前置清单。
+- `cross FIELD`：再调用一次 agy，为该领域补跨领域直接前置（候选缺省限于上游领域，可用
+  `--upstream` 改），写回片段并打印带领域标注的前置清单。
 - `merge`：把全部片段拼成 `seed/skeleton.yaml`，跑 019 的校验，可同时输出每领域前置清单。
 
-agent 结构化输出按规格用 pydantic 建模，`--json-schema` 的 schema 直接由模型导出，解析时忽略
-`toolAction` / `toolSummary` 等 schema 外字段；`status` 为 SUCCESS 但无 `structured_output`
-视为失败。
+agent 调用按规格「agent 调用」一节：参数在 `--print=` 之前、`--disable-slash-commands`、自备
+硬超时并杀进程组、cwd 为该次调用的工作目录（ADR-0001）。这里用 `--output-format json` 而非后端
+的 `stream-json`：离线工具不需要流式正文，只要最终的 `structured_output`。结构化输出按规格用
+pydantic 建模，schema 直接由模型导出，解析时忽略 `toolAction` / `toolSummary` 等 schema 外字段；
+`status` 为 SUCCESS 但无 `structured_output` 视为失败。
 退出码：0 成功、1 校验或 agy 失败、2 输入文件无法读取。
 """
 
@@ -24,10 +26,11 @@ import json
 import os
 import re
 import shlex
+import shutil
 import signal
 import subprocess
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from importlib import resources
 from pathlib import Path
 from string import Template
@@ -37,6 +40,7 @@ from ruamel.yaml import YAML, YAMLError
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from theroadnottaken.skeleton import (
+    KIND_NAMES,
     Skeleton,
     SkeletonLoadError,
     load_skeleton,
@@ -50,7 +54,6 @@ DEFAULT_GEN_DIR = REPO_ROOT / "seed" / "gen"
 DEFAULT_SKELETON = REPO_ROOT / "seed" / "skeleton.yaml"
 
 FIELD_KIND_BY_LETTER = {"c": "core", "b": "branch"}
-KIND_NAMES = {"core": "主干", "branch": "分支"}
 FIELD_PROMPT_TEMPLATE = "seed-field.v1.md"
 CROSS_PROMPT_TEMPLATE = "seed-cross.v1.md"
 SLUG_PATTERN = r"^[cb][0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*$"
@@ -66,10 +69,16 @@ class AgyFailure(Exception):
     """agy 调用失败或其输出不可用（退出码非 0、非 JSON、无 structured_output、不符合 schema）。"""
 
 
+def _in_field(topic_id: str, field_id: str) -> bool:
+    """主题 id 以领域 id 为前缀，即属于该领域（规格「骨架」一节的 slug 约定）。"""
+    return topic_id.startswith(f"{field_id}-")
+
+
 # ---------------------------------------------------------------- extract：解析调研报告
 
 _FIELD_HEADING = re.compile(r"^##### ([CB])(\d{2})\. (.+?)（(\d+) 个主题）\s*$")
 _TOPIC_LINE = re.compile(r"^\d+\. \*\*(.+?)\*\*（(.+)）\s*$")
+_HINT_SEPARATORS = re.compile(r"[、，]")
 _FIELD_EDGE = re.compile(r'^\s*([CB]\d{2}) (?:-->|-\.->\|"([^"]*)"\|) ([CB]\d{2})\s*$')
 _HISTORY_ROW = re.compile(r"^\| \*\*([CB]\d{2})\. .+?\*\* \| (.+?) \| (.+?) \|\s*$")
 _HISTORY_SECTION = "知识网领域与《古今数学思想》及补充历史素材的总映射"
@@ -77,7 +86,7 @@ _TOPIC_SECTION_END = "## 二、"
 
 
 def extract_input(research: Path) -> CommentedMap:
-    """把调研报告解析成生成输入：领域（含先修领域与历史素材来源）与各领域的主题清单。"""
+    """把调研报告解析成生成输入：领域（含上游领域与历史素材来源）与各领域的主题清单。"""
     try:
         lines = research.read_text(encoding="utf-8").splitlines()
     except (OSError, UnicodeDecodeError) as exc:
@@ -87,13 +96,22 @@ def extract_input(research: Path) -> CommentedMap:
     if not fields:
         raise SeedError(f"{research} 里没有找到「##### C01. …（N 个主题）」形式的领域清单")
     by_id = {f["id"]: f for f in fields}
+
+    def known(field_id: str, where: str) -> CommentedMap:
+        if field_id not in by_id:
+            raise SeedError(f"{research} 的{where}提到未在主题清单里声明的领域 {field_id}")
+        return by_id[field_id]
+
     for upstream, note, downstream in _extract_field_edges(lines):
-        field = by_id[downstream]
+        known(upstream, "领域前置图")
+        field = known(downstream, "领域前置图")
         field["upstream"].append(upstream)
         if note:
             field["upstream_notes"].append(f"{upstream}：{note}（进阶 / 局部主题前置）")
     for fid, kline, supplement in _extract_history_rows(lines):
-        by_id[fid]["history_sources"] = CommentedMap(kline=kline, supplement=supplement)
+        known(fid, "历史素材表")["history_sources"] = CommentedMap(
+            kline=kline, supplement=supplement
+        )
 
     doc = CommentedMap()
     doc.yaml_set_start_comment(
@@ -110,14 +128,16 @@ def extract_input(research: Path) -> CommentedMap:
 
 
 def _extract_fields_and_topics(lines: list[str]) -> list[CommentedMap]:
+    """领域标题下的编号行是主题；标题里声明的主题数必须与实际行数一致。"""
     fields: list[CommentedMap] = []
+    declared: dict[str, int] = {}
     current: CommentedMap | None = None
     for line in lines:
         if line.startswith(_TOPIC_SECTION_END):
             break
         heading = _FIELD_HEADING.match(line)
         if heading:
-            letter, number, name, _count = heading.groups()
+            letter, number, name, count = heading.groups()
             current = CommentedMap()
             current["id"] = f"{letter.lower()}{number}"
             current["name"] = name
@@ -128,14 +148,23 @@ def _extract_fields_and_topics(lines: list[str]) -> list[CommentedMap]:
             current["history_sources"] = CommentedMap(kline="", supplement="")
             current["topics"] = []
             fields.append(current)
+            declared[current["id"]] = int(count)
             continue
         topic = _TOPIC_LINE.match(line)
         if topic and current is not None:
             name, hints = topic.groups()
             entry = CommentedMap()
             entry["name"] = name
-            entry["concept_hints"] = _flow([h.strip() for h in hints.split("、") if h.strip()])
+            entry["concept_hints"] = _flow(
+                [h.strip() for h in _HINT_SEPARATORS.split(hints) if h.strip()]
+            )
             current["topics"].append(entry)
+    for field in fields:
+        if len(field["topics"]) != declared[field["id"]]:
+            raise SeedError(
+                f"领域 {field['id']} 标题声明 {declared[field['id']]} 个主题，"
+                f"实际解析到 {len(field['topics'])} 个"
+            )
     return fields
 
 
@@ -177,15 +206,14 @@ def _flow(items: list[str]) -> CommentedSeq:
 
 # ---------------------------------------------------------------- agent 结构化输出模型
 
-_IGNORE_EXTRA = ConfigDict(
-    extra="ignore"
-)  # agy 会在 structured_output 里混入 toolAction / toolSummary
+# agy 会在 structured_output 里混入 toolAction / toolSummary，解析时忽略
+_IGNORE_UNKNOWN_KEYS = ConfigDict(extra="ignore")
 
 
 class TopicDraft(BaseModel):
     """领域内一轮：一个主题的 id、名称、概念、领域内直接前置与历史动机索引。"""
 
-    model_config = _IGNORE_EXTRA
+    model_config = _IGNORE_UNKNOWN_KEYS
     index: int = Field(ge=1, description="主题在输入清单中的序号，从 1 起")
     id: str = Field(pattern=SLUG_PATTERN, description="稳定 slug，前缀为领域 id")
     name: str = Field(min_length=1)
@@ -196,20 +224,20 @@ class TopicDraft(BaseModel):
 
 
 class FieldDraft(BaseModel):
-    model_config = _IGNORE_EXTRA
+    model_config = _IGNORE_UNKNOWN_KEYS
     topics: list[TopicDraft]
 
 
 class CrossEdges(BaseModel):
     """跨领域一轮：一个主题需要补充的跨领域直接前置。"""
 
-    model_config = _IGNORE_EXTRA
+    model_config = _IGNORE_UNKNOWN_KEYS
     topic: str = Field(description="本领域主题的 id")
     prerequisites: list[str] = Field(min_length=1, max_length=3, description="其它领域主题的 id")
 
 
 class CrossDraft(BaseModel):
-    model_config = _IGNORE_EXTRA
+    model_config = _IGNORE_UNKNOWN_KEYS
     edges: list[CrossEdges]
 
 
@@ -270,7 +298,7 @@ def render_field_prompt(field: dict) -> str:
 
 
 def agy_command(
-    schema_path: Path, prompt_path: Path, effort: str, extra: Sequence[str]
+    schema_path: Path, prompt_path: Path, effort: str, passthrough: Sequence[str]
 ) -> list[str]:
     """agy print 模式：参数放在 --print 之前，prompt 是 --print= 的值（规格「agent 调用」节）。"""
     return [
@@ -280,7 +308,7 @@ def agy_command(
         f"--json-schema={schema_path}",
         "--disable-slash-commands",
         f"--effort={effort}",
-        *extra,
+        *passthrough,
         f"--print={prompt_path.read_text(encoding='utf-8')}",
     ]
 
@@ -291,14 +319,37 @@ def _shell_hint(command: list[str], prompt_path: Path) -> str:
     return " ".join(shlex.quote(c) if c != shown[-1] else c for c in shown)
 
 
+class PreparedCall:
+    """一次 agy 调用的工作目录与文件：prompt、schema、原始输出；命令行按 agent 调用约定拼好。"""
+
+    def __init__(
+        self,
+        work: Path,
+        stem: str,
+        prompt: str,
+        model: type[BaseModel],
+        effort: str,
+        passthrough: Sequence[str],
+    ) -> None:
+        work.mkdir(parents=True, exist_ok=True)
+        self.work = work
+        self.prompt_path = work / f"{stem}prompt.md"
+        self.schema_path = work / f"{stem}schema.json"
+        self.raw_path = work / f"{stem}agy.json"
+        self.prompt_path.write_text(prompt, encoding="utf-8")
+        self.schema_path.write_text(schema_json(model), encoding="utf-8")
+        self.command = agy_command(self.schema_path, self.prompt_path, effort, passthrough)
+
+
 # ---------------------------------------------------------------- 调用 agy
 
 
-def call_agy(command: list[str], raw_path: Path, timeout: float) -> dict:
+def call_agy(command: list[str], raw_path: Path, timeout: float, *, cwd: Path) -> dict:
     """运行 agy print 模式，原始 stdout 存到 raw_path，返回 structured_output。
 
     退出码非 0 时带出 stderr 里的 `AGY_ERROR:` 行；`status` 为 SUCCESS 但无 `structured_output`
-    视为失败（schema 未被满足），把模型的解释文字带给作者。自备硬超时并杀掉整个进程组。
+    视为失败（schema 未被满足），把模型的解释文字带给作者。自备硬超时并杀掉整个进程组；
+    cwd 为本次调用的工作目录（ADR-0001：agent 只在生成任务目录里动）。
     """
     raw_path.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -308,6 +359,7 @@ def call_agy(command: list[str], raw_path: Path, timeout: float) -> dict:
             stderr=subprocess.PIPE,
             text=True,
             encoding="utf-8",
+            cwd=cwd,
             start_new_session=True,
         )
     except FileNotFoundError as exc:
@@ -353,6 +405,31 @@ def parse_draft[T: BaseModel](model: type[T], structured: dict) -> T:
         raise AgyFailure(f"structured_output 不符合 schema：\n{details}") from exc
 
 
+def generate[T: BaseModel](
+    call: PreparedCall,
+    model: type[T],
+    timeout: float,
+    check: Callable[[T], list[str]],
+    *,
+    untouched: str,
+) -> T | None:
+    """调 agy → 按 schema 解析 → 本地检查；任一步失败就打印原因并返回 None。"""
+    try:
+        draft = parse_draft(model, call_agy(call.command, call.raw_path, timeout, cwd=call.work))
+    except AgyFailure as exc:
+        print(f"生成失败：{exc}")
+        return None
+    errors = check(draft)
+    if errors:
+        print(
+            f"agy 输出不合要求（{len(errors)} 个问题，{untouched}；原始输出见 {call.raw_path}）："
+        )
+        for e in errors:
+            print(f"- {e}")
+        return None
+    return draft
+
+
 # ---------------------------------------------------------------- 领域内一轮：本地检查与片段
 
 
@@ -363,19 +440,19 @@ def check_field_draft(field: dict, draft: FieldDraft) -> list[str]:
     expected = set(range(1, len(field["topics"]) + 1))
     got = [t.index for t in draft.topics]
     missing = sorted(expected - set(got))
-    extra = sorted(set(got) - expected)
+    unexpected = sorted(set(got) - expected)
     duplicated = sorted({i for i in got if got.count(i) > 1})
     if missing:
         errors.append(f"主题序号缺失：{missing}（输入清单共 {len(expected)} 个主题）")
-    if extra:
-        errors.append(f"主题序号超出清单：{extra}（输入清单共 {len(expected)} 个主题）")
+    if unexpected:
+        errors.append(f"主题序号超出清单：{unexpected}（输入清单共 {len(expected)} 个主题）")
     if duplicated:
         errors.append(f"主题序号重复：{duplicated}")
     for t in draft.topics:
-        if not t.id.startswith(f"{fid}-"):
+        if not _in_field(t.id, fid):
             errors.append(f"主题 {t.id}：id 必须以 {fid}- 开头")
         for p in t.prerequisites:
-            if not p.startswith(f"{fid}-"):
+            if not _in_field(p, fid):
                 errors.append(
                     f"主题 {t.id}：前置 {p} 不是本领域的主题（跨领域前置由 cross 一轮处理）"
                 )
@@ -442,10 +519,24 @@ def load_fragment(gen_dir: Path, field_id: str, *, needed_by: str | None = None)
     return doc
 
 
-def render_cross_prompt(
-    field: dict, target: CommentedMap, candidates: dict[str, tuple[dict, CommentedMap]]
-) -> str:
-    """跨领域一轮的 prompt：本领域主题（含领域内前置）＋按先修领域分组的候选主题。"""
+Candidates = dict[str, tuple[dict, CommentedMap]]
+"""跨领域前置的候选：上游领域 id → （领域定义，该领域的片段）。"""
+
+
+def candidate_fields(doc: dict, field: dict, upstream: Sequence[str] | None) -> list[dict]:
+    """候选领域：`--upstream` 指定的，否则调研报告里的上游领域；主干主题的前置只能是主干。"""
+    ids = list(upstream) if upstream is not None else list(field.get("upstream") or [])
+    chosen = [pick_field(doc, up) for up in ids if up != field["id"]]
+    if field["kind"] == "core":
+        dropped = [f["id"] for f in chosen if f["kind"] == "branch"]
+        if dropped:
+            print(f"忽略分支候选领域 {'、'.join(dropped)}：主干主题的前置只能是主干主题")
+        chosen = [f for f in chosen if f["kind"] == "core"]
+    return chosen
+
+
+def render_cross_prompt(field: dict, target: CommentedMap, candidates: Candidates) -> str:
+    """跨领域一轮的 prompt：本领域主题（含领域内前置）＋按上游领域分组的候选主题。"""
     target_block = "\n".join(
         f"- `{t['id']}` {t['name']}\n  概念：{'、'.join(t['concepts'])}\n"
         f"  领域内前置：{'、'.join(t['prerequisites']) or '（无）'}"
@@ -458,7 +549,7 @@ def render_cross_prompt(
         sections.append("\n".join(lines))
     notes = field.get("upstream_notes") or []
     notes_block = (
-        "\n课程体系对其中部分先修关系的说明（只有相应的局部主题才需要这些前置）：\n"
+        "\n课程体系对其中部分领域级前置的说明（只有相应的局部主题才需要这些前置）：\n"
         + "\n".join(f"- {n}" for n in notes)
         + "\n"
         if notes
@@ -469,16 +560,13 @@ def render_cross_prompt(
         field_name=field["name"],
         kind_name=KIND_NAMES[field["kind"]],
         target_block=target_block,
-        candidates_block="\n\n".join(sections) or "（无：课程体系中本领域没有先修领域）",
+        candidates_block="\n\n".join(sections) or "（无：课程体系中本领域没有上游领域）",
         notes_block=notes_block,
     )
 
 
 def check_cross_draft(
-    field: dict,
-    target: CommentedMap,
-    candidates: dict[str, tuple[dict, CommentedMap]],
-    draft: CrossDraft,
+    field: dict, target: CommentedMap, candidates: Candidates, draft: CrossDraft
 ) -> list[str]:
     """主题是本领域的；前置只能是候选领域里存在的 id；同一主题不重复出现。"""
     fid = field["id"]
@@ -494,7 +582,7 @@ def check_cross_draft(
         if edge.topic not in target_ids:
             errors.append(f"主题 {edge.topic} 不在领域 {fid} 的片段里")
         for p in edge.prerequisites:
-            if p.startswith(f"{fid}-"):
+            if _in_field(p, fid):
                 errors.append(f"主题 {edge.topic}：{p} 是本领域的主题，这一轮只填跨领域前置")
             elif p not in candidate_ids:
                 errors.append(f"主题 {edge.topic}：前置 {p} 不在候选领域（{upstream}）的片段里")
@@ -505,7 +593,7 @@ def apply_cross_edges(target: CommentedMap, field_id: str, draft: CrossDraft) ->
     """就地改写：每个主题保留领域内前置、替换全部跨领域前置（重跑不会累积旧边）。"""
     new_edges = {e.topic: e.prerequisites for e in draft.edges}
     for t in target["topics"]:
-        in_field = [p for p in t["prerequisites"] if p.startswith(f"{field_id}-")]
+        in_field = [p for p in t["prerequisites"] if _in_field(p, field_id)]
         t["prerequisites"] = _flow(in_field + list(new_edges.get(t["id"], [])))
 
 
@@ -519,10 +607,10 @@ def field_prerequisite_list(gen_dir: Path, field_id: str) -> str:
             raise SeedError(str(exc)) from exc
     target = next(s for s in skeletons if any(f.id == field_id for f in s.fields))
     merged = Skeleton(
-        1,
-        tuple(f for f in target.fields if f.id == field_id),
-        tuple(t for s in skeletons for t in s.topics),
-        (),
+        version=1,
+        fields=tuple(f for f in target.fields if f.id == field_id),
+        topics=tuple(t for s in skeletons for t in s.topics),
+        retired=(),
     )
     return prerequisite_lists(merged)
 
@@ -535,34 +623,45 @@ def ordered_fields(doc: dict) -> list[dict]:
     return sorted(doc["fields"], key=lambda f: (f["kind"] != "core", f["order"], f["id"]))
 
 
-def merge_fragments(doc: dict, gen_dir: Path) -> tuple[CommentedMap, list[str]]:
-    """把每个领域的片段按顺序拼成一份骨架；返回骨架与缺失片段的领域 id。"""
+def merge_fragments(doc: dict, gen_dir: Path) -> tuple[CommentedMap, list[str], list[str]]:
+    """把每个领域的片段按顺序拼成一份骨架。
+
+    返回（骨架，阻止拼装的问题，提醒）：片段缺失或片段里混入别的领域的主题是问题；
+    片段主题数与输入清单不一致只是提醒——作者审核时拆分或合并主题是允许的。
+    """
     fields = ordered_fields(doc)
     missing = [f["id"] for f in fields if not fragment_path(gen_dir, f["id"]).exists()]
     merged = CommentedMap()
     if missing:
-        return merged, missing
+        problems = [f"缺少片段，先运行：theroadnottaken-seed run {fid}" for fid in missing]
+        return merged, problems, []
 
+    problems: list[str] = []
+    notes: list[str] = []
     merged["version"] = 1
     field_entries, topics = CommentedSeq(), CommentedSeq()
     for field in fields:
-        fragment = load_fragment(gen_dir, field["id"])
+        fid = field["id"]
+        fragment = load_fragment(gen_dir, fid)
         own = [
-            f
-            for f in fragment.get("fields") or []
-            if isinstance(f, dict) and f.get("id") == field["id"]
+            f for f in fragment.get("fields") or [] if isinstance(f, dict) and f.get("id") == fid
         ]
         field_entries.append(own[0] if own else _field_entry(field))
         first = len(topics)
         for topic in fragment["topics"]:
             if isinstance(topic, CommentedMap):
                 topic.fa.set_block_style()  # 主题一律块式，列表字段保持流式
+                if topic.get("field") != fid:
+                    problems.append(
+                        f"片段 {fid}.yaml 里的主题 {topic.get('id')} 的 field 是 "
+                        f"{topic.get('field')!r}，不是 {fid}"
+                    )
             topics.append(topic)
-        if len(topics) > first:
-            header = (
-                f"---- {field['id']} {field['name']}"
-                f"（{KIND_NAMES[field['kind']]}，{len(topics) - first} 个主题）"
-            )
+        count = len(topics) - first
+        if count != len(field["topics"]):
+            notes.append(f"领域 {fid}：片段 {count} 个主题，输入清单 {len(field['topics'])} 个")
+        if count:
+            header = f"---- {fid} {field['name']}（{KIND_NAMES[field['kind']]}，{count} 个主题）"
             topics.yaml_set_comment_before_after_key(first, before=header, indent=2)
     merged["fields"] = field_entries
     merged["topics"] = topics
@@ -575,7 +674,7 @@ def merge_fragments(doc: dict, gen_dir: Path) -> tuple[CommentedMap, list[str]]:
         "此后数据目录副本为权威。\n"
         "校验：theroadnottaken-skeleton seed/skeleton.yaml -p"
     )
-    return merged, []
+    return merged, problems, notes
 
 
 # ---------------------------------------------------------------- YAML 读写
@@ -608,15 +707,17 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
 def cmd_prompt(args: argparse.Namespace) -> int:
     field = pick_field(load_input(args.gen_dir), args.field)
-    work = args.gen_dir / "work" / field["id"]
-    work.mkdir(parents=True, exist_ok=True)
-    prompt_path, schema_path = work / "prompt.md", work / "schema.json"
-    prompt_path.write_text(render_field_prompt(field), encoding="utf-8")
-    schema_path.write_text(schema_json(FieldDraft), encoding="utf-8")
-    command = agy_command(schema_path, prompt_path, args.effort, args.agy_args)
-    print(f"已写入 {prompt_path} 与 {schema_path}（模板 {FIELD_PROMPT_TEMPLATE}）")
+    call = PreparedCall(
+        args.gen_dir / "work" / field["id"],
+        "",
+        render_field_prompt(field),
+        FieldDraft,
+        args.effort,
+        args.agy_args,
+    )
+    print(f"已写入 {call.prompt_path} 与 {call.schema_path}（模板 {FIELD_PROMPT_TEMPLATE}）")
     print("手动运行：")
-    print("  " + _shell_hint(command, prompt_path))
+    print("  " + _shell_hint(call.command, call.prompt_path))
     return 0
 
 
@@ -628,33 +729,37 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(f"{target} 已存在（可能已手改）；要重新生成请加 --force")
         return 1
 
-    work = args.gen_dir / "work" / fid
-    work.mkdir(parents=True, exist_ok=True)
-    prompt_path, schema_path = work / "prompt.md", work / "schema.json"
-    prompt_path.write_text(render_field_prompt(field), encoding="utf-8")
-    schema_path.write_text(schema_json(FieldDraft), encoding="utf-8")
-    command = agy_command(schema_path, prompt_path, args.effort, args.agy_args)
+    call = PreparedCall(
+        args.gen_dir / "work" / fid,
+        "",
+        render_field_prompt(field),
+        FieldDraft,
+        args.effort,
+        args.agy_args,
+    )
     print(f"调用 agy 生成领域 {fid}「{field['name']}」（{len(field['topics'])} 个主题）…")
-    try:
-        structured = call_agy(command, work / "agy.json", args.timeout)
-        draft = parse_draft(FieldDraft, structured)
-    except AgyFailure as exc:
-        print(f"生成失败：{exc}")
+    draft = generate(
+        call,
+        FieldDraft,
+        args.timeout,
+        lambda d: check_field_draft(field, d),
+        untouched="片段未写入",
+    )
+    if draft is None:
         return 1
 
-    errors = check_field_draft(field, draft)
-    if errors:
-        print(
-            f"agy 输出不合要求（{len(errors)} 个问题，片段未写入；"
-            f"原始输出见 {work / 'agy.json'}）："
-        )
-        for e in errors:
-            print(f"- {e}")
+    # 先落在工作目录里校验，通过才进 fields/，这样失败的产出不会挡住下一次 run。
+    staged = call.work / "fragment.yaml"
+    write_yaml(staged, fragment_document(field, draft))
+    print(f"已生成 {staged}，校验：")
+    code = skeleton_main([str(staged), "--prerequisites"])
+    if code != 0:
+        print(f"校验未通过，片段留在 {staged}；可手改后复制到 {target}，或重新 run")
         return 1
-
-    write_yaml(target, fragment_document(field, draft))
-    print(f"已写入 {target}，校验：")
-    return skeleton_main([str(target), "--prerequisites"])
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(staged, target)
+    print(f"已写入 {target}")
+    return 0
 
 
 def cmd_cross(args: argparse.Namespace) -> int:
@@ -662,36 +767,31 @@ def cmd_cross(args: argparse.Namespace) -> int:
     field = pick_field(doc, args.field)
     fid = field["id"]
     target = load_fragment(args.gen_dir, fid)
-    candidates = {
-        up: (pick_field(doc, up), load_fragment(args.gen_dir, up, needed_by=fid))
-        for up in field.get("upstream") or []
+    candidates: Candidates = {
+        f["id"]: (f, load_fragment(args.gen_dir, f["id"], needed_by=fid))
+        for f in candidate_fields(doc, field, args.upstream)
     }
 
-    work = args.gen_dir / "work" / fid
-    work.mkdir(parents=True, exist_ok=True)
-    prompt_path, schema_path = work / "cross-prompt.md", work / "cross-schema.json"
-    prompt_path.write_text(render_cross_prompt(field, target, candidates), encoding="utf-8")
-    schema_path.write_text(schema_json(CrossDraft), encoding="utf-8")
-    command = agy_command(schema_path, prompt_path, args.effort, args.agy_args)
+    call = PreparedCall(
+        args.gen_dir / "work" / fid,
+        "cross-",
+        render_cross_prompt(field, target, candidates),
+        CrossDraft,
+        args.effort,
+        args.agy_args,
+    )
     print(
         f"调用 agy 为领域 {fid}「{field['name']}」补跨领域前置"
         f"（候选领域：{'、'.join(candidates) or '无'}）…"
     )
-    try:
-        structured = call_agy(command, work / "cross-agy.json", args.timeout)
-        draft = parse_draft(CrossDraft, structured)
-    except AgyFailure as exc:
-        print(f"生成失败：{exc}")
-        return 1
-
-    errors = check_cross_draft(field, target, candidates, draft)
-    if errors:
-        print(
-            f"agy 输出不合要求（{len(errors)} 个问题，片段未改动；"
-            f"原始输出见 {work / 'cross-agy.json'}）："
-        )
-        for e in errors:
-            print(f"- {e}")
+    draft = generate(
+        call,
+        CrossDraft,
+        args.timeout,
+        lambda d: check_cross_draft(field, target, candidates, d),
+        untouched="片段未改动",
+    )
+    if draft is None:
         return 1
 
     apply_cross_edges(target, fid, draft)
@@ -705,22 +805,28 @@ def cmd_cross(args: argparse.Namespace) -> int:
 
 def cmd_merge(args: argparse.Namespace) -> int:
     doc = load_input(args.gen_dir)
-    merged, missing = merge_fragments(doc, args.gen_dir)
-    if missing:
-        print(f"缺少 {len(missing)} 个领域的片段，未拼装：{'、'.join(missing)}")
-        for fid in missing:
-            print(f"- theroadnottaken-seed run {fid}")
+    merged, problems, notes = merge_fragments(doc, args.gen_dir)
+    if problems:
+        print(f"{len(problems)} 个问题，未拼装：")
+        for p in problems:
+            print(f"- {p}")
         return 1
     write_yaml(args.output, merged)
+    for n in notes:
+        print(f"提醒：{n}")
     print(f"已拼装 {args.output}，校验：")
     flags = ["--prerequisites"] if args.prerequisites else []
     return skeleton_main([str(args.output), *flags])
 
 
-def _add_agy_options(p: argparse.ArgumentParser) -> None:
+def _add_gen_dir(p: argparse.ArgumentParser) -> None:
     p.add_argument(
         "--gen-dir", type=Path, default=DEFAULT_GEN_DIR, help="生成目录（含 input.yaml）"
     )
+
+
+def _add_agy_options(p: argparse.ArgumentParser) -> None:
+    _add_gen_dir(p)
     p.add_argument(
         "--effort", default=DEFAULT_EFFORT, help=f"agy --effort（缺省 {DEFAULT_EFFORT}）"
     )
@@ -731,6 +837,10 @@ def _add_agy_options(p: argparse.ArgumentParser) -> None:
         help=f"agy 硬超时秒数（缺省 {DEFAULT_TIMEOUT_SECONDS}）",
     )
     p.epilog = "`--` 之后的参数原样传给 agy（放在 --print 之前）。"
+
+
+def _field_list(text: str) -> list[str]:
+    return [f for f in text.split(",") if f]
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -759,13 +869,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("cross", help="调用 agy 为某领域补跨领域直接前置，写回片段")
     p.add_argument("field", help="领域 id，如 b06")
+    p.add_argument(
+        "--upstream",
+        type=_field_list,
+        default=None,
+        help="候选领域 id，逗号分隔（缺省为调研报告里该领域的上游领域）",
+    )
     _add_agy_options(p)
     p.set_defaults(func=cmd_cross)
 
     p = sub.add_parser("merge", help="把全部片段拼成种子骨架并校验")
-    p.add_argument(
-        "--gen-dir", type=Path, default=DEFAULT_GEN_DIR, help="生成目录（含 input.yaml）"
-    )
+    _add_gen_dir(p)
     p.add_argument("--output", type=Path, default=DEFAULT_SKELETON, help="种子骨架输出路径")
     p.add_argument(
         "-p", "--prerequisites", action="store_true", help="同时输出每领域的 markdown 前置清单"

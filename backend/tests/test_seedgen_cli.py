@@ -99,9 +99,10 @@ def test_prompt_rejects_unknown_field(gen_dir: Path, capsys: pytest.CaptureFixtu
 
 FAKE_AGY = f"""\
 #!{sys.executable}
-import json, os, sys
+import json, os, sys, time
 with open(os.environ["FAKE_AGY_ARGV"], "w", encoding="utf-8") as f:
-    json.dump(sys.argv[1:], f, ensure_ascii=False)
+    json.dump({{"argv": sys.argv[1:], "cwd": os.getcwd()}}, f, ensure_ascii=False)
+time.sleep(float(os.environ.get("FAKE_AGY_SLEEP", "0")))
 sys.stdout.write(open(os.environ["FAKE_AGY_STDOUT"], encoding="utf-8").read())
 sys.stderr.write(os.environ.get("FAKE_AGY_STDERR", ""))
 sys.exit(int(os.environ.get("FAKE_AGY_EXIT", "0")))
@@ -120,6 +121,7 @@ class FakeAgy:
         monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}{os.environ['PATH']}")
         monkeypatch.setenv("FAKE_AGY_ARGV", str(self.argv_path))
         monkeypatch.setenv("FAKE_AGY_STDOUT", str(self.stdout_path))
+        monkeypatch.setenv("FAKE_AGY_SLEEP", "0")
         self.monkeypatch = monkeypatch
         self.reply(structured_output={})
 
@@ -134,7 +136,11 @@ class FakeAgy:
 
     @property
     def argv(self) -> list[str]:
-        return json.loads(self.argv_path.read_text(encoding="utf-8"))
+        return json.loads(self.argv_path.read_text(encoding="utf-8"))["argv"]
+
+    @property
+    def cwd(self) -> str:
+        return json.loads(self.argv_path.read_text(encoding="utf-8"))["cwd"]
 
 
 @pytest.fixture
@@ -215,6 +221,7 @@ def test_run_calls_agy_in_print_mode_with_schema(
     schema_arg = next(a for a in argv if a.startswith("--json-schema="))
     assert '"minItems": 3' in Path(schema_arg.removeprefix("--json-schema=")).read_text("utf-8")
     assert argv[-1].startswith("--print=") and "线性方程组与 Gauss 消元法" in argv[-1]
+    assert agy.cwd == str(gen_dir / "work" / "c04")  # agent 只在本次调用的工作目录里动
 
 
 def test_run_rejects_ids_outside_the_field_and_misaligned_indices(
@@ -262,7 +269,6 @@ def test_run_reports_schema_violations_from_agy(
 def test_run_surfaces_agy_error_exit_3(
     gen_dir: Path, agy: FakeAgy, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    agy.raw("")
     agy.reply(
         exit_code=3,
         stderr=(
@@ -270,12 +276,54 @@ def test_run_surfaces_agy_error_exit_3(
             'AGY_ERROR: {"short_error":"RESOURCE_EXHAUSTED (code 429)","retryable":true}\n'
         ),
     )
-    agy.raw("")
 
     code, out = run("run", "c04", "--gen-dir", gen_dir, capsys=capsys)
 
     assert code == 1
     assert "退出码 3" in out and "RESOURCE_EXHAUSTED" in out
+
+
+def test_run_kills_agy_after_the_hard_timeout(
+    gen_dir: Path, agy: FakeAgy, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    agy.reply(structured_output=c04_topics())
+    monkeypatch.setenv("FAKE_AGY_SLEEP", "5")
+
+    code, out = run("run", "c04", "--gen-dir", gen_dir, "--timeout", "0.3", capsys=capsys)
+
+    assert code == 1
+    assert "0.3 秒" in out and "终止" in out
+    assert not (gen_dir / "fields" / "c04.yaml").exists()
+
+
+def test_run_rejects_non_json_output(
+    gen_dir: Path, agy: FakeAgy, capsys: pytest.CaptureFixture[str]
+) -> None:
+    agy.raw("Loading…\n{not json")
+
+    code, out = run("run", "c04", "--gen-dir", gen_dir, capsys=capsys)
+
+    assert code == 1
+    assert "不是 JSON" in out and "agy.json" in out
+
+
+def test_run_keeps_a_fragment_that_fails_validation_out_of_fields(
+    gen_dir: Path, agy: FakeAgy, capsys: pytest.CaptureFixture[str]
+) -> None:
+    draft = c04_topics()
+    draft["topics"][0]["prerequisites"] = ["c04-eigenvalue-diagonalization"]  # 成环
+    agy.reply(structured_output=draft)
+
+    code, out = run("run", "c04", "--gen-dir", gen_dir, capsys=capsys)
+
+    assert code == 1
+    assert "成环" in out
+    assert not (gen_dir / "fields" / "c04.yaml").exists()
+    staged = gen_dir / "work" / "c04" / "fragment.yaml"
+    assert staged.exists() and str(staged) in out
+    # 失败的产出不挡住下一次 run
+    agy.reply(structured_output=c04_topics())
+    assert run("run", "c04", "--gen-dir", gen_dir, capsys=capsys)[0] == 0
 
 
 def test_run_treats_success_without_structured_output_as_failure(
@@ -413,6 +461,20 @@ def test_cross_needs_the_upstream_fragments_first(
     assert "c04" in out and "run c04" in out
 
 
+def test_cross_upstream_option_overrides_the_candidate_fields(
+    gen_dir: Path, fragments: Path, agy: FakeAgy, capsys: pytest.CaptureFixture[str]
+) -> None:
+    agy.reply(structured_output=edges(("c04-gauss-elimination", ["c02-limits-continuity"])))
+
+    code, out = run("cross", "c04", "--upstream", "c02,b06", "--gen-dir", gen_dir, capsys=capsys)
+
+    assert code == 0
+    assert "候选领域：c02）" in out and "忽略分支候选领域 b06" in out  # 主干只拿主干候选
+    prompt = (gen_dir / "work" / "c04" / "cross-prompt.md").read_text(encoding="utf-8")
+    assert "c02-derivative-rules" in prompt and "b06-convex-sets-functions" not in prompt
+    assert load(fragments / "c04.yaml")["topics"][0]["prerequisites"] == ["c02-limits-continuity"]
+
+
 # ---------------------------------------------------------------- merge
 
 
@@ -466,6 +528,38 @@ def test_merge_reports_validation_errors_across_fields(
     assert code == 1
     assert "校验失败" in out and "b06-convex-sets-functions" in out and "c04-svd" in out
     assert out_path.exists()  # 仍写出，便于作者在编辑器里定位
+
+
+def test_merge_refuses_a_topic_filed_under_another_field(
+    gen_dir: Path, fragments: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    c04 = fragments / "c04.yaml"
+    c04.write_text(
+        c04.read_text(encoding="utf-8").replace(
+            "field: c04, concepts: [行阶梯形", "field: c02, concepts: [行阶梯形"
+        ),
+        encoding="utf-8",
+    )
+    out_path = gen_dir.parent / "skeleton.yaml"
+
+    code, out = run("merge", "--gen-dir", gen_dir, "--output", out_path, capsys=capsys)
+
+    assert code == 1
+    assert "c04-gauss-elimination" in out and "'c02'" in out and "未拼装" in out
+    assert not out_path.exists()
+
+
+def test_merge_notes_topic_counts_that_differ_from_the_input(
+    gen_dir: Path, fragments: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    b06 = fragments / "b06.yaml"
+    b06.write_text(b06.read_text(encoding="utf-8").replace("concept_hints", "x"), encoding="utf-8")
+    out_path = gen_dir.parent / "skeleton.yaml"
+
+    code, out = run("merge", "--gen-dir", gen_dir, "--output", out_path, capsys=capsys)
+
+    assert code == 0
+    assert "提醒：领域 b06：片段 2 个主题，输入清单 1 个" in out
 
 
 # ---------------------------------------------------------------- 仓库里的提交物

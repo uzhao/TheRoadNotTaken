@@ -216,7 +216,7 @@ fields:
       - name: 理想、商环与环同态基本定理
         concept_hints: [理想, 主理想, 商环 $R/I$, 环同态定理, 整环的分式域构造]
       - name: 素理想与极大理想
-        concept_hints: [$R/P$ 为整环 $\iff P$ 为素理想，$R/M$ 为域 $\iff M$ 为极大理想，Krull/Zorn 极大理想存在性]
+        concept_hints: [$R/P$ 为整环 $\iff P$ 为素理想, $R/M$ 为域 $\iff M$ 为极大理想, Krull/Zorn 极大理想存在性]
       - name: 整环中的因子分解：ED、PID 与 UFD
         concept_hints: [Euclid 整环 $\subset$ 主理想整环 $\subset$ 唯一分解整环, 'Gauss 引理与 $R[x]$ 唯一分解性', Eisenstein 不可约判别法]
   - id: c08

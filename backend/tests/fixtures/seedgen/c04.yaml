@@ -1,0 +1,7 @@
+version: 1
+fields:
+  - {id: c04, name: 线性代数 I：矩阵、方程组与几何直观, kind: core, order: 4}
+topics:
+  - {id: c04-gauss-elimination, name: 线性方程组与 Gauss 消元法, field: c04, concepts: [行阶梯形, 主元, 初等矩阵], prerequisites: [], history: Kline Ch.29, references: []}
+  - {id: c04-eigenvalue-diagonalization, name: 特征值、特征向量与矩阵对角化, field: c04, concepts: [特征多项式, 迹与行列式, 可对角化判据], prerequisites: [c04-gauss-elimination], history: Kline Ch.33, references: []}
+retired: []

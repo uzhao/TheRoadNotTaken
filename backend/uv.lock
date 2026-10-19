@@ -504,6 +504,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "pydantic" },
     { name = "ruamel-yaml" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -518,6 +519,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
+    { name = "pydantic", specifier = ">=2" },
     { name = "ruamel-yaml", specifier = ">=0.18" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
 ]

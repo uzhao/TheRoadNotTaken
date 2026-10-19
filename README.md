@@ -45,6 +45,14 @@ uv run --project backend theroadnottaken-skeleton seed/skeleton.yaml -p   # 另�
 
 退出码 0 通过、1 校验失败、2 文件无法读取或解析。校验规则与骨架结构见规格「骨架」一节；`-p` 在校验失败时也输出清单，缺失的前置会标出，方便逐领域审核片段。样例骨架在 `backend/tests/fixtures/sample-skeleton.yaml`。
 
+种子骨架的生成工具 `theroadnottaken-seed`（`extract` / `prompt` / `run` / `cross` / `merge`）配合作者本机的真实 agy 逐领域生成并审核 209 个主题，流程见 [seed/README.md](./seed/README.md)：
+
+```sh
+uv run --project backend theroadnottaken-seed run c01        # 调 agy 生成一个领域的片段并校验
+uv run --project backend theroadnottaken-seed cross c02      # 为一个领域补跨领域前置
+uv run --project backend theroadnottaken-seed merge -p       # 拼成 seed/skeleton.yaml 并校验
+```
+
 ## 测试约定
 
-后端测试只走一条主缝：真实 FastAPI 应用 + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`；`sample_skeleton` 给出随仓库提交的样例骨架路径）。后续工单的测试都从这些夹具开始，不新增缝；唯一的例外是骨架校验脚本，它要在生成骨架阶段独立运行，所以按命令行方式测试（argv 进、stdout 与退出码出）。详见规格的 Testing Decisions。
+后端测试只走一条主缝：真实 FastAPI 应用 + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`；`sample_skeleton` 给出随仓库提交的样例骨架路径）。后续工单的测试都从这些夹具开始，不新增缝；唯一的例外是骨架阶段独立运行的两个命令——骨架校验脚本与种子骨架生成工具——按命令行方式测试（argv 进、stdout / 退出码 / 文件出），后者的 agent 调用走 `PATH` 上的假 `agy`（夹具在 `backend/tests/test_seedgen_cli.py`）。详见规格的 Testing Decisions。

@@ -1,0 +1,32 @@
+source: test
+fields:
+  - id: c02
+    name: 单变量微积分与数学分析基础
+    kind: core
+    order: 2
+    upstream: []
+    upstream_notes: []
+    history_sources: {kline: "完整覆盖：Ch. 17（牛顿与莱布尼茨）", supplement: "—"}
+    topics:
+      - {name: 函数极限与连续函数, concept_hints: [ε-δ 定义, 单侧极限, 间断点分类]}
+      - {name: 导数、微分与求导法则, concept_hints: [切线与瞬时变化率, 链式法则, 高阶导数]}
+      - {name: 微分中值定理, concept_hints: [Rolle 定理, Lagrange 中值定理, Cauchy 中值定理]}
+  - id: c04
+    name: 线性代数 I：矩阵、方程组与几何直观
+    kind: core
+    order: 4
+    upstream: []
+    upstream_notes: []
+    history_sources: {kline: "Ch. 33（克莱姆、柯西行列式）", supplement: "Stewart 1993（SVD）"}
+    topics:
+      - {name: 线性方程组与 Gauss 消元法, concept_hints: [行阶梯形, 主元, 初等矩阵]}
+      - {name: 特征值、特征向量与矩阵对角化, concept_hints: [特征多项式, 迹与行列式, 可对角化判据]}
+  - id: b06
+    name: 最优化方法与凸优化
+    kind: branch
+    order: 6
+    upstream: [c02, c04]
+    upstream_notes: ["c04：矩阵计算（进阶 / 局部主题前置）"]
+    history_sources: {kline: "仅覆盖古典变分法（Ch. 24）", supplement: "Tikhomirov 1990"}
+    topics:
+      - {name: 凸集与凸函数（Convexity）, concept_hints: [凸集, 凸函数的一阶与二阶判据, 次梯度]}

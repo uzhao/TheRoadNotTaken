@@ -32,7 +32,13 @@ uv run --project backend theroadnottaken & pnpm --dir frontend dev  # 开发
 uv run --project backend pytest backend && pnpm --dir frontend test # 测试
 ```
 
-`GET /api/health` 返回 `{"name", "version", "data_dir"}`，可用来确认后端在跑、代理是否生效。
+`GET /api/health` 返回 `{"name", "version", "data_dir"}`，可用来确认后端在跑、代理是否生效。知识网的只读视图：`GET /api/fields`（领域、进度计数与已掌握总数）、`GET /api/topics?field=<领域id>`（主题、状态、不可学与缺失前置；不带 `field` 返回全部）。
+
+## 数据目录
+
+首次启动时，后端在数据目录里复制种子骨架 `seed/skeleton.yaml`、建立空的 `state.json`、`conversations.json`、`proposals.yaml`，写入忽略 `jobs/` 的 `.gitignore`，`git init` 并提交首个 commit。此后每次启动只补齐缺失的文件，不覆盖已有内容，也不把学习者未提交的手改顺手提交；数据目录里的骨架副本是权威，手改骨架 = 改文件后重启。
+
+每次启动都校验骨架与状态文件：不合法则进程以非零退出并在 stderr 打印定位（骨架如 `第 23 行 主题 c02-derivative-definition：前置 c02-nope 不存在`，状态文件如 `state.json: c02-derivative-definition.status: …`）。
 
 ## 骨架校验脚本
 
@@ -55,4 +61,4 @@ uv run --project backend theroadnottaken-seed merge -p       # 拼成 seed/skele
 
 ## 测试约定
 
-后端测试只走一条主缝：真实 FastAPI 应用 + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`；`sample_skeleton` 给出随仓库提交的样例骨架路径）。后续工单的测试都从这些夹具开始，不新增缝；唯一的例外是骨架阶段独立运行的两个命令——骨架校验脚本与种子骨架生成工具——按命令行方式测试（argv 进、stdout / 退出码 / 文件出），后者的 agent 调用走 `PATH` 上的假 `agy`（夹具在 `backend/tests/test_seedgen_cli.py`）。详见规格的 Testing Decisions。
+后端测试只走一条主缝：真实 FastAPI 应用 + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`，都以 `sample_skeleton` 给出的样例骨架为种子）。后续工单的测试都从这些夹具开始，不新增缝；唯一的例外是骨架阶段独立运行的两个命令——骨架校验脚本与种子骨架生成工具——按命令行方式测试（argv 进、stdout / 退出码 / 文件出），后者的 agent 调用走 `PATH` 上的假 `agy`（夹具在 `backend/tests/test_seedgen_cli.py`）。详见规格的 Testing Decisions。

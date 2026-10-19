@@ -15,6 +15,7 @@ from pathlib import Path
 import uvicorn
 
 from theroadnottaken.app import create_app
+from theroadnottaken.datadir import StartupError
 
 DATA_DIR_ENV = "ROAD_DATA_DIR"
 DEFAULT_DATA_DIR_NAME = ".theroadnottaken"
@@ -68,7 +69,11 @@ class Settings:
 
 def main(argv: Sequence[str] | None = None) -> None:
     settings = Settings.parse(argv if argv is not None else sys.argv[1:])
-    app = create_app(data_dir=settings.data_dir, static_dir=settings.static_dir)
+    try:
+        app = create_app(data_dir=settings.data_dir, static_dir=settings.static_dir)
+    except StartupError as exc:
+        print(exc, file=sys.stderr)
+        sys.exit(1)
     print(f"数据目录：{settings.data_dir}")
     if settings.static_dir is None:
         print("未找到前端构建产物，只提供 API（先运行 pnpm --dir frontend build）")

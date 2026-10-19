@@ -39,3 +39,9 @@ def static_client(data_dir: Path, build_dir: Path) -> Iterator[TestClient]:
     """同时托管前端构建产物的应用实例的 HTTP 客户端。"""
     with TestClient(create_app(data_dir=data_dir, static_dir=build_dir)) as c:
         yield c
+
+
+@pytest.fixture
+def sample_skeleton() -> Path:
+    """随仓库提交的样例骨架（7 个主题、含主干与分支、含跨领域前置），后续工单的测试都用它。"""
+    return Path(__file__).parent / "fixtures" / "sample-skeleton.yaml"

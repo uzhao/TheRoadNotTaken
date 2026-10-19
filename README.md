@@ -34,6 +34,17 @@ uv run --project backend pytest backend && pnpm --dir frontend test # 测试
 
 `GET /api/health` 返回 `{"name", "version", "data_dir"}`，可用来确认后端在跑、代理是否生效。
 
+## 骨架校验脚本
+
+生成与审核骨架时，对一份骨架 YAML（完整骨架或单个领域的片段）独立运行校验：
+
+```sh
+uv run --project backend theroadnottaken-skeleton seed/skeleton.yaml      # 通过，或带行号与 id 的错误列表
+uv run --project backend theroadnottaken-skeleton seed/skeleton.yaml -p   # 另输出每领域的 markdown 前置清单
+```
+
+退出码 0 通过、1 校验失败、2 文件无法读取或解析。校验规则与骨架结构见规格「骨架」一节；`-p` 在校验失败时也输出清单，缺失的前置会标出，方便逐领域审核片段。样例骨架在 `backend/tests/fixtures/sample-skeleton.yaml`。
+
 ## 测试约定
 
 后端测试只走一条主缝：真实 FastAPI 应用 + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`）。后续工单的测试都从这两个夹具开始，不新增缝；详见规格的 Testing Decisions。

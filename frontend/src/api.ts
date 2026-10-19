@@ -153,8 +153,10 @@ export interface Job {
 }
 
 export interface JobError {
-  kind: 'agy_error' | 'timeout' | 'exit' | 'no_result' | 'result' | 'spawn'
+  kind: 'agy_error' | 'timeout' | 'exit' | 'no_result' | 'result' | 'spawn' | 'validation' | 'postprocess'
   message?: string
+  /** 搬运校验未通过时的逐条错误 */
+  errors?: string[]
   short_error?: string
   error_id?: string
   retryable?: boolean
@@ -166,7 +168,13 @@ export type JobEvent =
   | { event: 'started'; data: Record<string, never> }
   | { event: 'conversation'; data: { conversation_id: string } }
   | { event: 'delta'; data: { text: string } }
-  | { event: 'tool'; data: { step_index: number; name: string; state: 'ACTIVE' | 'DONE' } }
+  | {
+      event: 'tool'
+      /** `detail`：命令行或目标文件，如 `python3 figures/secant.py` */
+      data: { step_index: number; name: string; state: 'ACTIVE' | 'DONE'; detail: string }
+    }
+  /** 产出没通过校验，同一会话再试一次；之后的正文从头重新流出 */
+  | { event: 'retry'; data: { attempt: number; errors: string[] } }
   | {
       event: 'done'
       data: {
@@ -176,7 +184,7 @@ export type JobEvent =
       }
     }
 
-const JOB_EVENTS = ['queued', 'started', 'conversation', 'delta', 'tool', 'done'] as const
+const JOB_EVENTS = ['queued', 'started', 'conversation', 'delta', 'tool', 'retry', 'done'] as const
 
 export async function createPingJob(): Promise<Job> {
   const resp = await fetch('/api/jobs', {
@@ -203,4 +211,38 @@ export function subscribeJob(id: string, onEvent: (event: JobEvent) => void): ()
     })
   }
   return () => source.close()
+}
+
+// ---- 讲义 ----
+
+export interface LectureMeta {
+  generated_at: string
+  model: string | null
+  effort: string
+  template: string
+  definition_hash: string
+  weak_points: string[]
+  regenerations: number
+  job_id: string
+}
+
+/** 学习页：主题（状态与薄弱点）、缓存的讲义、在跑的讲义任务。 */
+export interface LecturePage {
+  topic: TopicView
+  lecture: { markdown: string; meta: LectureMeta } | null
+  job: Job | null
+}
+
+/** 开始学习：未学 / 暂不学 → 学习中；有缓存直接返回讲义，否则返回讲义任务。 */
+export function startLecture(topicId: string): Promise<LecturePage> {
+  return request<LecturePage>('POST', `/api/lectures/${encodeURIComponent(topicId)}`)
+}
+
+export function fetchLecture(topicId: string): Promise<LecturePage> {
+  return getJson<LecturePage>(`/api/lectures/${encodeURIComponent(topicId)}`)
+}
+
+/** 讲义里 `figures/<名>` 对应的插图地址。 */
+export function figureUrl(topicId: string, name: string): string {
+  return `/api/lectures/${encodeURIComponent(topicId)}/figures/${encodeURIComponent(name)}`
 }

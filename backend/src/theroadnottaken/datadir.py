@@ -65,13 +65,18 @@ class DataDir:
         except StateError as exc:
             raise StartupError(f"状态文件不合法：\n{exc}") from exc
 
-    def update_state(self, change: Callable[[State], tuple[State, str]]) -> State:
+    def update_state(self, change: Callable[[State], tuple[State, str] | None]) -> State:
         """读入当前状态，`change` 返回新状态与提交信息；原子写入后提交 git，返回新状态。
 
+        `change` 返回 None 表示无需改动，原样返回当前状态；
         `change` 抛出的异常原样传出，此时文件与仓库都不变。
         """
         with self._write_lock:
-            new, message = change(self.read_state())
+            current = self.read_state()
+            changed = change(current)
+            if changed is None:
+                return current
+            new, message = changed
             save_state(self.state_path, new)
             _git(self.root, "add", "--", STATE_FILE)
             _commit_if_staged(self.root, message)
@@ -96,6 +101,19 @@ class DataDir:
                 f"会话映射应为「主题 id → 会话 id」的对象：{self.conversations_path}"
             )
         return mapping
+
+    def replace_dir(self, target: Path, staging: Path, *, message: str) -> None:
+        """用备好的 `staging` 整目录替换数据目录里的 `target`（可不存在），并提交 git。"""
+        old = target.with_name(f".{target.name}.old")
+        with self._write_lock:
+            shutil.rmtree(old, ignore_errors=True)
+            if target.exists():
+                target.rename(old)
+            staging.rename(target)
+            shutil.rmtree(old, ignore_errors=True)
+            rel = str(target.relative_to(self.root))
+            _git(self.root, "add", "--all", "--", rel)
+            _commit_if_staged(self.root, message)
 
     def set_conversation(self, topic: str, conversation_id: str) -> None:
         """记下主题的当前主题会话（覆盖旧 id），原子写入后提交 git。"""

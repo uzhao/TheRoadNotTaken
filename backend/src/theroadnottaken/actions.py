@@ -65,3 +65,23 @@ def apply(
     new = state.model_copy(update={"topics": {**state.topics, topic.id: entry}})
     message = f"{t.label}：{topic.name}（{topic.id}）{STATUS_NAMES[current]} → {STATUS_NAMES[t.to]}"
     return new, message
+
+
+# 开始学习：未学或暂不学 → 学习中；其它状态（已在学、声称掌握、已掌握）只是打开讲义，不改状态
+START_FROM: tuple[Status, ...] = ("unlearned", "deferred")
+
+
+def start(state: State, topic: Topic, now: datetime | None = None) -> tuple[State, str] | None:
+    """「开始学习」的状态变化；无需改状态时返回 None。"""
+    current = state.status_of(topic.id)
+    if current not in START_FROM:
+        return None
+    old = state.topics.get(topic.id)
+    entry = TopicState(
+        status="learning",
+        weak_points=list(old.weak_points) if old else [],
+        verifications=list(old.verifications) if old else [],
+        updated_at=now or datetime.now(UTC),
+    )
+    new = state.model_copy(update={"topics": {**state.topics, topic.id: entry}})
+    return new, f"开始学习：{topic.name}（{topic.id}）{STATUS_NAMES[current]} → 学习中"

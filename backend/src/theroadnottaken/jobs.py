@@ -6,18 +6,21 @@
 - 并发上限 `max_running`，其余按提交顺序排队并上报位次。
 - 硬超时到期杀整个进程组（agy 会起 python3 等子进程），任务标记失败。
 - `init` 事件到达时，若任务绑定了主题会话，立即把会话 id 写进会话映射。
+- 任务可带产出的后处理（如讲义的搬运校验）：通过则并入 `done`；要求重试时在同一任务目录里
+  再调一次 agy（发 `retry` 事件）；拒绝则任务失败、目录保留。
 - 任务状态只在内存；订阅者从任意事件序号起回放并跟随，流在终止事件 `done` 后结束。
 """
 
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import shutil
 import signal
 import uuid
 from collections import deque
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
@@ -26,6 +29,8 @@ from typing import Any
 
 from theroadnottaken import agy
 from theroadnottaken.datadir import DataDir
+
+log = logging.getLogger(__name__)
 
 STREAM_LIMIT = 16 * 1024 * 1024  # result 事件带全文，单行可能很长
 
@@ -42,6 +47,27 @@ FINISHED = {JobStatus.SUCCEEDED, JobStatus.FAILED, JobStatus.CANCELLED}
 
 
 @dataclass(frozen=True)
+class Retry:
+    """产出没通过后处理：在同一任务目录里按 `invocation` 再调一次 agy（通常续接同一会话）。"""
+
+    invocation: agy.Invocation
+    errors: list[str]
+
+
+@dataclass(frozen=True)
+class Reject:
+    """产出没通过后处理且不再重试：任务失败，`error` 并入 `done`。"""
+
+    error: dict[str, Any]
+
+
+# 后处理的裁决：dict 表示通过（并入 `done` 的数据），或 Retry / Reject
+Verdict = dict[str, Any] | Retry | Reject
+# (任务目录, agy 成功结果, 第几次尝试) → 裁决；在线程里执行，可以写数据目录
+Postprocess = Callable[[Path, dict[str, Any], int], Verdict]
+
+
+@dataclass(frozen=True)
 class JobSpec:
     kind: str
     invocation: agy.Invocation
@@ -50,6 +76,10 @@ class JobSpec:
     conversation_topic: str | None = None
     # 无产出要搬运的任务（如「重试连接」）成功后由运行器直接删目录
     delete_dir_on_success: bool = False
+    # agy 成功后对产出的后处理（校验、搬运）；None 表示 agy 成功即任务成功
+    postprocess: Postprocess | None = None
+    # 启动前放进任务目录的文件（相对路径 → 内容），如统一的 `matplotlibrc`
+    files: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(eq=False)
@@ -61,6 +91,8 @@ class Job:
     position: int | None = None
     events: list[dict[str, Any]] = field(default_factory=list)
     task: asyncio.Task | None = None
+    # 工具步 ACTIVE 事件的要点，DONE 事件不带参数，按步序号补上
+    _tool_details: dict[int, str] = field(default_factory=dict)
     _wakeup: asyncio.Event = field(default_factory=asyncio.Event)
 
     @property
@@ -96,6 +128,8 @@ class JobRunner:
         job_id = f"{datetime.now():%Y%m%dT%H%M%S}-{uuid.uuid4().hex[:6]}"
         job = Job(id=job_id, spec=spec, dir=self.jobs_dir / job_id)
         job.dir.mkdir(parents=True)
+        for name, content in spec.files:
+            (job.dir / name).write_text(content, encoding="utf-8")
         self._jobs[job_id] = job
         self._queue.append(job)
         self._schedule()
@@ -159,7 +193,7 @@ class JobRunner:
 
     async def _run(self, job: Job) -> None:
         try:
-            status, data = await self._execute(job)
+            status, data = await self._attempts(job)
         except asyncio.CancelledError:
             self._running.discard(job)
             raise
@@ -169,8 +203,34 @@ class JobRunner:
         self._finish(job, status, data)
         self._schedule()
 
-    async def _execute(self, job: Job) -> tuple[JobStatus, dict[str, Any]]:
-        cmd = agy.command(job.spec.invocation)
+    async def _attempts(self, job: Job) -> tuple[JobStatus, dict[str, Any]]:
+        """调 agy，成功则交给后处理；后处理要求重试时再调一次，直到通过或被拒。"""
+        invocation = job.spec.invocation
+        attempt = 1
+        while True:
+            status, data = await self._execute(job, invocation)
+            if status is not JobStatus.SUCCEEDED or job.spec.postprocess is None:
+                return status, data
+            try:
+                verdict = await asyncio.to_thread(job.spec.postprocess, job.dir, data, attempt)
+            except Exception as exc:
+                log.exception("任务 %s 的后处理出错", job.id)
+                error = {"kind": "postprocess", "message": f"后处理出错：{exc}"}
+                return JobStatus.FAILED, {**data, "error": error}
+            match verdict:
+                case Retry(next_invocation, errors):
+                    attempt += 1
+                    invocation = next_invocation
+                    self._emit(job, "retry", {"attempt": attempt, "errors": errors})
+                case Reject(error):
+                    return JobStatus.FAILED, {**data, "error": error}
+                case _:
+                    return status, {**data, **verdict}
+
+    async def _execute(
+        self, job: Job, invocation: agy.Invocation
+    ) -> tuple[JobStatus, dict[str, Any]]:
+        cmd = agy.command(invocation)
         try:
             proc = await asyncio.create_subprocess_exec(
                 *cmd,
@@ -188,7 +248,8 @@ class JobRunner:
         result: dict | None = None
         try:
             async with asyncio.timeout(job.spec.timeout):
-                with (job.dir / "agy.ndjson").open("w", encoding="utf-8") as raw:
+                # 追加：重试的那次调用接在同一份原始事件记录后面
+                with (job.dir / "agy.ndjson").open("a", encoding="utf-8") as raw:
                     async for line_bytes in proc.stdout:
                         line = line_bytes.decode("utf-8", errors="replace").rstrip("\n")
                         raw.write(line + "\n")
@@ -212,7 +273,8 @@ class JobRunner:
             if proc.returncode is None:  # 被取消
                 await _kill_group(proc)
             stderr = (await stderr_task).decode("utf-8", errors="replace")
-            (job.dir / "agy.stderr").write_text(stderr, encoding="utf-8")
+            with (job.dir / "agy.stderr").open("a", encoding="utf-8") as f:
+                f.write(stderr)
 
         return _outcome(returncode, result, stderr)
 
@@ -222,8 +284,14 @@ class JobRunner:
                 self._emit(job, "conversation", {"conversation_id": conversation_id})
             case agy.TextDelta(text):
                 self._emit(job, "delta", {"text": text})
-            case agy.ToolStep(step_index, name, state):
-                self._emit(job, "tool", {"step_index": step_index, "name": name, "state": state})
+            case agy.ToolStep(step_index, name, state, detail):
+                detail = detail or job._tool_details.get(step_index, "")
+                job._tool_details[step_index] = detail
+                self._emit(
+                    job,
+                    "tool",
+                    {"step_index": step_index, "name": name, "state": state, "detail": detail},
+                )
             case agy.Result(payload):
                 return payload
         return None

@@ -17,6 +17,8 @@ from starlette.exceptions import HTTPException
 from theroadnottaken import agy, agy_permissions
 from theroadnottaken.datadir import JOBS_DIR, open_data_dir
 from theroadnottaken.jobs import Job, JobRunner, JobSpec
+from theroadnottaken.lecture import Lectures, check_cjk_font
+from theroadnottaken.lecture_api import router as lecture_router
 from theroadnottaken.web import router as web_router
 
 PACKAGE_NAME = "theroadnottaken"
@@ -63,6 +65,7 @@ def create_app(
                 ", ".join(permissions["missing"]),
                 permissions["error"] or permissions["settings_path"],
             )
+        check_cjk_font()
         yield
         await jobs.shutdown()
 
@@ -70,6 +73,7 @@ def create_app(
     app.state.data_dir = data_dir
     app.state.store = store
     app.state.jobs = jobs
+    app.state.lectures = Lectures(store, jobs)
 
     @app.get("/api/health")
     def health() -> dict[str, str]:
@@ -80,6 +84,7 @@ def create_app(
         }
 
     app.include_router(web_router)
+    app.include_router(lecture_router)
 
     def find_job(job_id: str) -> Job:
         job = jobs.get(job_id)

@@ -54,6 +54,8 @@ class ToolStep:
     step_index: int
     name: str
     state: Literal["ACTIVE", "DONE"]
+    # 工具步的要点（命令行或目标文件），供界面显示「画图 xxx」；DONE 事件不带参数，为空
+    detail: str = ""
 
 
 @dataclass(frozen=True)
@@ -81,7 +83,14 @@ def parse_line(line: str) -> Event | None:
             if step.get("step_type") == "agent_response" and step.get("text_delta"):
                 return TextDelta(step["text_delta"])
             if step.get("step_type") == "tool" and step.get("state") in ("ACTIVE", "DONE"):
-                return ToolStep(step.get("step_index", 0), step.get("tool_name", ""), step["state"])
+                params = (step.get("tool_info") or {}).get("parameters") or {}
+                detail = params.get("CommandLine") or params.get("TargetFile") or ""
+                return ToolStep(
+                    step.get("step_index", 0),
+                    step.get("tool_name", ""),
+                    step["state"],
+                    detail if isinstance(detail, str) else "",
+                )
         case "result":
             return Result(obj)
     return None

@@ -48,6 +48,8 @@ function describe(e: JobEvent): string {
       return e.data.text
     case 'tool':
       return `${e.data.name} ${e.data.state === 'ACTIVE' ? '执行中' : '完成'}`
+    case 'retry':
+      return `第 ${e.data.attempt} 次尝试：${e.data.errors.join('；')}`
     case 'done': {
       const { status, response, error } = e.data
       if (status === 'succeeded') return `成功：${response ?? ''}`

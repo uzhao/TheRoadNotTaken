@@ -32,7 +32,7 @@ uv run --project backend theroadnottaken & pnpm --dir frontend dev  # 开发
 uv run --project backend pytest backend && pnpm --dir frontend test # 测试
 ```
 
-`GET /api/health` 返回 `{"name", "version", "data_dir"}`，可用来确认后端在跑、代理是否生效。知识网的只读视图：`GET /api/fields`（领域、进度计数与已掌握总数）、`GET /api/topics?field=<领域id>`（主题、状态、不可学与缺失前置；不带 `field` 返回全部）。
+`GET /api/health` 返回 `{"name", "version", "data_dir"}`，可用来确认后端在跑、代理是否生效。知识网的只读视图：`GET /api/fields`（领域、进度计数与已掌握总数）、`GET /api/topics?field=<领域id>`（主题、状态、不可学与缺失前置；不带 `field` 返回全部）。学习页：`POST /api/lectures/<主题id>`（开始学习：未学 / 暂不学 → 学习中；有缓存直接返回讲义，否则返回讲义任务，经 `GET /api/jobs/<任务id>/events` 看流式生成）、`GET /api/lectures/<主题id>`（只读）、`GET /api/lectures/<主题id>/figures/<文件名>`（插图）。
 
 ## 数据目录
 
@@ -65,4 +65,4 @@ uv run --project backend theroadnottaken-seed merge -p       # 拼成 seed/skele
 
 - `fake_agy`：`PATH` 前置的假 `agy`（`backend/tests/fake_agy.py`），按场景回放 stream-json 事件、在 cwd 写文件、模拟各种故障，并记录收到的命令行与 prompt。场景用 `backend/tests/agy_steps.py` 的步骤函数拼：`fake_agy.script(s.run(s.init("conv-1"), s.text("…"), s.result()))`，读回调用用 `fake_agy.calls()`。
 - `agy_settings`：代替 `~/.gemini/antigravity-cli/settings.json` 的临时路径，缺省不存在。
-- 尚无 HTTP 入口的任务类型（讲义、追问等）暂经 `client.portal.call(client.app.state.jobs.submit, spec)` 提交，事件仍经 SSE 观察；对应路由上线后改走路由。
+- 讲义任务走 `POST /api/lectures/<主题id>`（见 `backend/tests/test_lecture.py`）；尚无 HTTP 入口的任务类型（追问等）暂经 `client.portal.call(client.app.state.jobs.submit, spec)` 提交，事件仍经 SSE 观察；对应路由上线后改走路由。

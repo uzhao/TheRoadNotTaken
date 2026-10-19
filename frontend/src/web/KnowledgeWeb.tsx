@@ -17,6 +17,8 @@ interface Props {
   /** 状态版本：每次写入后由上层加一，看板与推荐据此重取。 */
   version: number
   onChanged: () => void
+  /** 开始学习：进入学习页 */
+  onLearn: (topicId: string) => void
 }
 
 interface LoadedTopics {
@@ -25,7 +27,7 @@ interface LoadedTopics {
 }
 
 /** 知识网页：左侧领域侧栏 + 右侧推荐卡与选中领域的看板。 */
-export function KnowledgeWeb({ fields, version, onChanged }: Props) {
+export function KnowledgeWeb({ fields, version, onChanged, onLearn }: Props) {
   const [selected, setSelected] = useState<string | null>(null)
   const [loaded, setLoaded] = useState<LoadedTopics | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -79,7 +81,12 @@ export function KnowledgeWeb({ fields, version, onChanged }: Props) {
         busy={busy}
       />
       <main className="main">
-        <RecommendationCard version={version} onAction={onAction} busy={busy} />
+        <RecommendationCard
+          version={version}
+          onAction={onAction}
+          onLearn={onLearn}
+          busy={busy}
+        />
         {actionError && (
           <p className="error" role="alert">
             {actionError}
@@ -88,7 +95,13 @@ export function KnowledgeWeb({ fields, version, onChanged }: Props) {
         {error ? (
           <p className="error">{error}</p>
         ) : (
-          <TopicBoard field={current} topics={topics} onAction={onAction} busy={busy} />
+          <TopicBoard
+            field={current}
+            topics={topics}
+            onAction={onAction}
+            onLearn={onLearn}
+            busy={busy}
+          />
         )}
       </main>
     </div>

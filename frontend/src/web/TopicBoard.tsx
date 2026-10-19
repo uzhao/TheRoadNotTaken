@@ -4,16 +4,18 @@ import type { FieldView, TopicAction, TopicView } from '../api'
 import { KIND_NAMES, STATUS_NAMES } from './labels'
 
 type OnAction = (topicId: string, action: TopicAction) => void
+type OnLearn = (topicId: string) => void
 
 interface Props {
   field: FieldView
   topics: TopicView[] | null
   onAction: OnAction
+  onLearn: OnLearn
   busy: boolean
 }
 
 /** 看板：选中领域的主题卡片网格。 */
-export function TopicBoard({ field, topics, onAction, busy }: Props) {
+export function TopicBoard({ field, topics, onAction, onLearn, busy }: Props) {
   return (
     <section aria-labelledby="board-title">
       <div className="board-head">
@@ -27,7 +29,7 @@ export function TopicBoard({ field, topics, onAction, busy }: Props) {
       ) : (
         <div className="grid">
           {topics.map((t) => (
-            <TopicCard key={t.id} topic={t} onAction={onAction} busy={busy} />
+            <TopicCard key={t.id} topic={t} onAction={onAction} onLearn={onLearn} busy={busy} />
           ))}
         </div>
       )}
@@ -39,10 +41,12 @@ export function TopicBoard({ field, topics, onAction, busy }: Props) {
 function TopicCard({
   topic,
   onAction,
+  onLearn,
   busy,
 }: {
   topic: TopicView
   onAction: OnAction
+  onLearn: OnLearn
   busy: boolean
 }) {
   return (
@@ -61,7 +65,7 @@ function TopicCard({
           前置未掌握：{topic.missing_prerequisites.map((p) => p.name).join('、')}
         </span>
       )}
-      <TopicActions topic={topic} onAction={onAction} busy={busy} />
+      <TopicActions topic={topic} onAction={onAction} onLearn={onLearn} busy={busy} />
     </article>
   )
 }
@@ -70,10 +74,12 @@ function TopicCard({
 function TopicActions({
   topic,
   onAction,
+  onLearn,
   busy,
 }: {
   topic: TopicView
   onAction: OnAction
+  onLearn: OnLearn
   busy: boolean
 }) {
   const button = (action: TopicAction, label: string, ghost = false) => (
@@ -94,7 +100,19 @@ function TopicActions({
       : [button('restore', '恢复推荐'), button('claim', '我已掌握')]
   else if (topic.status === 'claimed') buttons = [button('unclaim', '其实没学过')]
   else if (!topic.locked && (topic.status === 'unlearned' || topic.status === 'learning'))
-    buttons = [button('claim', '我已掌握'), button('defer', '暂不学', true)]
+    buttons = [
+      <button
+        key="learn"
+        type="button"
+        className="primary"
+        disabled={busy}
+        onClick={() => onLearn(topic.id)}
+      >
+        {topic.status === 'learning' ? '继续学习' : '开始学习'}
+      </button>,
+      button('claim', '我已掌握'),
+      button('defer', '暂不学', true),
+    ]
   if (buttons.length === 0) return null
   return <div className="acts">{buttons}</div>
 }

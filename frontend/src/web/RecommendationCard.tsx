@@ -6,11 +6,12 @@ interface Props {
   /** 状态每变一次加一，推荐随之重取。 */
   version: number
   onAction: (topicId: string, action: TopicAction) => void
+  onLearn: (topicId: string) => void
   busy: boolean
 }
 
 /** 知识网页顶部唯一一张推荐卡：要么学一个主题，要么验证一个声称掌握的主题。 */
-export function RecommendationCard({ version, onAction, busy }: Props) {
+export function RecommendationCard({ version, onAction, onLearn, busy }: Props) {
   const [data, setData] = useState<RecommendationResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -67,8 +68,12 @@ export function RecommendationCard({ version, onAction, busy }: Props) {
           </>
         ) : (
           <>
-            {/* 讲义生成由工单 024 接入 */}
-            <button type="button" className="primary" disabled title="讲义生成尚未接入">
+            <button
+              type="button"
+              className="primary"
+              disabled={busy}
+              onClick={() => onLearn(topic.id)}
+            >
               {topic.status === 'learning' ? '继续学习' : '开始学习'}
             </button>
             <button type="button" disabled={busy} onClick={() => onAction(topic.id, 'claim')}>

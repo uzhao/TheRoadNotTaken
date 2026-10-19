@@ -487,3 +487,147 @@ h3 {
   font-size: 0.85rem;
   color: var(--muted);
 }
+
+/* ---- 学习页（原型 010 的学习页：讲义居中、衬线、约 68 字宽） ---- */
+
+.learn {
+  --serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+  max-width: calc(68ch + 48px);
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.learn-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.learn-head .weak ul {
+  margin: 2px 0 0;
+  padding-left: 18px;
+}
+
+.steps {
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.steps span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
+.steps span.on {
+  border-color: var(--learning);
+  color: var(--learning);
+}
+
+.steps span.done {
+  color: var(--mastered);
+}
+
+.lecture {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.85;
+  max-width: 68ch;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lecture h1 {
+  font-size: 26px;
+  line-height: 1.3;
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.lecture h2 {
+  font-size: 19px;
+  margin: 22px 0 6px;
+  font-weight: 600;
+}
+
+.lecture p {
+  margin: 8px 0;
+}
+
+.lecture .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.lecture.streaming > :last-child::after {
+  content: '▍';
+  color: var(--accent);
+}
+
+.lecture .fig {
+  display: block;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
+  background: var(--panel);
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.lecture .fig img {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto 6px;
+  background: #ffffff; /* 插图为白底，深色模式下也保持 */
+  border-radius: 4px;
+}
+
+.lecture .fig .box {
+  display: flex;
+  height: 180px;
+  border-radius: 6px;
+  background: repeating-linear-gradient(135deg, var(--bg) 0 8px, var(--panel) 8px 16px);
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.lecture .fig.pending .box {
+  animation: pulse 1.2s infinite;
+}
+
+.lecture .fig .cap {
+  display: block;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lecture .fig.pending .box {
+    animation: none;
+  }
+}
+
+.failure {
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 12px 0;
+  color: var(--danger);
+}
+
+.learn-foot {
+  margin-top: 24px;
+}

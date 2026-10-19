@@ -12,11 +12,13 @@ from __future__ import annotations
 
 import shutil
 import subprocess
-from dataclasses import dataclass
+import threading
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from theroadnottaken.skeleton import Skeleton, SkeletonLoadError, load_skeleton, validate
-from theroadnottaken.state import State, StateError, load_state
+from theroadnottaken.state import State, StateError, load_state, save_state
 
 SKELETON_FILE = "skeleton.yaml"
 STATE_FILE = "state.json"
@@ -45,6 +47,10 @@ class StartupError(Exception):
 class DataDir:
     root: Path
     skeleton: Skeleton
+    # 串行化「读—改—写—提交」：请求在线程池里并发执行
+    _write_lock: threading.Lock = field(
+        default_factory=threading.Lock, init=False, repr=False, compare=False
+    )
 
     @property
     def state_path(self) -> Path:
@@ -56,6 +62,18 @@ class DataDir:
             return load_state(self.state_path)
         except StateError as exc:
             raise StartupError(f"状态文件不合法：\n{exc}") from exc
+
+    def update_state(self, change: Callable[[State], tuple[State, str]]) -> State:
+        """读入当前状态，`change` 返回新状态与提交信息；原子写入后提交 git，返回新状态。
+
+        `change` 抛出的异常原样传出，此时文件与仓库都不变。
+        """
+        with self._write_lock:
+            new, message = change(self.read_state())
+            save_state(self.state_path, new)
+            _git(self.root, "add", "--", STATE_FILE)
+            _commit_if_staged(self.root, message)
+            return new
 
 
 def open_data_dir(root: Path, seed_skeleton: Path) -> DataDir:

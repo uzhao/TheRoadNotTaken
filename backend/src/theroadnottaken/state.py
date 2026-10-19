@@ -1,13 +1,17 @@
 """掌握状态文件 `state.json` 的 schema 与读取（见规格「数据目录」一节与 GLOSSARY「掌握状态」）。
 
-键为主题 id，每项含状态、薄弱点、验证记录与更新时间；退役主题的条目移入 `archived` 段。
+键为主题 id，每项含状态、薄弱点、验证记录与更新时间；退役主题的条目移入 `archived` 段；
+保留键 `included_branches` 列出开启了「纳入推荐」的分支领域 id（缺省为空：分支默认不参与推荐）。
 高中数学不入此文件；骨架里有、文件里没有的主题视为「未学」。
-只有后端写这个文件（ADR-0001）；写入由后续工单实现，本模块先提供读取与校验。
+只有后端写这个文件（ADR-0001）：写前按同一 schema 校验，写到同目录的临时文件再原子改名，
+因此任何时刻文件要么是旧版、要么是新版，不会出现半个 JSON。
 """
 
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -17,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 Status = Literal["unlearned", "learning", "deferred", "claimed", "mastered"]
 
 ARCHIVED_KEY = "archived"
+INCLUDED_BRANCHES_KEY = "included_branches"
 
 
 class _Strict(BaseModel):
@@ -64,6 +69,7 @@ class State(BaseModel):
 
     topics: dict[str, TopicState] = {}
     archived: dict[str, TopicState] = {}
+    included_branches: list[str] = []
 
     def status_of(self, topic_id: str) -> Status:
         entry = self.topics.get(topic_id)
@@ -102,9 +108,12 @@ def parse_state(raw: object, *, source: str = "state.json") -> State:
         raise StateError(source, [("", "顶层必须是对象（键为主题 id）")])
     data = dict(raw)
     archived = data.pop(ARCHIVED_KEY, {})
+    included = data.pop(INCLUDED_BRANCHES_KEY, [])
     try:
         # 走 JSON 模式：严格模式下 ISO 时间字符串只在 JSON 输入里被接受
-        return State.model_validate_json(json.dumps({"topics": data, "archived": archived}))
+        return State.model_validate_json(
+            json.dumps({"topics": data, "archived": archived, "included_branches": included})
+        )
     except ValidationError as exc:
         errors = []
         for err in exc.errors():
@@ -113,3 +122,31 @@ def parse_state(raw: object, *, source: str = "state.json") -> State:
                 loc = loc[1:]  # 文件里没有 topics 这一层
             errors.append((".".join(str(x) for x in loc), err["msg"]))
         raise StateError(source, errors) from exc
+
+
+def dump_state(state: State) -> str:
+    """文件形态：主题条目在顶层，`archived` 与 `included_branches` 仅在非空时写出。"""
+    raw: dict[str, object] = {
+        tid: entry.model_dump(mode="json") for tid, entry in state.topics.items()
+    }
+    if state.archived:
+        raw[ARCHIVED_KEY] = {tid: e.model_dump(mode="json") for tid, e in state.archived.items()}
+    if state.included_branches:
+        raw[INCLUDED_BRANCHES_KEY] = list(state.included_branches)
+    return json.dumps(raw, ensure_ascii=False, indent=2) + "\n"
+
+
+def save_state(path: Path, state: State) -> None:
+    """校验后写临时文件并原子替换 `path`；中途失败时原文件不变、临时文件被清理。"""
+    text = dump_state(state)
+    parse_state(json.loads(text), source=str(path))  # 写前校验：写出的内容必须能被读回
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise

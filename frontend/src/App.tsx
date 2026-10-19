@@ -1,10 +1,14 @@
+import { useState } from 'react'
+
 import { KnowledgeWeb } from './web/KnowledgeWeb'
 import { useFields } from './web/useFields'
 
 const NAV_ITEMS = ['知识网', '学习', '验证'] as const
 
 function App() {
-  const { data, error } = useFields()
+  // 状态每写入一次加一：领域、看板与推荐据此重取
+  const [version, setVersion] = useState(0)
+  const { data, error } = useFields(version)
 
   return (
     <>
@@ -26,7 +30,11 @@ function App() {
           <p className="error">无法读取知识网：{error}</p>
         </main>
       ) : data ? (
-        <KnowledgeWeb fields={data.fields} />
+        <KnowledgeWeb
+          fields={data.fields}
+          version={version}
+          onChanged={() => setVersion((v) => v + 1)}
+        />
       ) : (
         <main className="shell-plain">
           <p className="placeholder">加载中…</p>

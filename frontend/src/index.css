@@ -350,3 +350,94 @@ h3 {
     max-height: 200px;
   }
 }
+
+/* 推荐卡（原型 .rec） */
+.rec {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.rec.hero {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.rec .kind {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.rec .title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.rec .reason {
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.small {
+  font-size: 12px;
+}
+
+.acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.acts button {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.acts button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.acts button.ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+.acts button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.acts button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 侧栏分支领域的「纳入推荐」开关 */
+.include {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px 6px;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+}

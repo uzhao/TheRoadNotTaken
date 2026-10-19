@@ -5,10 +5,15 @@ interface Props {
   fields: FieldView[]
   selected: string | null
   onSelect: (fieldId: string) => void
+  onToggleIncluded: (fieldId: string, included: boolean) => void
+  busy: boolean
 }
 
-/** 左侧领域侧栏：按主干 / 分支分组，每行名称、已掌握 / 总数与三色进度条。 */
-export function FieldSidebar({ fields, selected, onSelect }: Props) {
+/**
+ * 左侧领域侧栏：按主干 / 分支分组，每行名称、已掌握 / 总数与三色进度条；
+ * 分支领域另有「纳入推荐」开关（默认关闭）。
+ */
+export function FieldSidebar({ fields, selected, onSelect, onToggleIncluded, busy }: Props) {
   const groups: FieldKind[] = ['core', 'branch']
   return (
     <aside className="side" aria-label="领域">
@@ -19,7 +24,21 @@ export function FieldSidebar({ fields, selected, onSelect }: Props) {
           <section key={kind}>
             <h3>{KIND_NAMES[kind]}</h3>
             {rows.map((f) => (
-              <FieldRow key={f.id} field={f} on={f.id === selected} onSelect={onSelect} />
+              <div key={f.id} className="frow-wrap">
+                <FieldRow field={f} on={f.id === selected} onSelect={onSelect} />
+                {f.kind === 'branch' && (
+                  <label className="include">
+                    <input
+                      type="checkbox"
+                      aria-label={`${f.name}：纳入推荐`}
+                      checked={f.included}
+                      disabled={busy}
+                      onChange={(e) => onToggleIncluded(f.id, e.target.checked)}
+                    />
+                    纳入推荐
+                  </label>
+                )}
+              </div>
             ))}
           </section>
         )

@@ -34,6 +34,7 @@ def test_fields_fresh_start_have_no_progress_and_core_comes_first(client: TestCl
         "mastered": 0,
         "learning": 0,
         "claimed": 0,
+        "included": True,
     }
 
 

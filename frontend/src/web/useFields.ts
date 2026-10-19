@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 
 import { fetchFields, type FieldsResponse } from '../api'
 
-/** 顶层数据：领域列表与已掌握计数，供顶栏与知识网页共用。 */
-export function useFields() {
+/** 顶层数据：领域列表与已掌握计数，供顶栏与知识网页共用；`version` 变化时重取。 */
+export function useFields(version: number) {
   const [data, setData] = useState<FieldsResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -19,7 +19,7 @@ export function useFields() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [version])
 
   return { data, error }
 }

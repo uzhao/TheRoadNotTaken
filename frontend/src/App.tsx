@@ -1,25 +1,10 @@
-import { useEffect, useState } from 'react'
-
-import { fetchHealth } from './api'
+import { KnowledgeWeb } from './web/KnowledgeWeb'
+import { useFields } from './web/useFields'
 
 const NAV_ITEMS = ['知识网', '学习', '验证'] as const
 
 function App() {
-  const [version, setVersion] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    fetchHealth()
-      .then((health) => {
-        if (!cancelled) setVersion(health.version)
-      })
-      .catch(() => {
-        if (!cancelled) setVersion(null)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { data, error } = useFields()
 
   return (
     <>
@@ -27,16 +12,26 @@ function App() {
         <span className="brand">The Road Not Taken</span>
         <nav aria-label="主导航">
           {NAV_ITEMS.map((item) => (
-            <span key={item} className="nav-item">
+            <span key={item} className={`nav-item${item === '知识网' ? ' on' : ''}`}>
               {item}
             </span>
           ))}
         </nav>
-        <span className="version">{version ? `v${version}` : '…'}</span>
+        <span className="mastered-count" aria-live="polite">
+          {data ? `已掌握 ${data.mastered} / ${data.total} 个主题` : '…'}
+        </span>
       </header>
-      <main className="shell">
-        <p className="placeholder">空壳页面：知识网、推荐卡与讲义将在后续工单中出现。</p>
-      </main>
+      {error ? (
+        <main className="shell-plain">
+          <p className="error">无法读取知识网：{error}</p>
+        </main>
+      ) : data ? (
+        <KnowledgeWeb fields={data.fields} />
+      ) : (
+        <main className="shell-plain">
+          <p className="placeholder">加载中…</p>
+        </main>
+      )}
     </>
   )
 }

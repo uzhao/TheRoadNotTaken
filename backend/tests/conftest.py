@@ -18,9 +18,9 @@ def data_dir(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
-def client(data_dir: Path) -> Iterator[TestClient]:
-    """指向临时数据目录的应用实例的 HTTP 客户端（不托管前端）。"""
-    with TestClient(create_app(data_dir=data_dir)) as c:
+def client(data_dir: Path, sample_skeleton: Path) -> Iterator[TestClient]:
+    """指向临时数据目录的应用实例的 HTTP 客户端（不托管前端）；以样例骨架为种子。"""
+    with TestClient(create_app(data_dir=data_dir, seed_skeleton=sample_skeleton)) as c:
         yield c
 
 
@@ -35,9 +35,10 @@ def build_dir(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
-def static_client(data_dir: Path, build_dir: Path) -> Iterator[TestClient]:
+def static_client(data_dir: Path, build_dir: Path, sample_skeleton: Path) -> Iterator[TestClient]:
     """同时托管前端构建产物的应用实例的 HTTP 客户端。"""
-    with TestClient(create_app(data_dir=data_dir, static_dir=build_dir)) as c:
+    app = create_app(data_dir=data_dir, static_dir=build_dir, seed_skeleton=sample_skeleton)
+    with TestClient(app) as c:
         yield c
 
 

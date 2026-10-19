@@ -1,0 +1,20 @@
+version: 1
+fields:
+  - {id: b06, name: 最优化方法与凸优化, kind: branch, order: 6}
+topics:
+  - id: b06-convex-sets-functions
+    name: 凸集与凸函数
+    field: b06
+    concepts: [凸集, 凸函数的一阶与二阶判据, 次梯度]
+    prerequisites: []   # 作者注：入门主题
+    history: Minkowski 1896
+    references: []
+    aliases: [Convexity]
+  - id: b06-gradient-descent
+    name: 梯度下降
+    field: b06
+    concepts: [步长, 收敛率, 条件数]
+    prerequisites: [b06-convex-sets-functions]
+    history: Cauchy 1847
+    references: []
+retired: []

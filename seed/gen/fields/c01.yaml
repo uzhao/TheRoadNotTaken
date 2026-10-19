@@ -1,0 +1,77 @@
+# 领域 c01「数学语言、集合与数论基础」（主干，10 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c01.yaml -p
+version: 1
+fields:
+  - {id: c01, name: 数学语言、集合与数论基础, kind: core, order: 1}
+topics:
+  - id: c01-logic-and-proof
+    name: 命题逻辑与证明方法
+    field: c01
+    concepts: [命题、蕴含与量词, 逆否命题与反证法, 数学归纳法与强归纳法, 证明的书写规范]
+    prerequisites: []
+    history: Kline Ch.3, 51
+    references: []
+  - id: c01-sets-relations-maps
+    name: 集合、关系与映射
+    field: c01
+    concepts: [集合运算与幂集, 关系与函数的定义, 单射、满射与双射, 逆映射、像与原像]
+    prerequisites: [c01-logic-and-proof]
+    history: Kline Ch.41
+    references: []
+  - id: c01-equivalence-quotient
+    name: 等价关系与商集
+    field: c01
+    concepts: [等价关系与等价类, 集合的划分, 商集与商映射, 容斥原理]
+    prerequisites: [c01-sets-relations-maps]
+    history: Kline Ch.41
+    references: []
+  - id: c01-divisibility-euclid
+    name: 整除与 Euclid 算法
+    field: c01
+    concepts: [带余除法, 最大公因子与 Euclid 算法, Bézout 等式, 线性丢番图方程]
+    prerequisites: [c01-logic-and-proof]
+    history: Kline Ch.4
+    references: []
+  - id: c01-primes-fundamental-theorem
+    name: 素数与算术基本定理
+    field: c01
+    concepts: [素数与合数, 算术基本定理及其证明, Euclid 的素数无穷性证明, 素数分布初探]
+    prerequisites: [c01-divisibility-euclid]
+    history: Kline Ch.4, 34
+    references: []
+  - id: c01-congruence-modular
+    name: 同余与模算术
+    field: c01
+    concepts: [同余及其基本性质, 同余类环 Z_n, 线性同余方程, 中国剩余定理]
+    prerequisites: [c01-divisibility-euclid, c01-equivalence-quotient]
+    history: Kline Ch.34
+    references: []
+  - id: c01-fermat-euler-wilson
+    name: Fermat 小定理、Euler 定理与 Wilson 定理
+    field: c01
+    concepts: [Euler φ 函数, Fermat 小定理与 Euler 定理, Wilson 定理, 模幂运算与 RSA 公钥密码]
+    prerequisites: [c01-congruence-modular, c01-primes-fundamental-theorem]
+    history: Kline Ch.13, 34; Diffie 1988
+    references: []
+  - id: c01-primitive-roots-quadratic-residues
+    name: 原根与二次剩余
+    field: c01
+    concepts: [模 p 乘法群的循环性与原根, 二次剩余与 Legendre 符号, Euler 判别法, 二次互反律]
+    prerequisites: [c01-fermat-euler-wilson]
+    history: Kline Ch.34
+    references: []
+  - id: c01-rationals-irrationals-supremum
+    name: 有理数、无理数与上确界公理
+    field: c01
+    concepts: [√2 与 e 的无理性, 有序域公理, 上确界公理, Archimedes 性质与有理数的稠密性]
+    prerequisites: [c01-sets-relations-maps, c01-primes-fundamental-theorem]
+    history: Kline Ch.3, 41
+    references: []
+  - id: c01-countable-uncountable
+    name: 可数集与不可数集
+    field: c01
+    concepts: [基数比较与 Schröder–Bernstein 定理, 可数集与 Q 的可数性, Cantor 对角线法与 R 的不可数性, 连续统假设简介]
+    prerequisites: [c01-rationals-irrationals-supremum]
+    history: Kline Ch.41
+    references: []
+retired: []

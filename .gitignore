@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+backend/dist/
+
+# Node
+node_modules/
+frontend/dist/
+*.log
+
+# 本地数据目录（缺省在 ~/.theroadnottaken，仓库内若有也不提交）
+/data/
+
+# 种子骨架生成的中间产物（prompt、schema、agy 原始输出）；审定的片段 seed/gen/fields/ 与种子骨架照常提交
+seed/gen/work/
+
+.DS_Store

@@ -1,0 +1,63 @@
+# 领域 c05「线性代数 II：抽象空间、算子与标准形」（主干，8 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c05.yaml -p
+version: 1
+fields:
+  - {id: c05, name: 线性代数 II：抽象空间、算子与标准形, kind: core, order: 5}
+topics:
+  - id: c05-abstract-vector-spaces
+    name: 一般域上的向量空间与商空间
+    field: c05
+    concepts: [一般域上的向量空间, 子空间的直和分解, 商空间, 同构定理]
+    prerequisites: [c04-linear-maps-matrices, c01-equivalence-quotient]
+    history: Kline Ch.32, 49
+    references: []
+  - id: c05-dual-spaces
+    name: 对偶空间与对偶映射
+    field: c05
+    concepts: [线性泛函与对偶空间, 对偶基, 零化子, 对偶映射与转置]
+    prerequisites: [c05-abstract-vector-spaces]
+    history: Kline Ch.46
+    references: []
+  - id: c05-polynomials-minimal-polynomial
+    name: 多项式环与算子极小多项式
+    field: c05
+    concepts: [多项式的带余除法与唯一分解, 零化多项式与 Cayley–Hamilton 定理, 极小多项式, 不变子空间]
+    prerequisites: [c05-abstract-vector-spaces, c04-eigenvalues-diagonalization, c01-divisibility-euclid]
+    history: Kline Ch.33
+    references: []
+  - id: c05-generalized-eigenspaces
+    name: 广义特征子空间与主分解定理
+    field: c05
+    concepts: [广义特征子空间, 主分解定理, 可对角化的充要条件与同时对角化, 幂零算子]
+    prerequisites: [c05-polynomials-minimal-polynomial]
+    history: Kline Ch.33
+    references: []
+  - id: c05-jordan-rational-forms
+    name: Jordan 标准形与有理标准形
+    field: c05
+    concepts: [Jordan 块与 Jordan 标准形, 循环子空间分解与有理标准形, 相似不变量, λ-矩阵与 Smith 标准形]
+    prerequisites: [c05-generalized-eigenspaces]
+    history: Kline Ch.33
+    references: []
+  - id: c05-bilinear-quadratic-forms
+    name: 双线性型与二次型的一般理论
+    field: c05
+    concepts: [双线性型及其矩阵, 对称双线性型与二次型, 合同变换与标准形, 交错型与辛几何初步]
+    prerequisites: [c05-dual-spaces, c04-symmetric-positive-definite]
+    history: Kline Ch.33
+    references: []
+  - id: c05-adjoint-normal-operators
+    name: 有限维内积空间上的伴随算子与正规算子
+    field: c05
+    concepts: [有限维内积空间与 Riesz 表示, 伴随算子, 正规算子, 酉算子与正交算子]
+    prerequisites: [c05-dual-spaces, c04-inner-product-orthogonality]
+    history: Kline Ch.46
+    references: []
+  - id: c05-spectral-theorem-polar
+    name: 有限维谱定理与算子极分解
+    field: c05
+    concepts: [复正规算子的谱定理, 实自伴算子的谱定理, 正算子与平方根, 极分解与奇异值]
+    prerequisites: [c05-adjoint-normal-operators, c05-generalized-eigenspaces]
+    history: Kline Ch.46
+    references: []
+retired: []

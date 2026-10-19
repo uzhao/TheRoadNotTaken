@@ -1,0 +1,72 @@
+# 领域 c13「微分几何与流形初步」（主干，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c13.yaml -p
+version: 1
+fields:
+  - {id: c13, name: 微分几何与流形初步, kind: core, order: 13}
+topics:
+  - id: c13-frenet-curves
+    name: 空间正则曲线与 Frenet–Serret 标架
+    field: c13
+    concepts: [正则曲线与弧长参数化, Frenet 标架, 曲率与挠率, Frenet–Serret 公式与曲线基本定理]
+    prerequisites: [c03-space-curves]
+    history: Kline Ch.23
+    references: []
+  - id: c13-regular-surfaces
+    name: R^3 中的正则曲面与切平面
+    field: c13
+    concepts: [正则曲面与局部坐标卡, 切平面, 曲面间的光滑映射与切映射, 旋转面与直纹面的例子]
+    prerequisites: [c13-frenet-curves, c03-implicit-inverse-function]
+    history: Kline Ch.23
+    references: []
+  - id: c13-first-fundamental-form
+    name: 第一基本形式与内蕴几何
+    field: c13
+    concepts: [第一基本形式, 曲面上的弧长与面积, 等距与共形映射, 内蕴几何的观念]
+    prerequisites: [c13-regular-surfaces, c05-bilinear-quadratic-forms]
+    history: Kline Ch.37
+    references: []
+  - id: c13-gauss-map-curvature
+    name: Gauss 映射、第二基本形式与曲率
+    field: c13
+    concepts: [Gauss 映射与形状算子, 第二基本形式, 主曲率与法曲率, Gauss 曲率与平均曲率]
+    prerequisites: [c13-first-fundamental-form, c05-adjoint-normal-operators]
+    history: Kline Ch.37
+    references: []
+  - id: c13-theorema-egregium
+    name: Gauss 绝妙定理与曲面基本方程
+    field: c13
+    concepts: [Christoffel 符号, Gauss 方程与 Codazzi 方程, Gauss 绝妙定理, 曲面基本定理]
+    prerequisites: [c13-gauss-map-curvature]
+    history: Kline Ch.37
+    references: []
+    aliases: [Theorema Egregium]
+  - id: c13-geodesics-parallel-transport
+    name: 测地线、平行移动与指数映射
+    field: c13
+    concepts: [协变导数与测地曲率, 测地线方程与局部最短性, 平行移动, 指数映射]
+    prerequisites: [c13-theorema-egregium]
+    history: Kline Ch.37, 48
+    references: []
+    aliases: [Geodesics]
+  - id: c13-gauss-bonnet
+    name: Gauss–Bonnet 定理
+    field: c13
+    concepts: [测地三角形的角盈公式, 局部 Gauss–Bonnet 定理, Euler 示性数, 整体 Gauss–Bonnet 定理]
+    prerequisites: [c13-geodesics-parallel-transport, c09-subspace-product-quotient]
+    history: Kline Ch.37, 50
+    references: []
+  - id: c13-smooth-manifolds
+    name: 抽象光滑流形、切丛与向量场
+    field: c13
+    concepts: [光滑图册与流形, 切空间与切丛, 光滑向量场与积分曲线, Lie 括号]
+    prerequisites: [c13-regular-surfaces, c09-topological-spaces]
+    history: Kline Ch.37, 48
+    references: []
+  - id: c13-differential-forms-stokes
+    name: 微分形式、外微分与流形上的 Stokes 定理
+    field: c13
+    concepts: [余切丛与微分形式, 楔积, 外微分与 d²=0, 定向与流形上的 Stokes 定理, de Rham 上同调导引]
+    prerequisites: [c13-smooth-manifolds, c03-green-stokes-gauss, c05-dual-spaces]
+    history: Katz 1985
+    references: []
+retired: []

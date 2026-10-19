@@ -1,0 +1,79 @@
+# 领域 c09「度量空间与点集拓扑（含基本群初步）」（主干，10 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c09.yaml -p
+version: 1
+fields:
+  - {id: c09, name: 度量空间与点集拓扑（含基本群初步）, kind: core, order: 9}
+topics:
+  - id: c09-metric-spaces
+    name: 度量空间、开集与闭集
+    field: c09
+    concepts: [度量公理与例子, 开球、开集与闭集, 内点、聚点、闭包与边界, 度量空间中的收敛与连续]
+    prerequisites: [c02-function-limits-continuity, c03-multivariable-limits]
+    history: Kline Ch.46
+    references: []
+  - id: c09-completeness-contraction
+    name: 完备度量空间与压缩映射原理
+    field: c09
+    concepts: [Cauchy 列与完备性, 完备化, Banach 不动点定理, 在微分方程与积分方程中的应用]
+    prerequisites: [c09-metric-spaces, c02-subsequences-cauchy]
+    history: Kline Ch.46
+    references: []
+  - id: c09-topological-spaces
+    name: 拓扑空间、拓扑基与连续映射
+    field: c09
+    concepts: [拓扑的开集公理, 拓扑基与子基, 连续映射的刻画, 同胚]
+    prerequisites: [c09-metric-spaces]
+    history: Kline Ch.50
+    references: []
+  - id: c09-subspace-product-quotient
+    name: 子空间拓扑、积拓扑与商拓扑
+    field: c09
+    concepts: [子空间拓扑, 积拓扑, 商拓扑, 粘合构造：环面、Möbius 带、Klein 瓶与射影平面]
+    prerequisites: [c09-topological-spaces, c01-equivalence-quotient]
+    history: Kline Ch.50
+    references: []
+  - id: c09-connectedness
+    name: 连通性与道路连通性
+    field: c09
+    concepts: [连通空间及其刻画, 连通性在连续映射下的保持, 连通分支, 道路连通与局部连通]
+    prerequisites: [c09-topological-spaces]
+    history: Kline Ch.50
+    references: []
+  - id: c09-compactness
+    name: 紧致性
+    field: c09
+    concepts: [开覆盖与紧致性, 紧集与闭集, 紧空间上的连续函数, Tychonoff 定理导引]
+    prerequisites: [c09-topological-spaces]
+    history: Kline Ch.40, 50
+    references: []
+    aliases: [Compactness]
+  - id: c09-compactness-metric-heine-borel
+    name: 度量空间中的紧致性与 Heine–Borel 定理
+    field: c09
+    concepts: [紧致、列紧与完全有界的等价, Heine–Borel 定理, Lebesgue 覆盖引理, Arzelà–Ascoli 定理初步]
+    prerequisites: [c09-compactness, c09-completeness-contraction, c02-continuous-on-closed-interval]
+    history: Kline Ch.40, 46
+    references: []
+  - id: c09-separation-axioms-urysohn
+    name: 分离公理与 Urysohn 引理
+    field: c09
+    concepts: [Hausdorff 空间, 正则与正规空间, Urysohn 引理, Tietze 扩张定理]
+    prerequisites: [c09-compactness]
+    history: Kline Ch.50
+    references: []
+  - id: c09-homotopy-fundamental-group
+    name: 道路同伦与基本群
+    field: c09
+    concepts: [映射同伦与道路同伦, 道路乘积与基本群, 基本群的函子性, 同伦等价与形变收缩]
+    prerequisites: [c09-connectedness, c09-subspace-product-quotient, c07-quotient-groups-homomorphisms]
+    history: Kline Ch.50
+    references: []
+    aliases: [π₁]
+  - id: c09-covering-spaces-van-kampen
+    name: 覆叠空间、圆周的基本群与 Seifert–van Kampen 定理初步
+    field: c09
+    concepts: [覆叠空间与提升, 圆周的基本群, Brouwer 不动点定理, Seifert–van Kampen 定理与曲面的基本群]
+    prerequisites: [c09-homotopy-fundamental-group, c09-compactness]
+    history: Kline Ch.50; Dieudonné 1989
+    references: []
+retired: []

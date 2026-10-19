@@ -1,0 +1,70 @@
+# 领域 c06「常微分方程与动力系统初步」（主干，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c06.yaml -p
+version: 1
+fields:
+  - {id: c06, name: 常微分方程与动力系统初步, kind: core, order: 6}
+topics:
+  - id: c06-first-order-odes
+    name: 一阶常微分方程与方向场
+    field: c06
+    concepts: [分离变量方程, 一阶线性方程与积分因子, 恰当方程, 方向场与积分曲线]
+    prerequisites: [c02-fundamental-theorem-calculus]
+    history: Kline Ch.21
+    references: []
+  - id: c06-existence-uniqueness
+    name: 初值问题的存在唯一性定理
+    field: c06
+    concepts: [Picard 逐次逼近, Lipschitz 条件与局部存在唯一性, 解的延拓与最大存在区间, 解对初值的连续依赖]
+    prerequisites: [c06-first-order-odes, c02-uniform-convergence]
+    history: Kline Ch.29
+    references: []
+  - id: c06-linear-constant-coefficient
+    name: 二阶与高阶常系数线性微分方程
+    field: c06
+    concepts: [线性微分算子与解空间, Wronski 行列式, 特征方程与实根情形, 复根与重根情形]
+    prerequisites: [c06-first-order-odes, c04-linear-independence-basis, c04-determinants]
+    history: Kline Ch.21
+    references: []
+  - id: c06-nonhomogeneous-oscillations
+    name: 非齐次线性方程解法与振动模型
+    field: c06
+    concepts: [待定系数法, 常数变易法, 阻尼谐振子, 受迫振动与共振]
+    prerequisites: [c06-linear-constant-coefficient]
+    history: Kline Ch.21
+    references: []
+  - id: c06-power-series-frobenius
+    name: 幂级数解法与正则奇点
+    field: c06
+    concepts: [常点处的幂级数解, 正则奇点与 Frobenius 方法, Legendre 方程, Bessel 方程初步]
+    prerequisites: [c06-linear-constant-coefficient, c02-power-fourier-series]
+    history: Kline Ch.21, 29
+    references: []
+  - id: c06-laplace-transform
+    name: Laplace 变换与脉冲响应
+    field: c06
+    concepts: [Laplace 变换及其性质, 阶跃函数与 Dirac δ 函数, 传递函数与脉冲响应, 卷积定理与 Green 函数]
+    prerequisites: [c06-nonhomogeneous-oscillations, c02-improper-integrals]
+    history: Kline Ch.28
+    references: []
+  - id: c06-linear-systems-matrix-exponential
+    name: 一阶线性微分方程组与矩阵指数
+    field: c06
+    concepts: [高阶方程化为一阶系统, 特征值法求解线性系统, 矩阵指数与基解矩阵, 非齐次系统的常数变易]
+    prerequisites: [c06-linear-constant-coefficient, c04-eigenvalues-diagonalization]
+    history: Kline Ch.29
+    references: []
+  - id: c06-phase-plane
+    name: 平面自治系统与相平面分析
+    field: c06
+    concepts: [平面自治系统与平衡点, 平衡点的线性分类, 局部线性化, 相图绘制]
+    prerequisites: [c06-linear-systems-matrix-exponential]
+    history: Kline Ch.29
+    references: []
+  - id: c06-lyapunov-limit-cycles
+    name: Lyapunov 稳定性与极限环初步
+    field: c06
+    concepts: [Lyapunov 函数与直接法, 守恒系统, 极限环与 Poincaré–Bendixson 定理, Lotka–Volterra 模型]
+    prerequisites: [c06-phase-plane]
+    history: Kline Ch.29
+    references: []
+retired: []

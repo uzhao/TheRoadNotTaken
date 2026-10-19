@@ -1,0 +1,673 @@
+# 由 theroadnottaken-seed extract 从调研报告提取的生成输入；勿手改，改调研报告后重新 extract。
+source: research/curriculum-references.md
+fields:
+  - id: c01
+    name: 数学语言、集合与数论基础
+    kind: core
+    order: 1
+    upstream: []
+    upstream_notes: []
+    history_sources:
+      kline: 完整覆盖：Ch. 3, 4（公理化与欧几里得算法）、Ch. 6, 13, 34（丢番图、费马、高斯同余与二次互反律）、Ch. 41, 51（集合论、可数性与公理化逻辑）
+      supplement: RSA 与现代密码学数论动机补充：Whitfield Diffie (1988), *"The First Ten Years of Public-Key Cryptography"*, *Proc. 
+        IEEE*, 76(5), 560–577 (<https://doi.org/10.1109/5.4442>)
+    topics:
+      - name: 命题逻辑与证明方法
+        concept_hints: [蕴含与量词, 逆否命题, 反证法, 数学归纳法与强归纳法]
+      - name: 集合、关系与映射
+        concept_hints: [集合运算, 单射/满射/双射, 逆映射, 像与原像]
+      - name: 等价关系与商集
+        concept_hints: [等价类, 集合划分, 商映射, 容斥原理]
+      - name: 整除与 Euclid 算法
+        concept_hints: [带余除法, 最大公因子, Bézout 等式, 线性丢番图方程]
+      - name: 素数与算术基本定理
+        concept_hints: [唯一分解定理, Euclid 素数无穷性证明, 素数分布初探]
+      - name: 同余与模算术
+        concept_hints: ['同余类环 $\mathbb{Z}_n$', 线性同余方程, 中国剩余定理]
+      - name: Fermat 小定理、Euler 定理与 Wilson 定理
+        concept_hints: [Euler $\varphi$ 函数, 模幂运算, RSA 公钥密码动机]
+      - name: 原根与二次剩余
+        concept_hints: [模 $p$ 乘法群的循环性, Legendre 符号, 二次互反律]
+      - name: 有理数、无理数与上确界公理
+        concept_hints: ['$\sqrt{2}$ 与 $e$ 的无理性', 有序域, 上确界公理与 Archimedes 性质]
+      - name: 可数集与不可数集
+        concept_hints: [基数比较, '$\mathbb{Q}$ 的可数性', 'Cantor 对角线法与 $\mathbb{R}$ 的不可数性', Schröder–Bernstein 定理]
+  - id: c02
+    name: 单变量微积分与数学分析基础
+    kind: core
+    order: 2
+    upstream: [c01]
+    upstream_notes: []
+    history_sources:
+      kline: 完整覆盖：Ch. 3, 5（穷竭法）、Ch. 16, 17（牛顿与莱布尼茨创立微积分）、Ch. 19, 20（18世纪微积分与无穷级数）、Ch. 40, 41（柯西/魏尔斯特拉斯严密化、一致收敛、实数构造）
+      supplement: —
+    topics:
+      - name: 实数完备性与确界原理
+        concept_hints: [Dedekind 分割/Cauchy 基本列直观, 确界存在定理, 区间套定理]
+      - name: 数列极限与收敛准则
+        concept_hints: ['$\varepsilon\text{-}N$ 定义', 极限四则运算, 夹逼定理, 单调有界定理与数 $e$]
+      - name: 子列、Bolzano–Weierstrass 定理与 Cauchy 收敛原理
+        concept_hints: [上下极限 $\limsup/\liminf$, 列紧性, 实数完备性等价命题]
+      - name: 函数极限与连续函数
+        concept_hints: ['$\varepsilon\text{-}\delta$ 定义', 单侧极限, 连续函数局部性质, 间断点分类]
+      - name: 闭区间上连续函数的整体性质
+        concept_hints: [介值定理, 有界性与最值定理, 一致连续性与 Cantor 定理]
+      - name: 导数、微分与求导法则
+        concept_hints: [切线与瞬时变化率, 链式法则, 反函数与隐函数求导, 高阶导数与 Leibniz 公式]
+      - name: 微分中值定理（Rolle, Lagrange, Cauchy）
+        concept_hints: [费马引理, 三大中值定理, Darboux 导数介值定理]
+      - name: L'Hôpital 法则、Taylor 公式与凸函数
+        concept_hints: [Peano/Lagrange 余项 Taylor 定理, 极值判别, 凸函数与 Jensen 不等式]
+      - name: Riemann 积分的定义与可积性判别
+        concept_hints: [Darboux 上下和, 振幅与可积充要条件, 连续函数与单调函数的可积性]
+      - name: 微积分基本定理与积分计算方法
+        concept_hints: [变上限积分, Newton–Leibniz 公式, 换元积分法, 分部积分法, 有理函数积分]
+      - name: 反常积分及其收敛性判别
+        concept_hints: [无穷区间反常积分, 无界函数瑕积分, 比较判别法, Dirichlet 与 Abel 判别法]
+      - name: 数项级数收敛性
+        concept_hints: [正项级数比值/根值/积分判别法, 交错级数 Leibniz 判别法, 绝对收敛与条件收敛, Riemann 重排定理]
+      - name: 函数项级数与一致收敛
+        concept_hints: [逐点收敛与一致收敛, Weierstrass $M$-判别法, 极限与微积分交换次序定理]
+      - name: 幂级数、解析性与 Fourier 级数初步
+        concept_hints: [收敛半径与 Abel 定理, Taylor 级数展开, 三角正交系, Fourier 级数收敛与 Parseval 等式]
+  - id: c03
+    name: 多元微积分与向量分析
+    kind: core
+    order: 3
+    upstream: [c02, c04]
+    upstream_notes: []
+    history_sources:
+      kline: 主要覆盖：Ch. 19, 23（偏导数与空间几何）、Ch. 24（拉格朗日乘子与变分）、Ch. 28（格林与位势）、Ch. 32（吉布斯-亥维赛向量分析 $\nabla$）
+      supplement: 斯托克斯公式与外微分历史补充：Victor J. Katz (1979), *"The History of Stokes' Theorem"*, *Mathematics Magazine*, 
+        52(3), 146–156 (<https://doi.org/10.1080/0025570X.1979.11976770>)
+    topics:
+      - name: $\mathbb{R}^n$ 的欧氏结构、内积与外积
+        concept_hints: [范数与 Cauchy–Schwarz 不等式, '$\mathbb{R}^3$ 叉积与混合积', 柱坐标与球坐标]
+      - name: 空间曲线与参数化运动
+        concept_hints: [弧长参数化, 切向量, 曲率, 速度与加速度分解]
+      - name: 多元函数的极限与连续性
+        concept_hints: ['$\mathbb{R}^n$ 中的开集与闭集', 重极限与累次极限, 多元连续函数性质]
+      - name: 偏导数、全微分与梯度
+        concept_hints: [可微性的线性逼近定义, 偏导数与可微的关系, 方向导数与梯度 $\nabla f$]
+      - name: 复合映射链式法则与 Jacobi 矩阵
+        concept_hints: [向量值映射的微分, Jacobi 行列式, 多元 Taylor 公式]
+      - name: 多元极值、Hessian 矩阵与 Lagrange 乘子法
+        concept_hints: [无约束极值的二阶充分条件, 等式约束极值与 Lagrange 乘子几何意义]
+      - name: 隐函数定理与逆映射定理
+        concept_hints: [局部可逆性判据, 隐函数存在性与求导, 流形局部坐标化的基础]
+      - name: 重积分与变量替换公式
+        concept_hints: [有界域上的二重/三重积分, Fubini 累次积分, Jacobi 行列式变量替换]
+      - name: 曲线积分与保守向量场
+        concept_hints: [第一型与第二型曲线积分, 梯度场, 路径无关性与势函数重构]
+      - name: 曲面积分与散度、旋度算子
+        concept_hints: [参数曲面面积元, 第一型与第二型曲面积分, 通量, '散度 $\nabla\cdot\mathbf{F}$ 与旋度 $\nabla\times\mathbf{F}$']
+      - name: Green 公式、Stokes 公式与 Gauss 散度定理
+        concept_hints: [三大积分公式的物理与几何含义, 外微分形式 $d\omega$ 统一视角]
+  - id: c04
+    name: 线性代数 I：矩阵、方程组与几何直观
+    kind: core
+    order: 4
+    upstream: [c01]
+    upstream_notes: []
+    history_sources:
+      kline: 覆盖矩阵与行列式，缺 SVD：Ch. 15（解析几何）、Ch. 32（向量）、Ch. 33（克莱姆、柯西行列式、凯莱矩阵代数、实对称矩阵二次型主轴化）
+      supplement: SVD 历史补充：G. W. Stewart (1993), *"On the Early History of the Singular Value Decomposition"*, *SIAM 
+        Review*, 35(4), 551–566 (<https://doi.org/10.1137/1035134>)
+    topics:
+      - name: 线性方程组与 Gauss 消元法
+        concept_hints: [行阶梯形, 主元, 初等矩阵, 矩阵乘法与分块矩阵, $PA=LU$ 分解]
+      - name: 向量空间、子空间与四个基本子空间
+        concept_hints: [列空间 $C(A)$, 零空间 $N(A)$, 行空间, 左零空间]
+      - name: 线性无关、基与维数
+        concept_hints: [生成集, Steinitz 替换定理, 矩阵的秩, '秩-零化度定理 $\dim V = \operatorname{rank}(A) + \dim N(A)$']
+      - name: 线性变换及其矩阵表示
+        concept_hints: [旋转/反射/投影的几何作用, 基变换公式, '相似矩阵 $B=P^{-1}AP$']
+      - name: 行列式及其几何与代数性质
+        concept_hints: [多重线性反对称性, 有向体积缩放因子, Laplace 展开, Cramer 法则]
+      - name: 内积、正交性与正交投影
+        concept_hints: [正交补子空间, '正交投影矩阵 $P=A(A^TA)^{-1}A^T$', 最小二乘法的几何解释]
+      - name: Gram–Schmidt 正交化与 QR 分解
+        concept_hints: [标准正交基构造, 正交矩阵 $Q^TQ=I$, $A=QR$ 分解]
+      - name: 特征值、特征向量与矩阵对角化
+        concept_hints: [特征多项式, 迹与行列式, 几何重数与代数重数, 可对角化判据, 矩阵幂]
+      - name: 实对称矩阵、Hermite 矩阵与正定二次型
+        concept_hints: [实对称矩阵正交对角化, 主轴定理, 正定矩阵等价判据, Sylvester 惯性定理]
+      - name: 奇异值分解（SVD）与伪逆初步
+        concept_hints: [$A=U\Sigma V^T$ 的几何意义, 四个基本子空间的标准正交基, Moore–Penrose 伪逆]
+  - id: c05
+    name: 线性代数 II：抽象空间、算子与标准形
+    kind: core
+    order: 5
+    upstream: [c04, c01]
+    upstream_notes: []
+    history_sources:
+      kline: 完整覆盖：Ch. 32（格拉斯曼《线性扩张论》高维线性空间）、Ch. 33（魏尔斯特拉斯初等因子与若尔当标准形）、Ch. 45, 46（内积空间与谱分解）
+      supplement: —
+    topics:
+      - name: 一般域上的向量空间与商空间
+        concept_hints: ['任意域 $\mathbb{F}$ 上的向量空间', 子空间直和分解 $V=U\oplus W$, 商空间 $V/U$ 与同构定理]
+      - name: 对偶空间与对偶映射
+        concept_hints: [线性泛函, 对偶基 $V^*$, 零化子 $U^0$, '有限维自反性 $V\cong V^{**}$', 转置映射 $T^*$]
+      - name: 多项式环与算子极小多项式
+        concept_hints: [多项式带余除法与唯一分解, Cayley–Hamilton 定理, 极小多项式与不变子空间]
+      - name: 广义特征子空间与主分解定理
+        concept_hints: [零化多项式互素分解, 可对角化充要条件, 可交换算子组同时对角化, 幂零算子]
+      - name: Jordan 标准形与有理标准形
+        concept_hints: [Jordan 块, 循环子空间分解, 相似不变量与 $\lambda$-矩阵 Smith 标准形]
+      - name: 双线性型与二次型的一般理论
+        concept_hints: [对称与交错双线性型, 合同变换, 正交几何与辛几何初步]
+      - name: 有限维内积空间上的伴随算子与正规算子
+        concept_hints: [Riesz 表示定理有限维版, 伴随算子 $T^*$, 正规算子 $TT^*=T^*T$, 酉算子与正交算子]
+      - name: 有限维谱定理与算子极分解
+        concept_hints: [复正规算子与实对称算子的谱分解定理, 正算子平方根, 极分解 $T=UP$]
+  - id: c06
+    name: 常微分方程与动力系统初步
+    kind: core
+    order: 6
+    upstream: [c02, c04]
+    upstream_notes: []
+    history_sources:
+      kline: 完整覆盖：Ch. 21（18世纪初等积分法、振动与悬链线）、Ch. 29（柯西-利普希茨存在唯一性、Sturm–Liouville 本征值、庞加莱天体力学定性理论与极限环）
+      supplement: —
+    topics:
+      - name: 一阶常微分方程与方向场
+        concept_hints: [分离变量法, 一阶线性方程与积分因子, 恰当方程, 方向场与积分曲线]
+      - name: 初值问题的存在唯一性定理
+        concept_hints: [Picard 逐次逼近法, Lipschitz 条件, 局部存在唯一性, 解对初值的连续依赖性与最大存在区间]
+      - name: 二阶与高阶常系数线性微分方程
+        concept_hints: [线性微分算子, Wronski 行列式与解空间维数, 特征方程, 复指数解]
+      - name: 非齐次线性方程解法与振动模型
+        concept_hints: [待定系数法, 常数变易法, 阻尼谐振子, 受迫振动与共振现象]
+      - name: 幂级数解法与正则奇点
+        concept_hints: [常点幂级数展开, Frobenius 方法, Legendre 方程与 Bessel 方程初步]
+      - name: Laplace 变换与脉冲响应
+        concept_hints: [Laplace 变换性质, 阶跃函数与 Dirac $\delta$ 函数, 传递函数, 卷积定理与 Green 函数]
+      - name: 一阶线性微分方程组与矩阵指数
+        concept_hints: [高阶方程化一阶系统, 特征值法求解, 矩阵指数 $\exp(At)$ 与基解矩阵]
+      - name: 平面自治系统与相平面分析
+        concept_hints: [平衡点分类：结点/鞍点/焦点/中心, 局部线性化 Hartman–Grobman 直观, 相图绘制]
+      - name: Lyapunov 稳定性与极限环初步
+        concept_hints: [Lyapunov 函数直接法, 守恒系统, Poincaré–Bendixson 定理与 Lotka–Volterra 模型]
+  - id: c07
+    name: 抽象代数 I：群论、环与域初步
+    kind: core
+    order: 7
+    upstream: [c01, c05]
+    upstream_notes: []
+    history_sources:
+      kline: 完整覆盖：Ch. 31（置换群、正规子群与伽罗瓦）、Ch. 34（高斯整数、库默尔理想数、戴德金理想）、Ch. 49（群、环、理想、域的公理化）
+      supplement: 结构主义深化参考：Leo Corry (2004), *Modern Algebra and the Rise of Mathematical Structures* (2nd ed.), 
+        Birkhäuser
+    topics:
+      - name: 群的公理、子群与循环群
+        concept_hints: [群的定义, 子群判据, 元素阶, 循环群结构与生成元]
+      - name: 置换群与对称性
+        concept_hints: [对称群 $S_n$, 轮换分解, 奇偶置换与交错群 $A_n$, 正多面体对称群]
+      - name: 陪集、Lagrange 定理与正规子群
+        concept_hints: [左右陪集分解, '指数 $[G:H]$', Lagrange 定理, 正规子群 $N\triangleleft G$]
+      - name: 商群、群同态与同构基本定理
+        concept_hints: [商群 $G/N$, 核与像, 群的第一/第二/第三同构定理]
+      - name: 群作用、轨道-稳定子定理与计数应用
+        concept_hints: [群作用, 轨道与稳定化子, 共轭作用与类方程, Burnside 计数引理]
+      - name: 有限群结构：有限生成交换群与 Sylow 定理
+        concept_hints: [$p$-群性质, Sylow 三大定理, 小阶群同构分类, 单群概念与 $A_5$ 的单性]
+      - name: 环、整环与除环
+        concept_hints: [环的定义, 零因子与可逆元, 特征, 'Gauss 整数环 $\mathbb{Z}[i]$ 与多项式环']
+      - name: 理想、商环与环同态基本定理
+        concept_hints: [理想, 主理想, 商环 $R/I$, 环同态定理, 整环的分式域构造]
+      - name: 素理想与极大理想
+        concept_hints: [$R/P$ 为整环 $\iff P$ 为素理想, $R/M$ 为域 $\iff M$ 为极大理想, Krull/Zorn 极大理想存在性]
+      - name: 整环中的因子分解：ED、PID 与 UFD
+        concept_hints: [Euclid 整环 $\subset$ 主理想整环 $\subset$ 唯一分解整环, 'Gauss 引理与 $R[x]$ 唯一分解性', Eisenstein 不可约判别法]
+  - id: c08
+    name: 抽象代数 II：模论、Galois 理论与表示论初步
+    kind: core
+    order: 8
+    upstream: [c07, c05]
+    upstream_notes: []
+    history_sources:
+      kline: 覆盖 Galois 与环理想，缺群表示论与张量积：Ch. 31（伽罗瓦理论、尺规作图）、Ch. 49（施泰尼茨域论、诺特环）
+      supplement: '群表示论历史补充：Thomas Hawkins (2000), *Emergence of the Theory of Lie Groups: An Essay in the History of Mathematics
+        1869–1926* (含 Frobenius, Schur, Weyl 表示论起源), Springer'
+    topics:
+      - name: 环上的模、子模与自由模
+        concept_hints: [模与模同态, 商模, 自由模与秩, Noether 环与 Hilbert 基定理]
+      - name: 主理想整环（PID）上的有限生成模结构定理
+        concept_hints: [不变因子与初等因子分解, 统一导出有限生成交换群结构与矩阵 Jordan 标准形]
+      - name: 张量积与外代数
+        concept_hints: [模与向量空间的张量积 $M\otimes_R N$, 泛性质, 对称代数与外代数 $\Lambda^k V$]
+      - name: 域扩张、代数元与分裂域
+        concept_hints: ['扩域次数与塔律 $[L:K]=[L:F][F:K]$', 代数元极小多项式, 尺规作图不可能性证明, 分裂域存在唯一性]
+      - name: 可分扩张、正规扩张与有限域
+        concept_hints: [重根与形式导数, 可分性与正规性, '有限域 $\mathbb{F}_{p^n}$ 的结构与 Frobenius 自同构']
+      - name: Galois 群与 Galois 基本定理
+        concept_hints: ['域自同构群 $\operatorname{Aut}(L/K)$', Galois 扩张, 中间域与 Galois 群子群的反演一一对应]
+      - name: 可解群与高次方程根式可解性（Abel–Ruffini 定理）
+        concept_hints: [分圆扩张, 循环扩张, 可解群, 五次及以上一般方程无根式解]
+      - name: 有限群的线性表示与 Maschke 定理
+        concept_hints: ['群表示与 $\mathbb{C}[G]$-模', 不变子空间与不可约表示, Maschke 完全可约定理, Schur 引理]
+      - name: 特征标理论与正交关系
+        concept_hints: [特征标表, 第一与第二正交关系, 正则表示分解 $\sum d_i^2 = |G|$, Fourier 分析在有限群上的体现]
+  - id: c09
+    name: 度量空间与点集拓扑（含基本群初步）
+    kind: core
+    order: 9
+    upstream: [c02, c03]
+    upstream_notes: []
+    history_sources:
+      kline: 覆盖开端：Ch. 40, 41（点集开闭与紧致）、Ch. 46（Fréchet 度量空间）、Ch. 50（Hausdorff 拓扑公理、庞加莱基本群与同调、Brouwer 不动点定理）
+      supplement: 20 世纪点集与代数拓扑补充：Jean Dieudonné (1989), *A History of Algebraic and Differential Topology, 1900–1960*, 
+        Birkhäuser；I. M. James (Ed.) (1999), *History of Topology*, North-Holland
+    topics:
+      - name: 度量空间、开集与闭集
+        concept_hints: [度量公理, 开球, 内点/聚点/闭包/边界, 度量空间中的收敛与连续]
+      - name: 完备度量空间与压缩映射原理
+        concept_hints: [Cauchy 列, 完备性, Banach 不动点定理及其在微分/积分方程中的应用]
+      - name: 拓扑空间、拓扑基与连续映射
+        concept_hints: [开集公理, 拓扑基与子基, 连续映射的开集/闭集刻画, 同胚映射]
+      - name: 子空间拓扑、积拓扑与商拓扑
+        concept_hints: [诱导子空间, 乘积拓扑, 商拓扑与粘合构造：环面 $T^2$, '射影平面 $\mathbb{R}P^2$', Möbius 带, Klein 瓶]
+      - name: 连通性与道路连通性
+        concept_hints: [连通空间的等价刻画, 连续像的连通性, 连通分支, 道路连通与局部连通]
+      - name: 紧致性（Compactness）
+        concept_hints: [开覆盖与有限子覆盖, 紧集与闭集的关系, 紧空间上的连续函数极值与一致连续, Tychonoff 定理导引]
+      - name: 度量空间中的紧致性与 Heine–Borel 定理
+        concept_hints: [紧致 $\iff$ 列紧 $\iff$ 完备且完全有界, Lebesgue 覆盖引理, Arzelà–Ascoli 定理初步]
+      - name: 分离公理与 Urysohn 引理
+        concept_hints: [Hausdorff 空间 $T_2$, 正则与正规空间, Urysohn 引理与 Tietze 扩张定理]
+      - name: 道路同伦与基本群（$\pi_1$）
+        concept_hints: [映射同伦, 道路乘积, '基本群 $\pi_1(X,x_0)$ 的定义与函子性质', 同伦等价与形变收缩]
+      - name: 覆叠空间、$\pi_1(S^1)\cong\mathbb{Z}$ 与 Seifert–van Kampen 定理初步
+        concept_hints: [道路提升与同伦提升, 圆周基本群, Brouwer 不动点定理, van Kampen 定理计算曲面基本群]
+  - id: c10
+    name: 复分析（复变函数）
+    kind: core
+    order: 10
+    upstream: [c02, c03]
+    upstream_notes: []
+    history_sources:
+      kline: 完整覆盖：Ch. 27（复平面、Cauchy–Riemann 方程、柯西积分定理、留数、Weierstrass 级数、Riemann 曲面与保角映射）
+      supplement: —
+    topics:
+      - name: 复平面、Riemann 球面与全纯函数（Cauchy–Riemann 方程）
+        concept_hints: [复可微性, Cauchy–Riemann 方程, 全纯函数与调和共轭]
+      - name: 复幂级数与初等超越函数
+        concept_hints: [收敛圆, 复指数/三角/双曲函数, 多值对数函数 $\log z$ 与支点/支割线]
+      - name: 复积分、Cauchy 积分定理与原函数
+        concept_hints: [围道积分, ML 模估计不等式, Goursat 定理, 单连通域 Cauchy 积分定理]
+      - name: Cauchy 积分公式、高阶导数与解析性
+        concept_hints: [Cauchy 积分公式, 无穷可微性与幂级数展开, Cauchy 不等式, Liouville 定理与代数基本定理, Morera 定理]
+      - name: 唯一性定理、最大模原理与 Schwarz 引理
+        concept_hints: [零点孤立性与解析延拓, 最大模原理, Schwarz 引理与单位圆盘自同构]
+      - name: Laurent 级数与孤立奇点分类
+        concept_hints: [圆环上的 Laurent 展开, 可去奇点/极点/本质奇点, Casorati–Weierstrass 定理, 亚纯函数]
+      - name: 留数定理与实定积分计算
+        concept_hints: [留数计算, Cauchy 留数定理, 三角积分与广义有理积分, Jordan 引理, 含支割线围道积分]
+      - name: 辐角原理与 Rouché 定理
+        concept_hints: [对数导数, 环绕数, 辐角原理计数零点与极点, Rouché 定理, 开映射定理]
+      - name: 共形映射（保角变换）、Möbius 变换与 Riemann 映射定理
+        concept_hints: [保角性, 分式线性变换/Möbius 变换保圆性, Riemann 映射定理与平面位势问题]
+  - id: c11
+    name: 实变函数与测度论
+    kind: core
+    order: 11
+    upstream: [c02, c03, c09]
+    upstream_notes: []
+    history_sources:
+      kline: 完整覆盖：Ch. 44（Riemann 积分局限、Borel 测度、Lebesgue 测度与积分、极限定理、$L^p$ 空间）
+      supplement: —
+    topics:
+      - name: Riemann 积分的局限与 Lebesgue 外测度
+        concept_hints: [Dirichlet 函数, Cantor 三分集, 外测度 $m^*$ 的定义与次可加性]
+      - name: $\sigma$-代数、可测集与测度空间
+        concept_hints: [Carathéodory 条件, Lebesgue 可测集与 Borel 集, 测度的可数可加性, 不可测集 Vitali 构造]
+      - name: 可测函数及其收敛性
+        concept_hints: [可测函数与简单函数逼近, 几乎处处成立 a.e., 依测度收敛, Riesz 定理, Egorov 定理与 Lusin 定理]
+      - name: Lebesgue 积分的构造与基本性质
+        concept_hints: [非负简单函数积分 $\to$ 非负可测函数积分 $\to$ 一般可积函数积分, 线性性与绝对连续性]
+      - name: 三大极限定理（单调收敛、Fatou 引理、控制收敛）
+        concept_hints: [Levi 单调收敛定理 MCT, Fatou 引理, Lebesgue 控制收敛定理 DCT, 微积分号下求导]
+      - name: 乘积测度与 Fubini–Tonelli 定理
+        concept_hints: [乘积 $\sigma$-代数, Tonelli 非负重积分定理, Fubini 可积函数累次积分交换定理]
+      - name: 有界变差函数、绝对连续函数与 Lebesgue 微分定理
+        concept_hints: [Vitali 覆盖引理, 单调函数 a.e. 可微, 绝对连续函数与 Lebesgue 牛顿-莱布尼茨公式]
+      - name: $L^p$ 空间与完备性（Riesz–Fischer 定理）
+        concept_hints: [Hölder 不等式, Minkowski 不等式, $L^p(\mu)$ 完备性, 连续函数在 $L^p$ 中的稠密性]
+      - name: 符号测度、Hahn–Jordan 分解与 Radon–Nikodym 定理
+        concept_hints: [绝对连续测度 $\nu\ll\mu$ 与奇异测度 $\nu\perp\mu$, 'Radon–Nikodym 导数 $\frac{d\nu}{d\mu}$']
+  - id: c12
+    name: 泛函分析
+    kind: core
+    order: 12
+    upstream: [c11, c05, c09]
+    upstream_notes: []
+    history_sources:
+      kline: 完整覆盖：Ch. 45（积分方程与 Hilbert–Schmidt 定理）、Ch. 46（Hilbert 空间、Banach 空间、三大基本定理、算子谱理论）
+      supplement: —
+    topics:
+      - name: 赋范线性空间与 Banach 空间
+        concept_hints: [范数, 有限维范数等价性与 Riesz 引理, '无穷维空间示例：$C([a,b]), \ell^p, L^p$']
+      - name: 有界线性算子与算子范数
+        concept_hints: [线性算子连续性 $\iff$ 有界性, '算子空间 $\mathcal{B}(X,Y)$ 的完备性', 对偶空间 $X^*$]
+      - name: Hilbert 空间、正交投影与正交系
+        concept_hints: [内积与平行四边形法则, 闭凸集最佳逼近与正交分解 $H=M\oplus M^\perp$, 标准正交基与 Parseval 等式]
+      - name: Hilbert 空间 Riesz 表示定理与伴随算子
+        concept_hints: [连续线性泛函内积表示, Hilbert 伴随算子 $T^*$, 自伴算子与 Lax–Milgram 定理初步]
+      - name: Hahn–Banach 延拓与分离定理
+        concept_hints: [分析延拓形式, 凸集超平面分离几何形式, '二次对偶嵌入 $X\hookrightarrow X^{**}$ 与自反空间']
+      - name: Baire 纲定理与一致有界原理（Banach–Steinhaus 定理）
+        concept_hints: [完备度量空间 Baire 纲定理, 共鸣定理/一致有界原理及其应用]
+      - name: 开映射定理、逆算子定理与闭图像定理
+        concept_hints: [开映射定理, Banach 逆算子定理, 闭算子与闭图像定理]
+      - name: 弱收敛、弱*收敛与 Banach–Alaoglu 定理
+        concept_hints: [弱拓扑与弱*拓扑, 对偶空间单位闭球弱*紧致性, 自反空间有界列弱列紧性]
+      - name: 紧算子与自伴紧算子谱定理（Hilbert–Schmidt 定理）
+        concept_hints: [算子谱 $\sigma(T)$ 与预解集, 紧算子性质, Fredholm 二择一, 紧自伴算子正交特征基展开]
+  - id: c13
+    name: 微分几何与流形初步
+    kind: core
+    order: 13
+    upstream: [c03, c05, c09]
+    upstream_notes: []
+    history_sources:
+      kline: 覆盖古典曲面与张量，缺现代微分形式：Ch. 23（欧拉与蒙日）、Ch. 37（高斯曲面第一/二基本形式与绝妙定理、黎曼流形）、Ch. 48（张量分析与平行移动）
+      supplement: 外微分形式与现代流形补充：Victor J. Katz (1985), *"Differential Forms—Cartan to de Rham"*, *Archive for History of 
+        Exact Sciences*, 33, 321–336
+    topics:
+      - name: 空间正则曲线与 Frenet–Serret 标架
+        concept_hints: [弧长参数化, 切/主法/副法向量, 曲率 $\kappa$ 与挠率 $\tau$, Frenet–Serret 公式与曲线基本定理]
+      - name: $\mathbb{R}^3$ 中的正则曲面与切平面
+        concept_hints: [局部坐标卡, 切平面 $T_p S$, 曲面间光滑映射的切映射]
+      - name: 第一基本形式（诱导度量）与内蕴几何
+        concept_hints: ['第一基本形式 $I = E\,du^2 + 2F\,du\,dv + G\,dv^2$', 曲面弧长与面积, 等距与共形映射]
+      - name: Gauss 映射、第二基本形式与曲率
+        concept_hints: [单位法向量与 Gauss 映射, Weingarten 形状算子, 第二基本形式 $II$, 主曲率, Gauss 曲率 $K$ 与平均曲率 $H$]
+      - name: Gauss 绝妙定理（Theorema Egregium）与曲面基本方程
+        concept_hints: [Christoffel 符号, Gauss 方程与 Codazzi 方程, Gauss 曲率的内蕴性]
+      - name: 测地线（Geodesics）、平行移动与指数映射
+        concept_hints: [协变导数, 测地曲率, 测地线微分方程与局部最短性, Levi-Civita 平行移动]
+      - name: Gauss–Bonnet 定理（局部与整体）
+        concept_hints: [测地三角形角盈公式, 曲面 Euler 示性数 $\chi(S)$, '整体 Gauss–Bonnet 定理 $\int_S K\,dA = 2\pi\chi(S)$']
+      - name: 抽象光滑流形、切丛与向量场
+        concept_hints: [光滑图册与流形定义, 切空间与切丛 $TM$, 光滑向量场, '积分曲线流与 Lie 括号 $[X,Y]$']
+      - name: 微分形式、外微分与流形上的 Stokes 定理
+        concept_hints: [余切丛与 $k$-形式 $\Omega^k(M)$, 楔积 $\wedge$, 外微分 $d$ 与 $d^2=0$, 定向流形广义 Stokes 公式與 de Rham 上同调导引]
+  - id: c14
+    name: 概率论基础
+    kind: core
+    order: 14
+    upstream: [c02, c03]
+    upstream_notes: []
+    history_sources:
+      kline: 【完全未覆盖】
+      supplement: "1. 古典概率至中心极限定理：Anders Hald (1990), *A History of Probability and Statistics and Their Applications before
+        1750*, Wiley；Stephen M. Stigler (1986), *The History of Statistics: The Measurement of Uncertainty before 1900*, Harvard
+        Univ. Press\n2. 柯尔莫哥洛夫公理化概率论：Jan von Plato (1994), *Creating Modern Probability*, Cambridge Univ. Press (<https://doi.org/10.1017/CBO9780511609107>)；Shafer
+        & Vovk (2006), *\"The Sources of Kolmogorov's Grundbegriffe\"*, *Statistical Science*, 21(1), 70–98 (<https://doi.org/10.1214/088342305000000467>)"
+    topics:
+      - name: 概率空间、公理化体系与组合概型
+        concept_hints: [样本空间 $\Omega$, '事件域 $\mathcal{F}$', Kolmogorov 概率公理, 容斥原理与古典抽样]
+      - name: 条件概率、全概率公式、Bayes 公式与独立性
+        concept_hints: [条件概率 $P(A|B)$, 事件独立性, 全概率分解与 Bayes 后验推断]
+      - name: 离散型随机变量与经典分布
+        concept_hints: [分布列 PMF, 累积分布函数 CDF, Bernoulli/二项分布, 几何分布无记忆性, Poisson 分布稀有事件极限]
+      - name: 连续型随机变量与密度函数
+        concept_hints: [概率密度函数 PDF, 均匀分布, 指数分布, Gamma 分布, 正态分布, 随机变量函数分布变换]
+      - name: 数学期望、方差与高阶矩
+        concept_hints: [期望线性性, 指示变量法, '方差 $\operatorname{Var}(X)$', 尾概率积分求期望]
+      - name: 多维随机变量、联合分布与边缘分布
+        concept_hints: [联合与边缘分布, 随机变量独立性, 多维变量变换 Jacobi 行列式, 独立和卷积公式]
+      - name: 协方差、相关系数与多元正态分布
+        concept_hints: [协方差与 Pearson 相关系数, 协方差矩阵正定性, 多元正态分布与线性变换性质]
+      - name: 条件分布与条件期望（全期望与全方差定律）
+        concept_hints: [条件密度, '条件期望 $E[X|Y]$', '重期望公式 $E[E[X|Y]]=E[X]$', 全方差分解]
+      - name: 母函数、矩母函数与特征函数
+        concept_hints: [概率母函数 PGF, 矩母函数 MGF, '特征函数 $\varphi_X(t)=E[e^{itX}]$', 唯一性与连续性定理]
+      - name: 概率不等式、大数定律与中心极限定理
+        concept_hints: [Markov/Chebyshev/Jensen 不等式, 依概率收敛与几乎必然收敛, 弱/强大数定律, Lindeberg–Lévy 中心极限定理]
+  - id: b01
+    name: 偏微分方程与数学物理方法
+    kind: branch
+    order: 1
+    upstream: [c03, c06, c10, c12]
+    upstream_notes:
+      - c10：留数/保角变换（进阶 / 局部主题前置）
+      - c12：弱解/Sobolev空间（进阶 / 局部主题前置）
+    history_sources:
+      kline: 完整覆盖：Ch. 22, 28（波动、热传导、位势、傅里叶级数/变换、格林函数）、Ch. 24, 30（变分原理与狄利克雷原理）
+      supplement: —
+    topics:
+      - name: 一阶偏微分方程与特征线法
+        concept_hints: [传输方程, 拟线性一阶方程, 特征曲线, Burgers 方程与激波形成初步]
+      - name: 二阶线性偏微分方程分类与定解问题适定性
+        concept_hints: [椭圆/抛物/双曲型分类, 三大典型方程物理背景, Hadamard 适定性]
+      - name: 一维波动方程：d'Alembert 公式与特征区域
+        concept_hints: [行波解, 依赖区间与影响区域, Duhamel 齐次化原理, 能量法证明唯一性]
+      - name: 分离变量法与 Fourier 级数求解有界域问题
+        concept_hints: [弦振动与有限杆热传导, Dirichlet/Neumann 边界条件, 本征频率与驻波模态]
+      - name: Sturm–Liouville 本征值问题与正交特殊函数
+        concept_hints: [自伴微分算子, 实本征值与正交完备性, Bessel 函数与 Legendre 多项式]
+      - name: 热传导方程：Fourier 变换与热核（基本解）
+        concept_hints: [全空间 Fourier 变换, Gauss 热核卷积解, 平滑效应与极值原理]
+      - name: Laplace 方程与调和函数性质
+        concept_hints: [平均值定理, 强极值原理, 圆盘 Poisson 积分公式, Harnack 不等式]
+      - name: 位势理论与 Green 函数法
+        concept_hints: [基本解与牛顿位势, Green 第一/第二恒等式, 镜像法构造半空间与球域 Green 函数]
+      - name: 高维波动方程：球平均法与 Huygens 原理
+        concept_hints: [三维 Kirchhoff 公式与惠更斯原理, 二维 Poisson 降维法与波尾现象]
+      - name: 变分原理、Euler–Lagrange 方程与弱解导引
+        concept_hints: [泛函一阶变分, Euler–Lagrange 方程, Dirichlet 原理与 Sobolev 弱解思想]
+  - id: b02
+    name: 数理统计与统计推断
+    kind: branch
+    order: 2
+    upstream: [c14, c04]
+    upstream_notes: []
+    history_sources:
+      kline: 【完全未覆盖】
+      supplement: Anders Hald (1998), *A History of Mathematical Statistics from 1750 to 1930*, Wiley（覆盖高斯最小二乘、Gosset 
+        $t$-分布、Fisher 极大似然与充分统计量、Neyman–Pearson 假设检验）
+    topics:
+      - name: 统计模型、样本、经验分布与次序统计量
+        concept_hints: [统计量, 样本均值与样本方差, 经验分布函数与分位数]
+      - name: 正态总体三大抽样分布（$\chi^2, t, F$）
+        concept_hints: [Cochran 定理, 样本均值与样本方差独立性, Student's $t$ 分布与 $F$ 分布]
+      - name: 点估计：矩估计（MoM）与极大似然估计（MLE）
+        concept_hints: [似然函数与对数似然, 极大似然估计不变性, 指数族分布]
+      - name: 充分统计量、完备统计量与 Rao–Blackwell 定理
+        concept_hints: [Neyman 因子分解定理, Rao–Blackwell 方差缩减, Lehmann–Scheffé UMVUE 定理]
+      - name: 估计量评价、Fisher 信息量与 Cramér–Rao 下界
+        concept_hints: [无偏性, 均方误差 MSE, Fisher 信息矩阵 $I(\theta)$, Cramér–Rao 不等式]
+      - name: 大样本渐近理论与 MLE 渐近正态性
+        concept_hints: [相合性, Delta 方法, '$\sqrt{n}(\hat\theta_{\text{MLE}}-\theta)\xrightarrow{d}\mathcal{N}(0, I(\theta)^{-1})$']
+      - name: 区间估计与枢轴量法
+        concept_hints: [置信区间与覆盖率, 正态总体精确置信区间, 基于渐近正态的近似置信区间]
+      - name: 假设检验基础、两类错误与 Neyman–Pearson 引理
+        concept_hints: [原假设与备择假设, 第 I/II 类错误与功效函数, $p$ 值, 最优势检验 Neyman–Pearson 引理]
+      - name: 似然比检验（LRT）、拟合优度检验与 Bayes 推断
+        concept_hints: [广义似然比与 Wilks 定理, $\chi^2$ 拟合优度与独立性检验, 先验/共轭先验与后验分布]
+  - id: b03
+    name: 随机过程与马尔可夫链
+    kind: branch
+    order: 3
+    upstream: [c14, c04, c11]
+    upstream_notes:
+      - c11：测度论概率与鞅（进阶 / 局部主题前置）
+    history_sources:
+      kline: 【完全未覆盖】
+      supplement: Jan von Plato (1994) *Creating Modern Probability*（布朗运动、马尔可夫链）；*Electronic Journal for History of 
+        Probability and Statistics* (<https://www.jehps.net/>，开放获取，含 2006 马尔可夫链百年专刊与 Doob 鞅论历史专刊)
+    topics:
+      - name: 离散时间马尔可夫链（DTMC）与转移矩阵
+        concept_hints: [Markov 无后效性, $n$ 步转移概率, Chapman–Kolmogorov 方程]
+      - name: 状态分类：互通、常返（Recurrence）与暂留（Transience）
+        concept_hints: [互通类, 首达时间, '常返判据 $\sum p_{ii}^{(n)}=\infty$', 随机游走 Pólya 常返定理]
+      - name: 平稳分布、正常返与遍历定理
+        concept_hints: [非周期性, 平稳分布 $\pi=\pi P$ 存在唯一性, 细致平衡与时间可逆性, 遍历大数定律]
+      - name: 吸收链、首中时与分支过程（Galton–Watson 过程）
+        concept_hints: [吸收概率与平均吸收时间, 赌徒破产问题, 生成函数求灭绝概率]
+      - name: Poisson 过程与更新过程初步
+        concept_hints: [齐次 Poisson 过程三种等价定义, 到达间隔指数分布, 稀有事件合流与分解]
+      - name: 连续时间马尔可夫链（CTMC）与生灭过程
+        concept_hints: [指数停留时间, 转移速率矩阵 $Q$, Kolmogorov 向前/向后方程, 排队论 M/M/1 模型]
+      - name: 离散时间鞅（Martingales）与停时定理
+        concept_hints: ['滤子 $\mathcal{F}_n$', 鞅定义, Doob 可选停时定理及其应用, 鞅收敛定理初步]
+      - name: Brown 运动（Wiener 过程）初步
+        concept_hints: [独立正态增量, 连续非可微路径, 反射原理与首中时分布, 几何 Brown 运动导引]
+  - id: b04
+    name: 数值分析（科学计算与微分方程数值解）
+    kind: branch
+    order: 4
+    upstream: [c02, c04, c06]
+    upstream_notes: []
+    history_sources:
+      kline: 【完全未覆盖】
+      supplement: "1. 16–19 世纪经典数值方法（牛顿法、插值、高斯求积）：Herman H. Goldstine (1977), *A History of Numerical Analysis from the 16th
+        through the 19th Century*, Springer (<https://doi.org/10.1007/978-1-4684-9472-3>)\n2. 20 世纪电子计算机时代（浮点误差、RK 方法、有限差分/有限元）：Stephen
+        G. Nash (Ed.) (1990), *A History of Scientific Computing*, ACM Press (<https://dl.acm.org/doi/book/10.1145/87252>)"
+    topics:
+      - name: 浮点运算、舍入误差、条件数与数值稳定性
+        concept_hints: [IEEE 754 浮点数, 机器精度, 相近数相减灾难, 问题条件数 vs 算法向后稳定性]
+      - name: 非线性方程（组）求根算法
+        concept_hints: [二分法, 不动点迭代与收敛阶, Newton–Raphson 二次收敛, 割线法, 多元 Newton 法]
+      - name: 多项式插值与分段样条插值
+        concept_hints: [Lagrange 与 Newton 均差插值, 插值余项, Runge 现象与 Chebyshev 节点, 三次样条插值]
+      - name: 正交多项式与最佳平方逼近
+        concept_hints: [Legendre 与 Chebyshev 正交多项式, 三项递推, 函数空间最小二乘逼近]
+      - name: 数值微分与数值积分（Newton–Cotes 与外推）
+        concept_hints: [有限差分截断与舍入权衡, 梯形与 Simpson 公式, Richardson 外推与 Romberg 积分]
+      - name: Gauss 求积公式
+        concept_hints: [节点与权重联合待定, 正交多项式零点构造 $2n-1$ 阶最高代数精度 Gauss 求积]
+      - name: 常微分方程数值解：单步法与 Runge–Kutta 法
+        concept_hints: [显式/隐式 Euler 法, 局部截断误差与整体收敛阶, 经典四阶 RK4]
+      - name: 线性多步法、零稳定性与刚性方程（Stiffness）
+        concept_hints: [Adams 多步法, Dahlquist 等价定理, 绝对稳定域与 $A$-稳定性, 刚性系统隐式求解]
+      - name: 偏微分方程有限差分法初步
+        concept_hints: [Poisson 方程五点差分, 热传导显式与 Crank–Nicolson 格式, CFL 条件与 von Neumann 稳定性分析]
+  - id: b05
+    name: 数值线性代数与数据矩阵方法（ML 数学）
+    kind: branch
+    order: 5
+    upstream: [c04, c05, c03]
+    upstream_notes: []
+    history_sources:
+      kline: 【完全未覆盖】
+      supplement: "1. 矩阵分解、QR 算法与 Krylov/CG：Brezinski, Meurant, & Redivo-Zaglia (2022), *A Journey through the History of
+        Numerical Linear Algebra*, SIAM (<https://epubs.siam.org/doi/book/10.1137/1.9781611977233>)\n2. SVD 与低秩逼近：G. W. Stewart
+        (1993) (*SIAM Review*, 35(4))\n3. 自动微分与反向传播历史：Andreas Griewank (2012), *\"Who Invented the Reverse Mode of Differentiation?\"\
+        *, *Documenta Mathematica*, Extra Vol. ISMP, 389–400 (<https://www.elibm.org/article/10000285>)"
+    topics:
+      - name: 向量与矩阵范数、条件数与扰动分析
+        concept_hints: ['诱导算子范数 $\|A\|_1, \|A\|_2, \|A\|_\infty$ 与 Frobenius 范数', 条件数 $\kappa(A)$ 与解的扰动界]
+      - name: 选主元 LU 分解、Cholesky 分解与稀疏直接法
+        concept_hints: [列主元消元稳定性, 对称正定矩阵 $A=LL^T$ Cholesky 分解, 三对角追赶法]
+      - name: Householder 反射、Givens 旋转与最小二乘 QR 算法
+        concept_hints: [正交反射构造 $A=QR$, 避免法方程 $A^TA$ 条件数平方恶化]
+      - name: 奇异值分解（SVD）、Eckart–Young 低秩逼近与 PCA
+        concept_hints: [矩阵最佳 $k$-秩逼近定理, 样本协方差矩阵与主成分分析 PCA 降维]
+      - name: 特征值计算：幂法、反幂法、瑞利商迭代与 QR 算法
+        concept_hints: [幂法与反幂法, Rayleigh 商三次收敛, Hessenberg 化约与带位移 QR 迭代]
+      - name: 大型稀疏线性系统的定常迭代法
+        concept_hints: [Jacobi, Gauss–Seidel 与超松弛 SOR 迭代, 谱半径 $\rho(G)<1$ 收敛充要条件]
+      - name: Krylov 子空间方法与共轭梯度法（CG）
+        concept_hints: ['Krylov 子空间 $\mathcal{K}_k(A,b)$', '对称正定系统共轭梯度法与 $\frac{\sqrt{\kappa}-1}{\sqrt{\kappa}+1}$ 收敛率', 
+              预条件]
+      - name: 矩阵微积分与自动微分/反向传播
+        concept_hints: [标量对向量与矩阵求导, '迹技巧 $\operatorname{tr}(A^TB)$', 计算图逆向模式自动微分与 Backpropagation]
+      - name: 图拉普拉斯矩阵、谱聚类与随机矩阵算法初步
+        concept_hints: [图 Laplacian $L=D-W$ 半正定性, Fiedler 向量与谱聚类, PageRank, 随机 SVD]
+  - id: b06
+    name: 最优化方法与凸优化
+    kind: branch
+    order: 6
+    upstream: [c03, c04, b05]
+    upstream_notes:
+      - b05：矩阵计算与梯度法（进阶 / 局部主题前置）
+    history_sources:
+      kline: 仅覆盖古典变分法（Ch. 24, 30），未覆盖现代优化
+      supplement: "1. 极值与凸优化通史：V. M. Tikhomirov (1990), *Stories about Maxima and Minima*, AMS\n2. 线性规划、单纯形法与冯·诺伊曼对偶：George
+        B. Dantzig (1982), *\"Reminiscences about the Origins of Linear Programming\"*, *Operations Research Letters*, 1(2),
+        43–48 (<https://doi.org/10.1016/0167-6377(82)90043-8>)\n3. KKT 条件历史：Tinne Hoff Kjeldsen (2000), *Historia Mathematica*,
+        27(4), 331–361 (<https://doi.org/10.1006/hmat.2000.2289>)\n4. 组合与网络流优化：Alexander Schrijver (2005), *\"On the History
+        of Combinatorial Optimization (Till 1960)\"* (<https://homepages.cwi.nl/~lex/files/histco.pdf>)"
+    topics:
+      - name: 凸集与凸函数
+        concept_hints: [仿射集与凸集, 超平面分离与支撑定理, 凸函数一阶/二阶判据, 保凸运算与次梯度 $\partial f$]
+      - name: 线性规划（LP）标准形、多面体顶点与基本可行解
+        concept_hints: [LP 建模, 凸多面体几何, 极点与基本可行解等价性, 线性规划基本定理]
+      - name: 单纯形法（Simplex Algorithm）
+        concept_hints: [基变换与枢轴旋转, 检验数与最优判据, 退化与 Bland 规则, 两阶段法]
+      - name: 线性规划对偶理论、互补松弛与灵敏度分析
+        concept_hints: [弱对偶与强对偶定理, Farkas 引理, 互补松弛与影子价格, 零和博弈 Minimax 定理]
+      - name: 网络流优化：最短路、最大流最小割与匹配
+        concept_hints: [全单模矩阵整性, Ford–Fulkerson 最大流最小割定理, 运输问题]
+      - name: 无约束优化算法：梯度下降、线搜索与牛顿/拟牛顿法
+        concept_hints: [Armijo 回溯线搜索, 梯度下降收敛率与条件数, Newton 法与 BFGS 拟牛顿法]
+      - name: 约束非线性优化、Lagrange 对偶与 KKT 条件
+        concept_hints: [Lagrange 对偶函数, Slater 条件与强对偶, Karush–Kuhn–Tucker 最优性条件]
+      - name: 机器学习一阶优化：SGD、动量法与近端梯度法
+        concept_hints: [经验风险最小化, 随机梯度下降方差与步长, Nesterov 加速梯度, $\ell_1$ 正则近端梯度 ISTA]
+      - name: 动态规划（Dynamic Programming）与 Bellman 最优性原理
+        concept_hints: [多阶段决策, Bellman 方程, 离散动态规划与马尔可夫决策过程 MDP 导引]
+  - id: b07
+    name: 统计建模、回归分析与统计学习
+    kind: branch
+    order: 7
+    upstream: [b02, c04]
+    upstream_notes: []
+    history_sources:
+      kline: 【完全未覆盖】
+      supplement: "1. 最小二乘、回归与相关系数起源：Stephen M. Stigler (1986), *The History of Statistics*\n2. PCA 历史：Ian T. Jolliffe (2002),
+        *Principal Component Analysis* (Ch. 1), Springer\n3. 核方法与 RKHS 历史：Hofmann, Schölkopf, & Smola (2008), *\"Kernel Methods
+        in Machine Learning\"*, *Annals of Statistics*, 36(3) (<https://doi.org/10.1214/009053607000000677>)"
+    topics:
+      - name: 多元线性回归与普通最小二乘（OLS）几何
+        concept_hints: [线性模型 $Y=X\beta+\varepsilon$, '列空间投影矩阵 $H=X(X^TX)^{-1}X^T$', 残差正交分解]
+      - name: Gauss–Markov 定理与正态线性模型精确推断
+        concept_hints: [最佳线性无偏估计 BLUE, 回归系数 $t$ 检验, 整体 $F$ 检验, 预测区间]
+      - name: 方差分析（ANOVA）、模型诊断与多重共线性
+        concept_hints: [平方和分解, 残差图, 杠杆值与 Cook 距离, 方差膨胀因子 VIF]
+      - name: 正则化回归与偏差-方差权衡
+        concept_hints: ['均方误差 $\operatorname{Bias}^2 + \operatorname{Var} + \sigma^2$ 分解', Ridge $\ell_2$ 岭回归, Lasso 
+              $\ell_1$ 稀疏回归]
+      - name: 模型选择与交叉验证（AIC, BIC, CV）
+        concept_hints: [训练误差与泛化误差, AIC 与 BIC 信息准则, $K$-折交叉验证]
+      - name: 广义线性模型（GLM）与 Logistic 回归
+        concept_hints: [指数族分布与连接函数, Logistic 二分类回归, Poisson 回归, 迭代重加权最小二乘 IWLS]
+      - name: 非参数统计与核方法初步
+        concept_hints: [Bootstrap 自助法, 核密度估计 KDE, 再生核希尔伯特空间直观与核技巧 Kernel Trick]
+      - name: 统计学习基础：线性判别（LDA）、SVM 与泛化界直观
+        concept_hints: [Bayes 最优分类器, 最大间隔分类器与 SVM 对偶, 经验风险最小化与 VC 维直观]
+  - id: b08
+    name: 组合数学、图论与计算理论（CS 数学）
+    kind: branch
+    order: 8
+    upstream: [c01, c04, c07]
+    upstream_notes:
+      - c07：置换群与有限域（进阶 / 局部主题前置）
+    history_sources:
+      kline: 仅提及欧拉多面体（Ch. 50）与哥德尔（Ch. 51）
+      supplement: "1. 图论 200 年原典史：Biggs, Lloyd, & Wilson (1998), *Graph Theory 1736–1936*, Oxford Univ. Press\n2. 香农信息论与编码：Sergio
+        Verdú (1998), *\"Fifty Years of Shannon Theory\"*, *IEEE Trans. Info. Theory*, 44(6) (<https://doi.org/10.1109/18.720531>)\n\
+        3. 计算理论与复杂性（图灵机、P vs NP）：Avi Wigderson (2019), *Mathematics and Computation*, Princeton Univ. Press（开放获取 PDF：<https://www.math.ias.edu/avi/book>）"
+    topics:
+      - name: 枚举组合学：双射证明、二项式恒等式与容斥原理
+        concept_hints: [组合恒等式, 错排问题与一般容斥公式, 鸽巢原理与 Ramsey 定理初步]
+      - name: 生成函数与递推关系
+        concept_hints: [普通生成函数 OGF 与指数生成函数 EGF, 常系数递推数列求解, Catalan 数与分拆数]
+      - name: 图的基本概念、树、连通性与 Euler/Hamilton 回路
+        concept_hints: [握手定理, '生成树 Cayley 公式 $n^{n-2}$', Euler 回路充要条件, Hamilton 圈与连通度]
+      - name: 二分图匹配、Hall 婚姻定理与覆盖
+        concept_hints: [交错路与增广路, Hall 相异代表系定理, König 匹配-点覆盖定理]
+      - name: 平面图、Euler 多面体公式与图着色
+        concept_hints: [平面图 $V-E+F=2$, Kuratowski 定理, 点着色色数 $\chi(G)$, 五色定理与色多项式]
+      - name: 极值图论与概率方法初步
+        concept_hints: [Mantel 与 Turán 定理, Erdős 概率方法：期望线性性与删去法证明存在性]
+      - name: 信息论与编码理论初步
+        concept_hints: [Shannon 信息熵, 互信息与 KL 散度, 信源编码与信道容量直观, Hamming 纠错码与有限域编码]
+      - name: 形式语言、有限自动机与上下文无关文法
+        concept_hints: [DFA 与 NFA 等价性, 正则表达式, 泵引理, 上下文无关文法]
+      - name: Turing 机、可计算性与停机问题不可判定性
+        concept_hints: [Turing 机与 Church–Turing 论题, 通用 Turing 机, 对角化证明停机问题不可判定, 归约法]
+      - name: 计算复杂性（P, NP 与 NP-完全性）与 Gödel 不完备性导引
+        concept_hints: [时间复杂度类 P 与 NP, 多项式归约与 Cook–Levin 定理, 一阶逻辑完备性与 Gödel 不完备性定理思想]

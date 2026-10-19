@@ -1,0 +1,61 @@
+# 样例骨架：7 个主题、3 个主干领域 + 1 个分支领域，含领域内链与跨领域前置。
+# 供后端测试与校验脚本演示使用；正式的 209 主题种子骨架见 seed/（工单 020）。
+version: 1
+fields:
+  - {id: c02, name: 单变量微积分与数学分析基础, kind: core, order: 2}
+  - {id: c04, name: 线性代数 I：矩阵、方程组与几何直观, kind: core, order: 4}
+  - {id: c14, name: 概率论基础, kind: core, order: 14}
+  - {id: b06, name: 最优化方法与凸优化, kind: branch, order: 6}
+topics:
+  - id: c02-function-limit-continuity
+    name: 函数极限与连续函数
+    field: c02
+    concepts: [ε-δ 定义, 单侧极限, 连续函数的局部性质, 间断点分类]
+    prerequisites: []        # 初始前沿：只需高中数学
+    history: "Kline Ch.40"
+    references: []
+  - id: c02-derivative-definition
+    name: 导数、微分与求导法则
+    field: c02
+    concepts: [切线与瞬时变化率, 链式法则, 反函数与隐函数求导, 高阶导数与 Leibniz 公式]
+    prerequisites: [c02-function-limit-continuity]
+    history: "Kline Ch.17"
+    references: []
+    aliases: [求导]
+  - id: c04-gauss-elimination
+    name: 线性方程组与 Gauss 消元法
+    field: c04
+    concepts: [行阶梯形与主元, 初等矩阵, 矩阵乘法与分块矩阵, PA=LU 分解]
+    prerequisites: []
+    history: "Kline Ch.29"
+    references: []
+  - id: c04-eigenvalue-diagonalization
+    name: 特征值、特征向量与矩阵对角化
+    field: c04
+    concepts: [特征多项式, 迹与行列式, 几何重数与代数重数, 可对角化判据]
+    prerequisites: [c04-gauss-elimination]
+    history: "Kline Ch.33"
+    references: []
+  - id: c14-probability-space
+    name: 概率空间、公理化体系与组合概型
+    field: c14
+    concepts: [样本空间与事件域, Kolmogorov 概率公理, 容斥原理, 古典抽样]
+    prerequisites: []
+    history: "Kolmogorov 1933《概率论基础》"
+    references: []
+  - id: c14-continuous-random-variable
+    name: 连续型随机变量与密度函数
+    field: c14
+    concepts: [概率密度函数, 均匀分布与指数分布, 正态分布, 随机变量函数的分布变换]
+    prerequisites: [c14-probability-space, c02-derivative-definition]   # 跨领域前置（主干 → 主干）
+    history: "Laplace 1812《分析概率论》"
+    references: []
+  - id: b06-convex-sets-functions
+    name: 凸集与凸函数
+    field: b06
+    concepts: [仿射集与凸集, 超平面分离与支撑定理, 凸函数的一阶与二阶判据, 保凸运算与次梯度]
+    prerequisites: [c02-derivative-definition, c04-eigenvalue-diagonalization]   # 分支 → 主干
+    history: "Minkowski 1896《数的几何》"
+    references: []
+retired:
+  - {id: c02-limit-intuition, retired_at: 2026-01-01, successors: [c02-function-limit-continuity], proposal: 1}

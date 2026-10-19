@@ -1,0 +1,78 @@
+# 领域 c14「概率论基础」（主干，10 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c14.yaml -p
+version: 1
+fields:
+  - {id: c14, name: 概率论基础, kind: core, order: 14}
+topics:
+  - id: c14-probability-space
+    name: 概率空间、公理化体系与组合概型
+    field: c14
+    concepts: [样本空间与事件域, Kolmogorov 公理, 概率的基本性质与容斥原理, 古典概型与抽样计数]
+    prerequisites: []
+    history: Kolmogorov 1933; Hald 1990
+    references: []
+  - id: c14-conditional-probability-bayes
+    name: 条件概率、全概率公式、Bayes 公式与独立性
+    field: c14
+    concepts: [条件概率, 乘法公式与全概率公式, Bayes 公式, 事件的独立性]
+    prerequisites: [c14-probability-space]
+    history: Hald 1990
+    references: []
+  - id: c14-discrete-random-variables
+    name: 离散型随机变量与经典分布
+    field: c14
+    concepts: [随机变量与分布函数, 分布列与 Bernoulli、二项分布, 几何分布与无记忆性, Poisson 分布与稀有事件]
+    prerequisites: [c14-conditional-probability-bayes]
+    history: Hald 1990
+    references: []
+  - id: c14-continuous-random-variables
+    name: 连续型随机变量与密度函数
+    field: c14
+    concepts: [概率密度函数, 均匀分布与指数分布, Gamma 分布与正态分布, 随机变量函数的分布]
+    prerequisites: [c14-discrete-random-variables, c02-fundamental-theorem-calculus]
+    history: Stigler 1986
+    references: []
+  - id: c14-expectation-variance
+    name: 数学期望、方差与高阶矩
+    field: c14
+    concepts: [期望及其线性性, 指示变量法, 方差与标准差, 用尾概率积分求期望与高阶矩]
+    prerequisites: [c14-continuous-random-variables, c02-improper-integrals]
+    history: Hald 1990
+    references: []
+  - id: c14-joint-distributions
+    name: 多维随机变量、联合分布与边缘分布
+    field: c14
+    concepts: [联合分布与边缘分布, 随机变量的独立性, 多维变量变换与 Jacobi 行列式, 独立和的卷积公式]
+    prerequisites: [c14-expectation-variance, c03-multiple-integrals]
+    history: Hald 1990
+    references: []
+  - id: c14-covariance-multivariate-normal
+    name: 协方差、相关系数与多元正态分布
+    field: c14
+    concepts: [协方差与相关系数, 协方差矩阵及其半正定性, 多元正态分布, 多元正态的线性变换性质]
+    prerequisites: [c14-joint-distributions, c04-symmetric-positive-definite]
+    history: Stigler 1986
+    references: []
+  - id: c14-conditional-expectation
+    name: 条件分布与条件期望
+    field: c14
+    concepts: [条件分布与条件密度, 条件期望, 重期望公式, 全方差公式]
+    prerequisites: [c14-joint-distributions]
+    history: Hald 1990
+    references: []
+    aliases: [全期望与全方差定律]
+  - id: c14-generating-functions
+    name: 母函数、矩母函数与特征函数
+    field: c14
+    concepts: [概率母函数, 矩母函数, 特征函数, 唯一性定理与连续性定理]
+    prerequisites: [c14-expectation-variance, c02-power-fourier-series]
+    history: Hald 1990
+    references: []
+  - id: c14-lln-clt
+    name: 概率不等式、大数定律与中心极限定理
+    field: c14
+    concepts: [Markov、Chebyshev 与 Jensen 不等式, 依概率收敛与几乎必然收敛, 弱大数定律与强大数定律, 中心极限定理]
+    prerequisites: [c14-generating-functions]
+    history: Stigler 1986; von Plato 1994
+    references: []
+retired: []

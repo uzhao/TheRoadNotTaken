@@ -1,0 +1,106 @@
+# 领域 c02「单变量微积分与数学分析基础」（主干，14 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c02.yaml -p
+version: 1
+fields:
+  - {id: c02, name: 单变量微积分与数学分析基础, kind: core, order: 2}
+topics:
+  - id: c02-real-completeness
+    name: 实数完备性与确界原理
+    field: c02
+    concepts: [Dedekind 分割与 Cauchy 列的直观, 确界存在定理, 区间套定理, 完备性诸等价表述概览]
+    prerequisites: [c01-rationals-irrationals-supremum]
+    history: Kline Ch.41
+    references: []
+  - id: c02-sequence-limits
+    name: 数列极限与收敛准则
+    field: c02
+    concepts: [ε-N 定义, 极限的四则运算与保序性, 夹逼定理, 单调有界定理与数 e]
+    prerequisites: [c02-real-completeness]
+    history: Kline Ch.40
+    references: []
+  - id: c02-subsequences-cauchy
+    name: 子列、Bolzano–Weierstrass 定理与 Cauchy 收敛原理
+    field: c02
+    concepts: [子列与 Bolzano–Weierstrass 定理, 上极限与下极限, Cauchy 收敛原理, 完备性诸命题的等价]
+    prerequisites: [c02-sequence-limits]
+    history: Kline Ch.40
+    references: []
+  - id: c02-function-limits-continuity
+    name: 函数极限与连续函数
+    field: c02
+    concepts: [ε-δ 定义与归结原则, 单侧极限与无穷极限, 连续函数的局部性质, 间断点分类]
+    prerequisites: [c02-sequence-limits]
+    history: Kline Ch.40
+    references: []
+  - id: c02-continuous-on-closed-interval
+    name: 闭区间上连续函数的整体性质
+    field: c02
+    concepts: [介值定理, 有界性与最值定理, 一致连续性, Cantor 定理]
+    prerequisites: [c02-function-limits-continuity, c02-subsequences-cauchy]
+    history: Kline Ch.40
+    references: []
+  - id: c02-derivative-rules
+    name: 导数、微分与求导法则
+    field: c02
+    concepts: [切线与瞬时变化率, 求导法则与链式法则, 反函数与隐函数求导, 高阶导数与 Leibniz 公式]
+    prerequisites: [c02-function-limits-continuity]
+    history: Kline Ch.17
+    references: []
+  - id: c02-mean-value-theorems
+    name: 微分中值定理
+    field: c02
+    concepts: [Fermat 引理与 Rolle 定理, Lagrange 中值定理及其推论, Cauchy 中值定理, Darboux 导数介值定理]
+    prerequisites: [c02-derivative-rules, c02-continuous-on-closed-interval]
+    history: Kline Ch.40
+    references: []
+    aliases: [Rolle、Lagrange、Cauchy 中值定理]
+  - id: c02-taylor-convexity
+    name: L'Hôpital 法则、Taylor 公式与凸函数
+    field: c02
+    concepts: [L'Hôpital 法则, 带 Peano 与 Lagrange 余项的 Taylor 公式, 极值判别, 凸函数与 Jensen 不等式]
+    prerequisites: [c02-mean-value-theorems]
+    history: Kline Ch.20
+    references: []
+  - id: c02-riemann-integral
+    name: Riemann 积分的定义与可积性判别
+    field: c02
+    concepts: [Riemann 和与 Darboux 上下和, 可积的充要条件, 连续函数与单调函数的可积性, 积分的基本性质]
+    prerequisites: [c02-continuous-on-closed-interval]
+    history: Kline Ch.40
+    references: []
+  - id: c02-fundamental-theorem-calculus
+    name: 微积分基本定理与积分计算方法
+    field: c02
+    concepts: [变上限积分与原函数, Newton–Leibniz 公式, 换元积分法与分部积分法, 有理函数积分]
+    prerequisites: [c02-riemann-integral, c02-derivative-rules]
+    history: Kline Ch.17
+    references: []
+  - id: c02-improper-integrals
+    name: 反常积分及其收敛性判别
+    field: c02
+    concepts: [无穷区间上的反常积分, 瑕积分, 比较判别法与绝对收敛, Dirichlet 与 Abel 判别法]
+    prerequisites: [c02-fundamental-theorem-calculus]
+    history: Kline Ch.20
+    references: []
+  - id: c02-numerical-series
+    name: 数项级数收敛性
+    field: c02
+    concepts: [级数收敛与 Cauchy 准则, 正项级数的比值、根值与积分判别法, 交错级数与 Leibniz 判别法, 绝对收敛、条件收敛与 Riemann 重排定理]
+    prerequisites: [c02-subsequences-cauchy, c02-improper-integrals]
+    history: Kline Ch.20, 40
+    references: []
+  - id: c02-uniform-convergence
+    name: 函数项级数与一致收敛
+    field: c02
+    concepts: [逐点收敛与一致收敛, Weierstrass M 判别法, 一致收敛与连续性、积分的交换, 一致收敛与求导的交换]
+    prerequisites: [c02-numerical-series]
+    history: Kline Ch.40
+    references: []
+  - id: c02-power-fourier-series
+    name: 幂级数、解析性与 Fourier 级数初步
+    field: c02
+    concepts: [收敛半径与 Abel 定理, Taylor 级数与解析性, 三角正交系与 Fourier 系数, Fourier 级数的收敛与 Parseval 等式]
+    prerequisites: [c02-uniform-convergence, c02-taylor-convexity]
+    history: Kline Ch.20, 28
+    references: []
+retired: []

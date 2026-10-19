@@ -1,0 +1,84 @@
+# 领域 c03「多元微积分与向量分析」（主干，11 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c03.yaml -p
+version: 1
+fields:
+  - {id: c03, name: 多元微积分与向量分析, kind: core, order: 3}
+topics:
+  - id: c03-euclidean-space
+    name: R^n 的欧氏结构、内积与外积
+    field: c03
+    concepts: [范数、内积与 Cauchy–Schwarz 不等式, R^3 中的叉积与混合积, 直线与平面的方程, 柱坐标与球坐标]
+    prerequisites: []
+    history: Kline Ch.32
+    references: []
+  - id: c03-space-curves
+    name: 空间曲线与参数化运动
+    field: c03
+    concepts: [曲线的参数化与弧长, 切向量与弧长参数化, 曲率, 速度与加速度的分解]
+    prerequisites: [c03-euclidean-space, c02-derivative-rules]
+    history: Kline Ch.23
+    references: []
+  - id: c03-multivariable-limits
+    name: 多元函数的极限与连续性
+    field: c03
+    concepts: [R^n 中的开集、闭集与紧集, 多元函数的极限, 重极限与累次极限, 多元连续函数的性质]
+    prerequisites: [c03-euclidean-space, c02-continuous-on-closed-interval]
+    history: Kline Ch.40
+    references: []
+  - id: c03-partial-derivatives-gradient
+    name: 偏导数、全微分与梯度
+    field: c03
+    concepts: [偏导数, 可微性与全微分, 可微、偏导数连续与连续的关系, 方向导数与梯度]
+    prerequisites: [c03-multivariable-limits, c02-derivative-rules]
+    history: Kline Ch.19
+    references: []
+  - id: c03-chain-rule-jacobian
+    name: 复合映射链式法则与 Jacobi 矩阵
+    field: c03
+    concepts: [向量值映射的微分与 Jacobi 矩阵, 复合映射的链式法则, Jacobi 行列式, 多元 Taylor 公式]
+    prerequisites: [c03-partial-derivatives-gradient, c04-linear-maps-matrices, c02-taylor-convexity]
+    history: Kline Ch.19
+    references: []
+  - id: c03-extrema-lagrange
+    name: 多元极值、Hessian 矩阵与 Lagrange 乘子法
+    field: c03
+    concepts: [无约束极值的必要条件, Hessian 矩阵与二阶充分条件, 等式约束极值, Lagrange 乘子法的几何意义]
+    prerequisites: [c03-chain-rule-jacobian, c04-symmetric-positive-definite]
+    history: Kline Ch.24
+    references: []
+  - id: c03-implicit-inverse-function
+    name: 隐函数定理与逆映射定理
+    field: c03
+    concepts: [逆映射定理, 隐函数定理, 隐函数的求导, 局部坐标化的几何意义]
+    prerequisites: [c03-chain-rule-jacobian, c04-determinants]
+    history: Kline Ch.19
+    references: []
+  - id: c03-multiple-integrals
+    name: 重积分与变量替换公式
+    field: c03
+    concepts: [有界域上的二重与三重积分, Fubini 定理与累次积分, 变量替换公式, 极坐标、柱坐标与球坐标下的积分]
+    prerequisites: [c03-chain-rule-jacobian, c02-riemann-integral]
+    history: Kline Ch.19
+    references: []
+  - id: c03-line-integrals
+    name: 曲线积分与保守向量场
+    field: c03
+    concepts: [第一型曲线积分, 第二型曲线积分, 梯度场与路径无关性, 势函数的重构]
+    prerequisites: [c03-space-curves, c03-partial-derivatives-gradient, c02-fundamental-theorem-calculus]
+    history: Kline Ch.28
+    references: []
+  - id: c03-surface-integrals-div-curl
+    name: 曲面积分与散度、旋度算子
+    field: c03
+    concepts: [参数曲面与面积元, 第一型与第二型曲面积分, 通量, 散度与旋度]
+    prerequisites: [c03-multiple-integrals, c03-line-integrals]
+    history: Kline Ch.32
+    references: []
+  - id: c03-green-stokes-gauss
+    name: Green 公式、Stokes 公式与 Gauss 散度定理
+    field: c03
+    concepts: [Green 公式, Gauss 散度定理, Stokes 公式, 外微分形式的统一视角]
+    prerequisites: [c03-surface-integrals-div-curl]
+    history: Kline Ch.28; Katz 1979
+    references: []
+retired: []

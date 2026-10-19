@@ -1,0 +1,8 @@
+version: 1
+fields:
+  - {id: c02, name: 单变量微积分与数学分析基础, kind: core, order: 2}
+topics:
+  - {id: c02-limits-continuity, name: 函数极限与连续函数, field: c02, concepts: [ε-δ 定义, 单侧极限, 间断点分类], prerequisites: [], history: Kline Ch.40, references: []}
+  - {id: c02-derivative-rules, name: 导数、微分与求导法则, field: c02, concepts: [切线, 链式法则, 高阶导数], prerequisites: [c02-limits-continuity], history: Kline Ch.17, references: []}
+  - {id: c02-mean-value-theorems, name: 微分中值定理, field: c02, concepts: [Rolle 定理, Lagrange 中值定理, Cauchy 中值定理], prerequisites: [c02-derivative-rules], history: Kline Ch.17, references: []}
+retired: []

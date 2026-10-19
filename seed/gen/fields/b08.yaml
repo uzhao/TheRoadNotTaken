@@ -1,0 +1,79 @@
+# 领域 b08「组合数学、图论与计算理论（CS 数学）」（分支，10 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/b08.yaml -p
+version: 1
+fields:
+  - {id: b08, name: 组合数学、图论与计算理论（CS 数学）, kind: branch, order: 8}
+topics:
+  - id: b08-enumerative-combinatorics
+    name: 枚举组合学：双射证明、二项式恒等式与容斥原理
+    field: b08
+    concepts: [双射证明与组合恒等式, 容斥原理与错排, 鸽巢原理, Ramsey 定理初步]
+    prerequisites: [c01-sets-relations-maps]
+    history: Biggs 1998
+    references: []
+  - id: b08-generating-functions-recurrences
+    name: 生成函数与递推关系
+    field: b08
+    concepts: [普通生成函数, 指数生成函数, 常系数线性递推的求解, Catalan 数与分拆数]
+    prerequisites: [b08-enumerative-combinatorics, c02-power-fourier-series, c04-eigenvalues-diagonalization]
+    history: Biggs 1998
+    references: []
+  - id: b08-graphs-trees-circuits
+    name: 图的基本概念、树、连通性与 Euler / Hamilton 回路
+    field: b08
+    concepts: [图的基本概念与握手定理, 树与 Cayley 公式, Euler 回路, Hamilton 圈与连通度]
+    prerequisites: [b08-enumerative-combinatorics]
+    history: Biggs 1998
+    references: []
+  - id: b08-matchings-hall
+    name: 二分图匹配、Hall 婚姻定理与覆盖
+    field: b08
+    concepts: [二分图与交错路, 增广路算法, Hall 定理, König 定理]
+    prerequisites: [b08-graphs-trees-circuits]
+    history: Biggs 1998
+    references: []
+  - id: b08-planar-graphs-coloring
+    name: 平面图、Euler 多面体公式与图着色
+    field: b08
+    concepts: [平面图与 Euler 公式, Kuratowski 定理, 色数与五色定理, 色多项式]
+    prerequisites: [b08-graphs-trees-circuits]
+    history: Kline Ch.50; Biggs 1998
+    references: []
+  - id: b08-extremal-probabilistic
+    name: 极值图论与概率方法初步
+    field: b08
+    concepts: [Mantel 与 Turán 定理, 概率方法与期望线性性, 删去法, Ramsey 数的下界]
+    prerequisites: [b08-graphs-trees-circuits, c14-expectation-variance]
+    history: Erdős 1947
+    references: []
+  - id: b08-information-coding-theory
+    name: 信息论与编码理论初步
+    field: b08
+    concepts: [Shannon 熵与互信息, KL 散度, 信源编码与信道容量直观, Hamming 码与有限域上的线性码]
+    prerequisites: [b08-enumerative-combinatorics, c14-expectation-variance, c07-rings-integral-domains, 
+          c04-vector-spaces-subspaces]
+    history: Verdú 1998
+    references: []
+  - id: b08-automata-formal-languages
+    name: 形式语言、有限自动机与上下文无关文法
+    field: b08
+    concepts: [DFA 与 NFA 的等价, 正则表达式, 泵引理, 上下文无关文法与下推自动机]
+    prerequisites: [c01-sets-relations-maps]
+    history: Rabin–Scott 1959
+    references: []
+  - id: b08-turing-computability
+    name: Turing 机、可计算性与停机问题不可判定性
+    field: b08
+    concepts: [Turing 机与 Church–Turing 论题, 通用 Turing 机, 停机问题的不可判定性, 归约]
+    prerequisites: [b08-automata-formal-languages, c01-countable-uncountable]
+    history: Turing 1936
+    references: []
+  - id: b08-complexity-godel
+    name: 计算复杂性与 Gödel 不完备性导引
+    field: b08
+    concepts: [P 与 NP, 多项式归约与 Cook–Levin 定理, NP 完全问题, 一阶逻辑完备性与 Gödel 不完备性导引]
+    prerequisites: [b08-turing-computability]
+    history: Kline Ch.51; Cook 1971
+    references: []
+    aliases: [P vs NP]
+retired: []

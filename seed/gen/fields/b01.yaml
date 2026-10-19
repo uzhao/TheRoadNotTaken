@@ -1,0 +1,77 @@
+# 领域 b01「偏微分方程与数学物理方法」（分支，10 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/b01.yaml -p
+version: 1
+fields:
+  - {id: b01, name: 偏微分方程与数学物理方法, kind: branch, order: 1}
+topics:
+  - id: b01-first-order-pdes-characteristics
+    name: 一阶偏微分方程与特征线法
+    field: b01
+    concepts: [传输方程, 一阶拟线性方程与特征线法, 特征曲线的几何, Burgers 方程与激波的形成]
+    prerequisites: [c03-chain-rule-jacobian, c06-first-order-odes]
+    history: Kline Ch.22
+    references: []
+  - id: b01-classification-well-posedness
+    name: 二阶线性偏微分方程分类与定解问题适定性
+    field: b01
+    concepts: [二阶线性方程的分类, 三大典型方程的物理背景, 定解问题与边界条件, Hadamard 适定性]
+    prerequisites: [b01-first-order-pdes-characteristics]
+    history: Kline Ch.28
+    references: []
+  - id: b01-wave-equation-dalembert
+    name: 一维波动方程：d'Alembert 公式与特征区域
+    field: b01
+    concepts: [d'Alembert 公式, 依赖区间与影响区域, Duhamel 原理, 能量法与唯一性]
+    prerequisites: [b01-classification-well-posedness]
+    history: Kline Ch.22
+    references: []
+  - id: b01-separation-of-variables
+    name: 分离变量法与 Fourier 级数求解有界域问题
+    field: b01
+    concepts: [分离变量法与本征函数展开, 弦振动与有限杆热传导, Dirichlet 与 Neumann 边界条件, 本征频率与驻波]
+    prerequisites: [b01-classification-well-posedness, c06-linear-constant-coefficient, c02-power-fourier-series]
+    history: Kline Ch.22, 28
+    references: []
+  - id: b01-sturm-liouville
+    name: Sturm–Liouville 本征值问题与正交特殊函数
+    field: b01
+    concepts: [Sturm–Liouville 问题与自伴性, 本征值的实性与本征函数的正交性, 本征函数展开的完备性, Bessel 函数与 Legendre 多项式]
+    prerequisites: [b01-separation-of-variables, c06-power-series-frobenius, c12-compact-operators-spectral]
+    history: Kline Ch.29
+    references: []
+  - id: b01-heat-equation-fourier-transform
+    name: 热传导方程：Fourier 变换与热核
+    field: b01
+    concepts: [Fourier 变换及其性质, 热核与基本解, 热方程的卷积解与平滑效应, 极值原理]
+    prerequisites: [b01-separation-of-variables, c02-improper-integrals, c10-residues]
+    history: Kline Ch.28
+    references: []
+  - id: b01-laplace-equation-harmonic
+    name: Laplace 方程与调和函数性质
+    field: b01
+    concepts: [调和函数与平均值性质, 强极值原理, 圆盘上的 Poisson 积分公式, Harnack 不等式]
+    prerequisites: [b01-classification-well-posedness, c10-holomorphic-functions, c03-green-stokes-gauss]
+    history: Kline Ch.28
+    references: []
+  - id: b01-potential-theory-green-functions
+    name: 位势理论与 Green 函数法
+    field: b01
+    concepts: [基本解与 Newton 位势, Green 恒等式, Green 函数与 Dirichlet 问题, 镜像法]
+    prerequisites: [b01-laplace-equation-harmonic]
+    history: Kline Ch.28
+    references: []
+  - id: b01-higher-dimensional-waves
+    name: 高维波动方程：球平均法与 Huygens 原理
+    field: b01
+    concepts: [球平均法, 三维波动方程的 Kirchhoff 公式, Huygens 原理, 二维降维法与波尾现象]
+    prerequisites: [b01-wave-equation-dalembert, b01-potential-theory-green-functions]
+    history: Kline Ch.22
+    references: []
+  - id: b01-variational-principles-weak-solutions
+    name: 变分原理、Euler–Lagrange 方程与弱解导引
+    field: b01
+    concepts: [泛函的一阶变分与 Euler–Lagrange 方程, Dirichlet 原理, 弱导数与 Sobolev 空间导引, 弱解与 Lax–Milgram 定理]
+    prerequisites: [b01-laplace-equation-harmonic, c12-riesz-representation-adjoint, c03-extrema-lagrange]
+    history: Kline Ch.24, 30
+    references: []
+retired: []

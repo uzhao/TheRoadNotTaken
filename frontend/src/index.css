@@ -1,0 +1,51 @@
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', 'Noto Sans CJK SC', 'PingFang SC', sans-serif;
+  color: #1f2328;
+  background: #fafafa;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: 3rem;
+  padding: 0 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.brand {
+  font-weight: 600;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-item {
+  color: #57606a;
+}
+
+.version {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #8b949e;
+}
+
+.shell {
+  padding: 2rem 1rem;
+}
+
+.placeholder {
+  color: #57606a;
+}

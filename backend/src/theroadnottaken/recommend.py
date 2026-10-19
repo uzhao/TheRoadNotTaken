@@ -35,15 +35,13 @@ class Recommendation:
 def recommend(skeleton: Skeleton, state: State) -> Recommendation | None:
     """唯一推荐；没有任何候选（含暂不学回归）时返回 None。"""
     fields = {f.id: f for f in skeleton.fields}
-    included = set(state.included_branches)
     successors: dict[str, int] = {t.id: 0 for t in skeleton.topics}
     for t in skeleton.topics:
         for p in t.prerequisites:
             successors[p] += 1
 
     def eligible(t: Topic) -> bool:
-        f = fields[t.field]
-        return f.kind == "core" or f.id in included
+        return state.recommends_field(t.field, fields[t.field].kind)
 
     def unlocked(t: Topic) -> bool:
         return all(state.status_of(p) == "mastered" for p in t.prerequisites)
@@ -63,6 +61,7 @@ def recommend(skeleton: Skeleton, state: State) -> Recommendation | None:
         return None
 
     recent = _recent_field(skeleton, state)
+    # 每级：排序键（小者优先）与推荐主题在这一级占优时的理由
     levels: list[tuple[Callable[[Topic], object], Callable[[Topic], str | None]]] = [
         (
             lambda t: state.status_of(t.id) != "claimed",
@@ -72,10 +71,7 @@ def recommend(skeleton: Skeleton, state: State) -> Recommendation | None:
             lambda t: state.status_of(t.id) != "learning",
             lambda t: "上次没学完" if state.status_of(t.id) == "learning" else None,
         ),
-        (
-            lambda t: fields[t.field].kind != "core",
-            lambda t: "主干优先于分支" if fields[t.field].kind == "core" else None,
-        ),
+        (lambda t: fields[t.field].kind != "core", _say_core_first),
         (
             lambda t: t.field != recent,
             lambda t: f"接着「{fields[t.field].name}」往下" if t.field == recent else None,
@@ -96,11 +92,16 @@ def recommend(skeleton: Skeleton, state: State) -> Recommendation | None:
         reason = levels[decisive][1](best)
     if reason is None:
         # 主干是常态，单独作为理由没有信息量；只在与分支比出胜负时才说
-        strengths = (say(best) for i, (_, say) in enumerate(levels) if i != 2)
+        strengths = (say(best) for _, say in levels if say is not _say_core_first)
         reason = next((s for s in strengths if s), "前置都已掌握，可以开始")
 
     kind: Kind = "verify" if state.status_of(best.id) == "claimed" else "learn"
     return Recommendation(topic=best, kind=kind, reason=reason, was_deferred=was_deferred)
+
+
+def _say_core_first(t: Topic) -> str | None:
+    # 推荐主题与第二名只在主干 / 分支上分出胜负时，推荐的必是主干
+    return "主干优先于分支"
 
 
 def _recent_field(skeleton: Skeleton, state: State) -> str | None:

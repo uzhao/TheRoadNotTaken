@@ -18,7 +18,7 @@ from pydantic import BaseModel
 
 from theroadnottaken import actions
 from theroadnottaken.datadir import DataDir
-from theroadnottaken.recommend import EMPTY_HINT, recommend
+from theroadnottaken.recommend import EMPTY_HINT, Kind, recommend
 from theroadnottaken.skeleton import Field, Skeleton, Topic
 from theroadnottaken.state import State, Status
 
@@ -75,7 +75,7 @@ class RecommendedTopic(BaseModel):
 
 class RecommendationView(BaseModel):
     topic: RecommendedTopic
-    kind: Literal["learn", "verify"]
+    kind: Kind
     reason: str
     was_deferred: bool
 
@@ -187,7 +187,7 @@ def field_view(sk: Skeleton, state: State, f: Field) -> FieldView:
         mastered=statuses.count("mastered"),
         learning=statuses.count("learning"),
         claimed=statuses.count("claimed"),
-        included=f.kind == "core" or f.id in state.included_branches,
+        included=state.recommends_field(f.id, f.kind),
     )
 
 
@@ -198,7 +198,7 @@ def topics_view(store: DataDir, state: State, field: str | None) -> list[TopicVi
 
 
 def topic_view(sk: Skeleton, state: State, t: Topic) -> TopicView:
-    by_id = {x.id: x for x in sk.topics}
+    by_id = {x.id: x for x in sk.topics if x.id in t.prerequisites}
     status = state.status_of(t.id)
     missing = [
         PrerequisiteRef(id=p, name=by_id[p].name)

@@ -24,7 +24,7 @@ export function FieldSidebar({ fields, selected, onSelect, onToggleIncluded, bus
           <section key={kind}>
             <h3>{KIND_NAMES[kind]}</h3>
             {rows.map((f) => (
-              <div key={f.id} className="frow-wrap">
+              <div key={f.id}>
                 <FieldRow field={f} on={f.id === selected} onSelect={onSelect} />
                 {f.kind === 'branch' && (
                   <label className="include">

@@ -88,7 +88,10 @@ function TopicActions({
     </button>
   )
   let buttons: ReactNode[] = []
-  if (topic.status === 'deferred') buttons = [button('restore', '恢复推荐')]
+  if (topic.status === 'deferred')
+    buttons = topic.locked
+      ? [button('restore', '恢复推荐')]
+      : [button('restore', '恢复推荐'), button('claim', '我已掌握')]
   else if (topic.status === 'claimed') buttons = [button('unclaim', '其实没学过')]
   else if (!topic.locked && (topic.status === 'unlearned' || topic.status === 'learning'))
     buttons = [button('claim', '我已掌握'), button('defer', '暂不学', true)]

@@ -71,6 +71,10 @@ class State(BaseModel):
     archived: dict[str, TopicState] = {}
     included_branches: list[str] = []
 
+    def recommends_field(self, field_id: str, kind: str) -> bool:
+        """领域是否参与推荐：主干恒参与，分支看「纳入推荐」开关。"""
+        return kind == "core" or field_id in self.included_branches
+
     def status_of(self, topic_id: str) -> Status:
         entry = self.topics.get(topic_id)
         return entry.status if entry else "unlearned"

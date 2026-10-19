@@ -1,5 +1,7 @@
 """骨架校验脚本按命令行方式测试：argv 进、stdout 与退出码出（见规格 Testing Decisions）。"""
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -57,7 +59,7 @@ def test_duplicate_topic_id_is_located(tmp_path: Path, capsys: pytest.CaptureFix
     code, out = run(skeleton(tmp_path, topic("c02-a") + topic("c02-a")), capsys=capsys)
 
     assert code == 1
-    assert "c02-a" in out and "重复" in out
+    assert "第 7 行 主题 c02-a：id 重复" in out  # 第二个 c02-a 在文件第 7 行
 
 
 def test_topic_id_must_not_reuse_retired_id(
@@ -116,7 +118,7 @@ def test_concepts_must_number_three_to_five(
     assert "c02-a" in out and "c02-b" in out and "3–5" in out
 
 
-def test_core_topic_may_only_depend_on_core(
+def test_core_topic_prerequisites_must_be_core(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     code, out = run(
@@ -164,8 +166,8 @@ def test_topic_behind_a_cycle_is_unreachable(
     code, out = run(skeleton(tmp_path, topics), capsys=capsys)
 
     assert code == 1
-    assert "c02-c" in out and "不可达" in out
-    assert "c02-b" not in out.split("不可达")[0].splitlines()[-1]  # 环上的主题只在环的错误里报一次
+    unreachable = [line for line in out.splitlines() if "不可达" in line]
+    assert len(unreachable) == 1 and "c02-c" in unreachable[0]  # 环上的主题只在环的错误里报
 
 
 def test_prerequisite_lists_per_field(
@@ -204,9 +206,6 @@ def test_unreadable_or_malformed_file_exits_2(
 
 
 def test_runs_as_a_standalone_command(sample_skeleton: Path) -> None:
-    import subprocess
-    import sys
-
     proc = subprocess.run(
         [sys.executable, "-m", "theroadnottaken.skeleton", str(sample_skeleton)],
         capture_output=True,
@@ -216,3 +215,72 @@ def test_runs_as_a_standalone_command(sample_skeleton: Path) -> None:
 
     assert proc.returncode == 0
     assert "通过" in proc.stdout
+
+
+def test_topic_behind_a_missing_prerequisite_is_unreachable(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    topics = topic("c02-b", prereqs="[c02-ghost]") + topic("c02-c", prereqs="[c02-b]")
+    code, out = run(skeleton(tmp_path, topics), capsys=capsys)
+
+    assert code == 1
+    unreachable = [line for line in out.splitlines() if "不可达" in line]
+    assert len(unreachable) == 1 and "c02-c" in unreachable[0]
+
+
+def test_duplicate_prerequisite_is_reported(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    code, out = run(
+        skeleton(tmp_path, topic("c02-a") + topic("c02-b", prereqs="[c02-a, c02-a]")), capsys=capsys
+    )
+
+    assert code == 1
+    assert "主题 c02-b：前置 c02-a 重复" in out
+
+
+def test_field_ids_must_be_unique(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    path = skeleton(tmp_path, topic("c02-a"))
+    path.write_text(
+        path.read_text(encoding="utf-8").replace("id: b06", "id: c02"), encoding="utf-8"
+    )
+    code, out = run(path, capsys=capsys)
+
+    assert code == 1
+    assert "领域 c02：id 重复" in out
+
+
+def test_retired_successor_must_exist(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    retired = "[{id: c02-old, retired_at: 2026-01-01, successors: [c02-nope], proposal: 1}]"
+    code, out = run(skeleton(tmp_path, topic("c02-a"), retired=retired), capsys=capsys)
+
+    assert code == 1
+    assert "退役主题 c02-old：后继 c02-nope 不存在" in out
+
+
+def test_structure_errors_are_located_and_all_reported(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    path = tmp_path / "skeleton.yaml"
+    path.write_text(
+        "version: 1\n"
+        "fields:\n"
+        "  - {id: c02, name: 微积分, kind: main, order: 2}\n"
+        "topics:\n"
+        "  - {id: c02-a, name: 甲, field: c02, prerequisites: [], history: ''}\n",
+        encoding="utf-8",
+    )
+    code, out = run(path, capsys=capsys)
+
+    assert code == 1
+    assert "第 3 行 领域 c02：kind 必须是 core 或 branch" in out
+    assert "第 5 行 主题 c02-a：缺少 concepts" in out
+    assert "第 5 行 主题 c02-a：缺少 references" in out
+    assert "顶层缺少 retired" in out
+
+
+def test_non_utf8_file_exits_2(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    path = tmp_path / "gbk.yaml"
+    path.write_bytes("version: 1 # 注释".encode("gbk"))
+
+    assert run(path, capsys=capsys)[0] == 2

@@ -11,7 +11,7 @@ topics:
     name: 函数极限与连续函数
     field: c02
     concepts: [ε-δ 定义, 单侧极限, 连续函数的局部性质, 间断点分类]
-    prerequisites: []        # 初始前沿：只依赖高中数学
+    prerequisites: []        # 初始前沿：只需高中数学
     history: "Kline Ch.40"
     references: []
   - id: c02-derivative-definition

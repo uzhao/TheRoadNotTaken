@@ -47,4 +47,4 @@ uv run --project backend theroadnottaken-skeleton seed/skeleton.yaml -p   # 另�
 
 ## 测试约定
 
-后端测试只走一条主缝：真实 FastAPI 应用 + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`）。后续工单的测试都从这两个夹具开始，不新增缝；详见规格的 Testing Decisions。
+后端测试只走一条主缝：真实 FastAPI 应用 + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`；`sample_skeleton` 给出随仓库提交的样例骨架路径）。后续工单的测试都从这些夹具开始，不新增缝；唯一的例外是骨架校验脚本，它要在生成骨架阶段独立运行，所以按命令行方式测试（argv 进、stdout 与退出码出）。详见规格的 Testing Decisions。

@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+backend/dist/
+
+# Node
+node_modules/
+frontend/dist/
+*.log
+
+# 本地数据目录（缺省在 ~/.theroadnottaken，仓库内若有也不提交）
+/data/
+
+.DS_Store

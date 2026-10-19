@@ -21,6 +21,8 @@ export interface LectureState {
   /** 生成中已流出的正文（讲义缓存后改用 `page.lecture.markdown`） */
   streamed: string
   steps: Step[]
+  /** 生成中已画好的插图：名（不含扩展名）→ 第几次画好，用作地址的版本号 */
+  drawn: Record<string, number>
   /** 排队位次，未排队为 null */
   queued: number | null
   failure: JobError | null
@@ -43,6 +45,7 @@ export function useLecture(topicId: string): LectureState {
   const [page, setPage] = useState<LecturePage | null>(null)
   const [streamed, setStreamed] = useState('')
   const [steps, setSteps] = useState<Step[]>([])
+  const [drawn, setDrawn] = useState<Record<string, number>>({})
   const [queued, setQueued] = useState<number | null>(null)
   const [failure, setFailure] = useState<JobError | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -88,7 +91,10 @@ export function useLecture(topicId: string): LectureState {
           if (name === null) break
           const key = `fig-${attempt}-${e.data.step_index}`
           if (e.data.state === 'ACTIVE') addStep(key, `画图 ${name}${suffix()}`)
-          else finishStep(key)
+          else {
+            finishStep(key)
+            setDrawn((prev) => ({ ...prev, [name]: (prev[name] ?? 0) + 1 }))
+          }
           break
         }
         case 'retry':
@@ -143,11 +149,12 @@ export function useLecture(topicId: string): LectureState {
     setPage(null)
     setStreamed('')
     setSteps([])
+    setDrawn({})
     setQueued(null)
     setFailure(null)
     setError(null)
     setRound((r) => r + 1)
   }
 
-  return { page, streamed, steps, queued, failure, error, generating, restart }
+  return { page, streamed, steps, drawn, queued, failure, error, generating, restart }
 }

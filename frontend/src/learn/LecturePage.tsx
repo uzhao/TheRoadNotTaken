@@ -78,6 +78,7 @@ export function LecturePage({ topicId, onBack }: Props) {
           topicId={topicId}
           markdown={markdown}
           cached={cached !== null}
+          drawn={lec.drawn}
           streaming={lec.generating}
         />
       )}

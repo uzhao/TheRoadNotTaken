@@ -4,7 +4,8 @@
   不启动 agy；否则提交讲义任务（同一主题已有在跑的就返回它），前端经任务事件流看生成过程。
 - `GET /api/lectures/{主题id}`：只读——主题（状态与薄弱点）、缓存的讲义、在跑的讲义任务。
 - `GET /api/lectures/{主题id}/figures/{文件名}`：讲义插图；只服务 `lectures/<主题id>/figures/`
-  下的 svg / png，越界或不存在一律 404。前端用 `<img>` 引用，不内联 SVG。
+  （生成中则还有讲义任务目录的 `figures/`）下的 svg / png，越界或不存在一律 404。
+  前端用 `<img>` 引用，不内联 SVG。
 """
 
 from __future__ import annotations
@@ -18,7 +19,7 @@ from pydantic import BaseModel
 
 from theroadnottaken import actions
 from theroadnottaken.datadir import DataDir
-from theroadnottaken.lecture import FIGURE_NAME_RE, FIGURES_DIR, Lectures
+from theroadnottaken.lecture import Lectures
 from theroadnottaken.skeleton import Topic
 from theroadnottaken.state import State
 from theroadnottaken.web import TopicView, topic_view
@@ -97,11 +98,7 @@ def get_lecture(request: Request, topic_id: str) -> LecturePage:
 @router.get("/{topic_id}/figures/{name:path}")
 def get_figure(request: Request, topic_id: str, name: str) -> FileResponse:
     topic = _topic(_store(request), topic_id)
-    figures = (_lectures(request).lecture_dir(topic.id) / FIGURES_DIR).resolve()
-    suffix = name[name.rfind(".") :].lower() if "." in name else ""
-    if not FIGURE_NAME_RE.match(name) or suffix not in MEDIA_TYPES:
+    path = _lectures(request).figure(topic.id, name)
+    if path is None:
         raise HTTPException(status_code=404, detail="插图不存在")
-    path = (figures / name).resolve()
-    if path.parent != figures or not path.is_file():
-        raise HTTPException(status_code=404, detail="插图不存在")
-    return FileResponse(path, media_type=MEDIA_TYPES[suffix], headers=FIGURE_HEADERS)
+    return FileResponse(path, media_type=MEDIA_TYPES[path.suffix], headers=FIGURE_HEADERS)

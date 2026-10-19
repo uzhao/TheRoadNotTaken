@@ -68,8 +68,9 @@ axes.facecolor: white
 savefig.facecolor: white
 """
 
-# 行内插图 `![图注](路径 "可选标题")`；图注里允许一层方括号（如区间 [a,b]）
-IMAGE_RE = re.compile(r"!\[((?:[^\[\]]|\[[^\]]*\])*)\]\(\s*<?([^)\s>]*)>?(?:\s+\"[^\"]*\")?\s*\)")
+# 行内插图 `![图注](路径 可选标题)`：取括号里的第一个词作路径，标题写法不论（"…"、'…'、(…)）；
+# 图注里允许一层方括号（如区间 [a,b]）
+IMAGE_RE = re.compile(r"!\[((?:[^\[\]]|\[[^\]]*\])*)\]\(([^)]*)\)")
 # 引用式插图 `![图注][标签]`：路径不在原处，不允许
 REF_IMAGE_RE = re.compile(r"!\[(?:[^\[\]]|\[[^\]]*\])*\]\[")
 FIGURE_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
@@ -109,6 +110,7 @@ def render_prompt(store: DataDir, topic: Topic, weak_points: list[str]) -> str:
         prerequisites=prerequisites,
         history=topic.history or "（无）",
         weak_points_block=weak,
+        **_figure_limits(),
     )
 
 
@@ -116,7 +118,12 @@ def render_fix_prompt(topic: Topic, errors: list[str]) -> str:
     return _template(FIX_TEMPLATE).substitute(
         topic_name=topic.name,
         errors_block="\n".join(f"- {e}" for e in errors),
+        **_figure_limits(),
     )
+
+
+def _figure_limits() -> dict[str, int]:
+    return {"max_figures": MAX_FIGURES, "max_figure_kb": MAX_FIGURE_BYTES // 1024}
 
 
 # ---- 搬运校验 ----
@@ -130,7 +137,7 @@ class Checked:
     figures: list[str] = field(default_factory=list)
 
 
-def check(job_dir: Path, response: str, *, max_figures: int = MAX_FIGURES) -> Checked:
+def check(job_dir: Path, response: str) -> Checked:
     """按规格的搬运校验检查一次产出；`response` 是 agy 的最终回复（讲义正文）。"""
     errors: list[str] = []
     if not response.strip():
@@ -141,7 +148,8 @@ def check(job_dir: Path, response: str, *, max_figures: int = MAX_FIGURES) -> Ch
         errors.append("插图只能用行内写法 ![图注](figures/<名>.svg)，不能用引用式 ![图注][标签]")
 
     figures: list[str] = []
-    for caption, target in IMAGE_RE.findall(response):
+    for caption, destination in IMAGE_RE.findall(response):
+        target = (destination.split() or [""])[0].removeprefix("<").removesuffix(">")
         name = _figure_name(target, errors)
         if name is None:
             continue
@@ -149,8 +157,8 @@ def check(job_dir: Path, response: str, *, max_figures: int = MAX_FIGURES) -> Ch
             errors.append(f"插图 {target} 缺少图注：![…] 里要写一句中文图注")
         if name not in figures:
             figures.append(name)
-    if len(figures) > max_figures:
-        errors.append(f"插图过多：引用了 {len(figures)} 张，至多 {max_figures} 张")
+    if len(figures) > MAX_FIGURES:
+        errors.append(f"插图过多：引用了 {len(figures)} 张，至多 {MAX_FIGURES} 张")
     for name in figures:
         _check_figure_file(job_dir / FIGURES_DIR / name, f"{FIGURES_DIR}/{name}", errors)
     return Checked(errors, figures if not errors else [])
@@ -165,7 +173,7 @@ def _figure_name(target: str, errors: list[str]) -> str | None:
     if (
         len(path.parts) != 2
         or path.parts[0] != FIGURES_DIR
-        or path.suffix.lower() not in FIGURE_SUFFIXES
+        or path.suffix not in FIGURE_SUFFIXES
         or not FIGURE_NAME_RE.match(path.name)
     ):
         errors.append(f"插图路径 {target} 不合规：必须是 figures/<名>.svg 或 figures/<名>.png")
@@ -183,7 +191,7 @@ def _check_figure_file(path: Path, shown: str, errors: list[str]) -> None:
             f"插图 {shown} 过大：{size // 1024} KB，每张至多 {MAX_FIGURE_BYTES // 1024} KB"
         )
         return
-    if path.suffix.lower() == ".png":
+    if path.suffix == ".png":
         if not path.read_bytes().startswith(PNG_SIGNATURE):
             errors.append(f"插图 {shown} 不是合法的 PNG 文件")
         return
@@ -237,10 +245,6 @@ def install(
 # ---- 学习页的服务 ----
 
 
-class TopicLocked(Exception):
-    """主题有直接前置尚未掌握，不可学。"""
-
-
 class Lectures:
     """开始学习与讲义缓存；同一主题同时至多一个讲义任务。"""
 
@@ -260,6 +264,19 @@ class Lectures:
             "markdown": (d / LECTURE_FILE).read_text(encoding="utf-8"),
             "meta": json.loads((d / META_FILE).read_text(encoding="utf-8")),
         }
+
+    def figure(self, topic_id: str, name: str) -> Path | None:
+        """插图文件：先找缓存的讲义，再找在跑的讲义任务（画好即可显示）；越界或不存在为 None。"""
+        if not FIGURE_NAME_RE.match(name) or PurePosixPath(name).suffix not in FIGURE_SUFFIXES:
+            return None
+        job = self.running(topic_id)
+        dirs = [self.lecture_dir(topic_id), *([job.dir] if job else [])]
+        for d in dirs:
+            figures = (d / FIGURES_DIR).resolve()
+            path = (figures / name).resolve()
+            if path.parent == figures and path.is_file():
+                return path
+        return None
 
     def running(self, topic_id: str) -> Job | None:
         job = self._running.get(topic_id)

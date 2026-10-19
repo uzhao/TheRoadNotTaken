@@ -224,6 +224,9 @@ export interface LectureMeta {
   weak_points: string[]
   regenerations: number
   job_id: string
+  conversation_id: string | null
+  /** 第几次尝试通过了搬运校验（1 或 2） */
+  attempts: number
 }
 
 /** 学习页：主题（状态与薄弱点）、缓存的讲义、在跑的讲义任务。 */

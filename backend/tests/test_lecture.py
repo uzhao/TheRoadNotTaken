@@ -197,6 +197,14 @@ INVALID_OUTPUTS = {
         "figures/<名>.svg",
     ),
     "missing-file": ([s.text(fig("figures/secant.svg"))], "figures/secant.svg 不存在"),
+    "missing-file-single-quoted-title": (
+        [s.text("# 导数\n\n![割线](figures/secant.svg 'title')\n")],
+        "figures/secant.svg 不存在",
+    ),
+    "missing-file-paren-title": (
+        [s.text("# 导数\n\n![割线](figures/secant.svg (title))\n")],
+        "figures/secant.svg 不存在",
+    ),
     "bad-xml": (
         [s.write("figures/secant.svg", "<svg"), s.text(fig("figures/secant.svg"))],
         "XML 无法解析",
@@ -446,3 +454,22 @@ def test_deferred_topic_starts_learning_but_mastered_stays_mastered(
     state = read_state(data_dir)
     assert state[DERIV]["status"] == "learning"
     assert state[LIMIT]["status"] == "mastered"
+
+
+def test_figure_is_served_from_running_job_once_drawn(
+    client: TestClient, fake_agy: FakeAgy, data_dir: Path
+) -> None:
+    mastered_limit(data_dir)
+    pid = data_dir.parent / "pid"
+    fake_agy.script(
+        s.run(s.init("c"), s.write("figures/secant-to-tangent.svg", SVG), s.hang(str(pid)))
+    )
+    job_id = start(client)["job"]["id"]
+    url = f"/api/lectures/{DERIV}/figures/secant-to-tangent.svg"
+
+    from test_jobs import wait_until
+
+    wait_until(lambda: client.get(url).status_code == 200)
+    assert client.get(url).text == SVG
+    client.delete(f"/api/jobs/{job_id}")
+    assert client.get(url).status_code == 404

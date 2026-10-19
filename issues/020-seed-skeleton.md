@@ -5,7 +5,7 @@ labels: [ready-for-human]
 parent: 17
 blocked_by: [19]
 assignee:
-status: open
+status: closed
 ---
 
 ## Parent
@@ -35,3 +35,7 @@ status: open
 - 作者步骤见 [seed/README.md](../seed/README.md)「生成流程」：对 22 个领域各跑一次 `run`、审片段，再各跑一次 `cross`、审前置清单，最后 `merge -p`，把 `seed/skeleton.yaml` 与 `seed/gen/fields/*.yaml` 一起提交，然后按验收条件勾选并关闭本票。
 
 **种子骨架第一版已生成并提交（由 Claude 代替 agy 撰写，待作者审核）：** 作者在 cloud 会话里无法运行 agy，于是按作者要求由 Claude 逐领域撰写 209 个主题的 id、名称与别名、概念、领域内前置、历史索引与跨领域前置，再通过同一条流水线（`run` → `cross` → `merge`，agy 换成回放脚本）落盘，所有本地检查与 019 的校验照常生效：`seed/skeleton.yaml` 通过（22 领域、209 主题；初始前沿 4 个：命题逻辑、R^n 欧氏结构、Gauss 消元、概率空间），片段在 `seed/gen/fields/*.yaml`。`cross` 对 c09、c14、b01、b06、b07、b08 用了 `--upstream` 扩大候选领域（分别加 c07+c01、c04、c02、c14、c14、c02+c14）。剩下的验收项「作者对每个领域的前置清单逐一确认过」留给作者：`theroadnottaken-skeleton seed/skeleton.yaml -p` 输出每领域清单，改片段后重新 `merge`，或直接改 `seed/skeleton.yaml`。
+
+## Resolution
+
+种子骨架 v1 已提交：`seed/skeleton.yaml`（`version: 1`，22 个领域、209 个主题）与片段 `seed/gen/fields/*.yaml`，通过 019 的全部校验（无环、全部从初始前沿可达、主干不依赖分支、概念 3–5 个）。内容由 Claude 代替 agy 撰写（见上方评论），作者决定按现状接受这一版，未逐领域审核前置清单（验收项保留未勾以如实记录）；后续发现的缺漏按规格走主题提议与合并流程修正。生成工具 `theroadnottaken-seed` 与流程文档见 [seed/README.md](../seed/README.md)。

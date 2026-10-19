@@ -1,0 +1,78 @@
+# 领域 c07「抽象代数 I：群论、环与域初步」（主干，10 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c07.yaml -p
+version: 1
+fields:
+  - {id: c07, name: 抽象代数 I：群论、环与域初步, kind: core, order: 7}
+topics:
+  - id: c07-groups-subgroups-cyclic
+    name: 群的公理、子群与循环群
+    field: c07
+    concepts: [群的定义与基本例子, 子群判据, 元素的阶, 循环群的结构]
+    prerequisites: [c01-congruence-modular]
+    history: Kline Ch.31, 49
+    references: []
+  - id: c07-permutation-groups
+    name: 置换群与对称性
+    field: c07
+    concepts: [对称群与轮换分解, 奇偶置换与交错群, 二面体群, 正多面体的对称群]
+    prerequisites: [c07-groups-subgroups-cyclic]
+    history: Kline Ch.31
+    references: []
+  - id: c07-cosets-lagrange-normal
+    name: 陪集、Lagrange 定理与正规子群
+    field: c07
+    concepts: [陪集分解, 指数与 Lagrange 定理, 正规子群, 单群的概念]
+    prerequisites: [c07-groups-subgroups-cyclic, c01-equivalence-quotient]
+    history: Kline Ch.31
+    references: []
+  - id: c07-quotient-groups-homomorphisms
+    name: 商群、群同态与同构基本定理
+    field: c07
+    concepts: [商群, 群同态的核与像, 第一同构定理, 第二与第三同构定理]
+    prerequisites: [c07-cosets-lagrange-normal]
+    history: Kline Ch.49
+    references: []
+  - id: c07-group-actions-counting
+    name: 群作用、轨道-稳定子定理与计数应用
+    field: c07
+    concepts: [群作用与轨道, 轨道-稳定子定理, 共轭作用与类方程, Burnside 引理与计数]
+    prerequisites: [c07-quotient-groups-homomorphisms, c07-permutation-groups]
+    history: Kline Ch.31
+    references: []
+  - id: c07-finite-groups-sylow
+    name: 有限群结构：有限生成交换群与 Sylow 定理
+    field: c07
+    concepts: [p-群的性质, Sylow 定理, 小阶群的分类, 有限生成交换群与 A_5 的单性]
+    prerequisites: [c07-group-actions-counting]
+    history: Sylow 1872
+    references: []
+  - id: c07-rings-integral-domains
+    name: 环、整环与除环
+    field: c07
+    concepts: [环、交换环与单位元, 零因子、整环与除环, 环的特征, Gauss 整数环与多项式环]
+    prerequisites: [c07-groups-subgroups-cyclic]
+    history: Kline Ch.34, 49
+    references: []
+  - id: c07-ideals-quotient-rings
+    name: 理想、商环与环同态基本定理
+    field: c07
+    concepts: [理想与主理想, 商环, 环同态基本定理, 整环的分式域]
+    prerequisites: [c07-rings-integral-domains, c07-quotient-groups-homomorphisms]
+    history: Kline Ch.34, 49
+    references: []
+  - id: c07-prime-maximal-ideals
+    name: 素理想与极大理想
+    field: c07
+    concepts: [素理想与整环商, 极大理想与域商, 极大理想的存在性与 Zorn 引理, 'Z 与 k[x] 中的理想']
+    prerequisites: [c07-ideals-quotient-rings]
+    history: Kline Ch.49
+    references: []
+  - id: c07-factorization-domains
+    name: 整环中的因子分解：ED、PID 与 UFD
+    field: c07
+    concepts: [Euclid 整环, 主理想整环, 唯一分解整环与 Gauss 引理, Eisenstein 判别法与不可约多项式]
+    prerequisites: [c07-prime-maximal-ideals, c01-primes-fundamental-theorem]
+    history: Kline Ch.34
+    references: []
+    aliases: [Euclid 整环、主理想整环与唯一分解整环]
+retired: []

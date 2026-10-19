@@ -1,0 +1,71 @@
+# 领域 b05「数值线性代数与数据矩阵方法（ML 数学）」（分支，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/b05.yaml -p
+version: 1
+fields:
+  - {id: b05, name: 数值线性代数与数据矩阵方法（ML 数学）, kind: branch, order: 5}
+topics:
+  - id: b05-norms-conditioning
+    name: 向量与矩阵范数、条件数与扰动分析
+    field: b05
+    concepts: [向量范数与诱导矩阵范数, Frobenius 范数与谱范数, 条件数, 线性方程组解的扰动界]
+    prerequisites: [c04-svd-pseudoinverse]
+    history: Brezinski 2022
+    references: []
+  - id: b05-lu-cholesky
+    name: 选主元 LU 分解、Cholesky 分解与稀疏直接法
+    field: b05
+    concepts: [列主元 LU 分解与稳定性, Cholesky 分解, 带状与三对角系统的追赶法, 稀疏直接法初步]
+    prerequisites: [b05-norms-conditioning, c04-symmetric-positive-definite]
+    history: Brezinski 2022
+    references: []
+  - id: b05-householder-givens-qr
+    name: Householder 反射、Givens 旋转与最小二乘 QR 算法
+    field: b05
+    concepts: [Householder 反射, Givens 旋转, QR 分解算法, 用 QR 解最小二乘]
+    prerequisites: [b05-norms-conditioning, c04-gram-schmidt-qr]
+    history: Brezinski 2022
+    references: []
+  - id: b05-svd-low-rank-pca
+    name: 奇异值分解、Eckart–Young 低秩逼近与 PCA
+    field: b05
+    concepts: [SVD 的计算与性质, Eckart–Young 低秩逼近定理, 主成分分析, 数据矩阵的中心化与降维]
+    prerequisites: [b05-householder-givens-qr]
+    history: Stewart 1993; Jolliffe 2002
+    references: []
+  - id: b05-eigenvalue-algorithms
+    name: 特征值计算：幂法、反幂法、Rayleigh 商迭代与 QR 算法
+    field: b05
+    concepts: [幂法与反幂法, Rayleigh 商迭代, Hessenberg 化约, 带位移的 QR 算法]
+    prerequisites: [b05-householder-givens-qr, c05-spectral-theorem-polar]
+    history: Brezinski 2022
+    references: []
+  - id: b05-iterative-methods
+    name: 大型稀疏线性系统的定常迭代法
+    field: b05
+    concepts: [Jacobi 与 Gauss–Seidel 迭代, SOR 超松弛, 收敛性与谱半径, 大型稀疏系统的实践]
+    prerequisites: [b05-lu-cholesky]
+    history: Brezinski 2022
+    references: []
+  - id: b05-krylov-conjugate-gradient
+    name: Krylov 子空间方法与共轭梯度法
+    field: b05
+    concepts: [Krylov 子空间, 共轭梯度法, 共轭梯度法的收敛率与条件数, 预条件]
+    prerequisites: [b05-iterative-methods]
+    history: Hestenes–Stiefel 1952
+    references: []
+    aliases: [CG]
+  - id: b05-matrix-calculus-autodiff
+    name: 矩阵微积分与自动微分 / 反向传播
+    field: b05
+    concepts: [标量对向量与矩阵的导数, 迹技巧与常用求导公式, 计算图与自动微分, 反向传播]
+    prerequisites: [b05-norms-conditioning, c03-chain-rule-jacobian]
+    history: Griewank 2012
+    references: []
+  - id: b05-graph-laplacian-spectral
+    name: 图 Laplacian 矩阵、谱聚类与随机矩阵算法初步
+    field: b05
+    concepts: [图 Laplacian 及其半正定性, Fiedler 向量与谱聚类, PageRank 与随机游走, 随机化 SVD 初步]
+    prerequisites: [b05-eigenvalue-algorithms, b05-svd-low-rank-pca]
+    history: Brin–Page 1998
+    references: []
+retired: []

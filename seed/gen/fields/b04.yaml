@@ -1,0 +1,72 @@
+# 领域 b04「数值分析（科学计算与微分方程数值解）」（分支，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/b04.yaml -p
+version: 1
+fields:
+  - {id: b04, name: 数值分析（科学计算与微分方程数值解）, kind: branch, order: 4}
+topics:
+  - id: b04-floating-point-conditioning
+    name: 浮点运算、舍入误差、条件数与数值稳定性
+    field: b04
+    concepts: [IEEE 754 浮点数与机器精度, 舍入误差与相近数相减, 问题的条件数, 算法的向后稳定性]
+    prerequisites: [c02-derivative-rules]
+    history: Goldstine 1977
+    references: []
+  - id: b04-root-finding
+    name: 非线性方程求根算法
+    field: b04
+    concepts: [二分法, 不动点迭代与收敛阶, Newton 法及其二次收敛, 割线法与多元 Newton 法]
+    prerequisites: [b04-floating-point-conditioning, c02-taylor-convexity]
+    history: Goldstine 1977
+    references: []
+  - id: b04-polynomial-spline-interpolation
+    name: 多项式插值与分段样条插值
+    field: b04
+    concepts: [Lagrange 与 Newton 插值, 插值余项, Runge 现象与 Chebyshev 节点, 三次样条插值]
+    prerequisites: [b04-floating-point-conditioning, c02-taylor-convexity, c04-gauss-elimination]
+    history: Goldstine 1977
+    references: []
+  - id: b04-orthogonal-polynomials-approximation
+    name: 正交多项式与最佳平方逼近
+    field: b04
+    concepts: [函数空间上的内积与正交性, Legendre 与 Chebyshev 多项式, 三项递推, 最佳平方逼近]
+    prerequisites: [b04-polynomial-spline-interpolation, c04-inner-product-orthogonality, c02-riemann-integral]
+    history: Goldstine 1977
+    references: []
+  - id: b04-numerical-differentiation-integration
+    name: 数值微分与数值积分
+    field: b04
+    concepts: [有限差分与截断误差, 梯形与 Simpson 公式, Richardson 外推, Romberg 积分]
+    prerequisites: [b04-polynomial-spline-interpolation]
+    history: Goldstine 1977
+    references: []
+    aliases: [Newton–Cotes 公式]
+  - id: b04-gauss-quadrature
+    name: Gauss 求积公式
+    field: b04
+    concepts: [代数精度, Gauss 求积的节点与权重, 正交多项式零点与最高代数精度, Gauss–Legendre 与 Gauss–Chebyshev 公式]
+    prerequisites: [b04-orthogonal-polynomials-approximation, b04-numerical-differentiation-integration]
+    history: Goldstine 1977
+    references: []
+  - id: b04-runge-kutta
+    name: 常微分方程数值解：单步法与 Runge–Kutta 法
+    field: b04
+    concepts: [Euler 法与隐式 Euler 法, 局部截断误差与整体收敛阶, Runge–Kutta 方法与 RK4, 步长控制初步]
+    prerequisites: [b04-numerical-differentiation-integration, c06-existence-uniqueness]
+    history: Runge 1895; Kutta 1901
+    references: []
+  - id: b04-multistep-stiffness
+    name: 线性多步法、零稳定性与刚性方程
+    field: b04
+    concepts: [Adams 多步法, 零稳定性与 Dahlquist 等价定理, 绝对稳定域与 A-稳定性, 刚性方程与隐式求解]
+    prerequisites: [b04-runge-kutta, c06-linear-systems-matrix-exponential]
+    history: Dahlquist 1956
+    references: []
+    aliases: [Stiffness]
+  - id: b04-finite-differences-pdes
+    name: 偏微分方程有限差分法初步
+    field: b04
+    concepts: [Poisson 方程的五点差分格式, 热方程的显式格式与 Crank–Nicolson 格式, CFL 条件, von Neumann 稳定性分析]
+    prerequisites: [b04-multistep-stiffness]
+    history: Courant–Friedrichs–Lewy 1928
+    references: []
+retired: []

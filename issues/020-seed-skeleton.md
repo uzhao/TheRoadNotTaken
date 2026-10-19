@@ -18,11 +18,11 @@ status: open
 
 ## Acceptance criteria
 
-- [ ] 22 个领域、约 209 个主题全部入库，`kind` 正确标注主干/分支
-- [ ] 每个主题有稳定 slug id、3–5 个概念、直接前置、`history` 索引；主干主题不依赖分支
-- [ ] 整份骨架通过 019 的校验，前置图无环、所有主题从初始前沿可达
+- [x] 22 个领域、约 209 个主题全部入库，`kind` 正确标注主干/分支
+- [x] 每个主题有稳定 slug id、3–5 个概念、直接前置、`history` 索引；主干主题不依赖分支
+- [x] 整份骨架通过 019 的校验，前置图无环、所有主题从初始前沿可达
 - [ ] 作者对每个领域的前置清单逐一确认过
-- [ ] 种子骨架 `version: 1` 提交到仓库的种子骨架目录
+- [x] 种子骨架 `version: 1` 提交到仓库的种子骨架目录
 
 ## Comments
 
@@ -33,3 +33,5 @@ status: open
 - 测试按命令行缝，agy 走 `PATH` 上的假 agy（`backend/tests/test_seedgen_cli.py`，含 exit 3 / 无 `structured_output` / schema 违规 / 序号与前缀错误 / 跨领域 id 混入等故障用例）。`test_seed_skeleton_when_present_passes_validation_with_22_fields` 在 `seed/skeleton.yaml` 出现后生效。
 - 术语表缺口：领域之间的前置关系（代码里叫 `upstream`，文档里写「上游领域 / 领域级前置」）尚无术语，留给 `/domain-modeling`。
 - 作者步骤见 [seed/README.md](../seed/README.md)「生成流程」：对 22 个领域各跑一次 `run`、审片段，再各跑一次 `cross`、审前置清单，最后 `merge -p`，把 `seed/skeleton.yaml` 与 `seed/gen/fields/*.yaml` 一起提交，然后按验收条件勾选并关闭本票。
+
+**种子骨架第一版已生成并提交（由 Claude 代替 agy 撰写，待作者审核）：** 作者在 cloud 会话里无法运行 agy，于是按作者要求由 Claude 逐领域撰写 209 个主题的 id、名称与别名、概念、领域内前置、历史索引与跨领域前置，再通过同一条流水线（`run` → `cross` → `merge`，agy 换成回放脚本）落盘，所有本地检查与 019 的校验照常生效：`seed/skeleton.yaml` 通过（22 领域、209 主题；初始前沿 4 个：命题逻辑、R^n 欧氏结构、Gauss 消元、概率空间），片段在 `seed/gen/fields/*.yaml`。`cross` 对 c09、c14、b01、b06、b07、b08 用了 `--upstream` 扩大候选领域（分别加 c07+c01、c04、c02、c14、c14、c02+c14）。剩下的验收项「作者对每个领域的前置清单逐一确认过」留给作者：`theroadnottaken-skeleton seed/skeleton.yaml -p` 输出每领域清单，改片段后重新 `merge`，或直接改 `seed/skeleton.yaml`。

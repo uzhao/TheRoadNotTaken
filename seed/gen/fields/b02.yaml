@@ -1,0 +1,73 @@
+# 领域 b02「数理统计与统计推断」（分支，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/b02.yaml -p
+version: 1
+fields:
+  - {id: b02, name: 数理统计与统计推断, kind: branch, order: 2}
+topics:
+  - id: b02-statistical-models-samples
+    name: 统计模型、样本、经验分布与次序统计量
+    field: b02
+    concepts: [统计模型与参数, 样本、统计量与样本矩, 经验分布函数, 次序统计量与分位数]
+    prerequisites: [c14-lln-clt, c14-joint-distributions]
+    history: Hald 1998
+    references: []
+  - id: b02-sampling-distributions
+    name: 正态总体三大抽样分布
+    field: b02
+    concepts: [χ² 分布, t 分布与 F 分布, 正态样本均值与方差的独立性, Cochran 定理]
+    prerequisites: [b02-statistical-models-samples, c14-covariance-multivariate-normal, c04-inner-product-orthogonality]
+    history: Hald 1998
+    references: []
+    aliases: [χ²、t、F 分布]
+  - id: b02-point-estimation-mle
+    name: 点估计：矩估计与极大似然估计
+    field: b02
+    concepts: [矩估计, 似然函数与极大似然估计, 极大似然估计的不变性, 指数族分布]
+    prerequisites: [b02-statistical-models-samples]
+    history: Hald 1998
+    references: []
+    aliases: [MoM, MLE]
+  - id: b02-sufficiency-rao-blackwell
+    name: 充分统计量、完备统计量与 Rao–Blackwell 定理
+    field: b02
+    concepts: [充分统计量与因子分解定理, 完备统计量, Rao–Blackwell 定理, Lehmann–Scheffé 定理与 UMVUE]
+    prerequisites: [b02-point-estimation-mle, c14-conditional-expectation]
+    history: Hald 1998
+    references: []
+  - id: b02-fisher-information-cramer-rao
+    name: 估计量评价、Fisher 信息量与 Cramér–Rao 下界
+    field: b02
+    concepts: [无偏性与均方误差, Fisher 信息量, Cramér–Rao 不等式, 有效估计]
+    prerequisites: [b02-point-estimation-mle]
+    history: Hald 1998
+    references: []
+  - id: b02-asymptotics-mle
+    name: 大样本渐近理论与极大似然估计的渐近正态性
+    field: b02
+    concepts: [相合性, Delta 方法, 极大似然估计的渐近正态性, 渐近有效性]
+    prerequisites: [b02-fisher-information-cramer-rao]
+    history: Hald 1998
+    references: []
+  - id: b02-confidence-intervals
+    name: 区间估计与枢轴量法
+    field: b02
+    concepts: [置信区间与覆盖率, 枢轴量法, 正态总体的精确置信区间, 大样本近似置信区间]
+    prerequisites: [b02-sampling-distributions, b02-asymptotics-mle]
+    history: Hald 1998
+    references: []
+  - id: b02-hypothesis-testing-neyman-pearson
+    name: 假设检验基础、两类错误与 Neyman–Pearson 引理
+    field: b02
+    concepts: [原假设与备择假设, 两类错误与功效函数, p 值, Neyman–Pearson 引理与最优势检验]
+    prerequisites: [b02-sampling-distributions]
+    history: Hald 1998
+    references: []
+  - id: b02-lrt-goodness-of-fit-bayes
+    name: 似然比检验、拟合优度检验与 Bayes 推断
+    field: b02
+    concepts: [似然比检验与 Wilks 定理, χ² 拟合优度检验与独立性检验, 先验与后验, 共轭先验与 Bayes 估计]
+    prerequisites: [b02-hypothesis-testing-neyman-pearson, b02-asymptotics-mle]
+    history: Hald 1998
+    references: []
+    aliases: [LRT]
+retired: []

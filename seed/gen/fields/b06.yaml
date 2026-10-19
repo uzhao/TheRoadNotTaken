@@ -1,0 +1,73 @@
+# 领域 b06「最优化方法与凸优化」（分支，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/b06.yaml -p
+version: 1
+fields:
+  - {id: b06, name: 最优化方法与凸优化, kind: branch, order: 6}
+topics:
+  - id: b06-convex-sets-functions
+    name: 凸集与凸函数
+    field: b06
+    concepts: [仿射集与凸集, 分离与支撑超平面, 凸函数的一阶与二阶判据, 保凸运算与次梯度]
+    prerequisites: [c03-extrema-lagrange, c04-symmetric-positive-definite]
+    history: Tikhomirov 1990
+    references: []
+  - id: b06-linear-programming-polyhedra
+    name: 线性规划标准形、多面体顶点与基本可行解
+    field: b06
+    concepts: [线性规划建模与标准形, 凸多面体与极点, 基本可行解, 线性规划基本定理]
+    prerequisites: [b06-convex-sets-functions, c04-linear-independence-basis]
+    history: Dantzig 1982
+    references: []
+    aliases: [LP]
+  - id: b06-simplex-method
+    name: 单纯形法
+    field: b06
+    concepts: [基变换与枢轴旋转, 检验数与最优判据, 退化与 Bland 规则, 两阶段法]
+    prerequisites: [b06-linear-programming-polyhedra]
+    history: Dantzig 1982
+    references: []
+    aliases: [Simplex Algorithm]
+  - id: b06-lp-duality
+    name: 线性规划对偶理论、互补松弛与灵敏度分析
+    field: b06
+    concepts: [弱对偶与强对偶定理, Farkas 引理, 互补松弛与影子价格, 零和博弈与 Minimax 定理]
+    prerequisites: [b06-simplex-method]
+    history: Dantzig 1982
+    references: []
+  - id: b06-network-flows
+    name: 网络流优化：最短路、最大流最小割与匹配
+    field: b06
+    concepts: [最短路, 最大流最小割定理, 二分匹配与运输问题, 全单模性与整数解]
+    prerequisites: [b06-lp-duality]
+    history: Ford–Fulkerson 1956
+    references: []
+  - id: b06-unconstrained-optimization
+    name: 无约束优化算法：梯度下降、线搜索与 Newton / 拟 Newton 法
+    field: b06
+    concepts: [梯度下降与线搜索, 收敛率与条件数, Newton 法, 拟 Newton 法与 BFGS]
+    prerequisites: [b06-convex-sets-functions, b05-norms-conditioning]
+    history: Cauchy 1847
+    references: []
+  - id: b06-kkt-lagrange-duality
+    name: 约束非线性优化、Lagrange 对偶与 KKT 条件
+    field: b06
+    concepts: [Lagrange 函数与对偶函数, 弱对偶与 Slater 条件, KKT 条件, 对偶的例子：支持向量机与最小二乘]
+    prerequisites: [b06-lp-duality, b06-unconstrained-optimization]
+    history: Kuhn–Tucker 1951
+    references: []
+  - id: b06-stochastic-first-order
+    name: 机器学习一阶优化：SGD、动量法与近端梯度法
+    field: b06
+    concepts: [经验风险最小化, 随机梯度下降及其方差, 动量与 Nesterov 加速, 近端梯度与 ℓ1 正则化]
+    prerequisites: [b06-unconstrained-optimization, b05-matrix-calculus-autodiff]
+    history: Robbins–Monro 1951
+    references: []
+  - id: b06-dynamic-programming
+    name: 动态规划与 Bellman 最优性原理
+    field: b06
+    concepts: [多阶段决策与最优性原理, Bellman 方程, 离散动态规划的例子, Markov 决策过程导引]
+    prerequisites: [c14-conditional-expectation]
+    history: Bellman 1957
+    references: []
+    aliases: [Dynamic Programming]
+retired: []

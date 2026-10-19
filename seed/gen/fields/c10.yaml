@@ -1,0 +1,72 @@
+# 领域 c10「复分析（复变函数）」（主干，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c10.yaml -p
+version: 1
+fields:
+  - {id: c10, name: 复分析（复变函数）, kind: core, order: 10}
+topics:
+  - id: c10-holomorphic-functions
+    name: 复平面、Riemann 球面与全纯函数
+    field: c10
+    concepts: [复平面与 Riemann 球面, 复可微性与全纯函数, Cauchy–Riemann 方程, 调和函数与调和共轭]
+    prerequisites: [c03-partial-derivatives-gradient]
+    history: Kline Ch.27
+    references: []
+    aliases: [Cauchy–Riemann 方程]
+  - id: c10-power-series-elementary-functions
+    name: 复幂级数与初等超越函数
+    field: c10
+    concepts: [复幂级数与收敛圆, 复指数、三角与双曲函数, 多值函数与对数, 支点与支割线]
+    prerequisites: [c10-holomorphic-functions, c02-power-fourier-series]
+    history: Kline Ch.27
+    references: []
+  - id: c10-cauchy-theorem
+    name: 复积分、Cauchy 积分定理与原函数
+    field: c10
+    concepts: [复积分与围道积分, ML 估计, Goursat 定理, 单连通域上的 Cauchy 积分定理与原函数]
+    prerequisites: [c10-holomorphic-functions, c03-line-integrals]
+    history: Kline Ch.27
+    references: []
+  - id: c10-cauchy-formula-analyticity
+    name: Cauchy 积分公式、高阶导数与解析性
+    field: c10
+    concepts: [Cauchy 积分公式, 全纯函数的无穷可微性与幂级数展开, Cauchy 不等式与 Liouville 定理, 代数基本定理与 Morera 定理]
+    prerequisites: [c10-cauchy-theorem, c10-power-series-elementary-functions]
+    history: Kline Ch.27
+    references: []
+  - id: c10-identity-maximum-modulus-schwarz
+    name: 唯一性定理、最大模原理与 Schwarz 引理
+    field: c10
+    concepts: [零点的孤立性与唯一性定理, 解析延拓, 最大模原理, Schwarz 引理与单位圆盘的自同构]
+    prerequisites: [c10-cauchy-formula-analyticity]
+    history: Kline Ch.27
+    references: []
+  - id: c10-laurent-singularities
+    name: Laurent 级数与孤立奇点分类
+    field: c10
+    concepts: [圆环上的 Laurent 展开, 孤立奇点的分类, Casorati–Weierstrass 定理, 亚纯函数]
+    prerequisites: [c10-cauchy-formula-analyticity]
+    history: Kline Ch.27
+    references: []
+  - id: c10-residues
+    name: 留数定理与实定积分计算
+    field: c10
+    concepts: [留数及其计算, 留数定理, 三角积分与有理函数积分, Jordan 引理与含支割线的围道积分]
+    prerequisites: [c10-laurent-singularities, c02-improper-integrals]
+    history: Kline Ch.27
+    references: []
+  - id: c10-argument-principle-rouche
+    name: 辐角原理与 Rouché 定理
+    field: c10
+    concepts: [对数导数与环绕数, 辐角原理, Rouché 定理, 开映射定理]
+    prerequisites: [c10-residues]
+    history: Kline Ch.27
+    references: []
+  - id: c10-conformal-mappings
+    name: 共形映射、Möbius 变换与 Riemann 映射定理
+    field: c10
+    concepts: [保角性与共形映射, Möbius 变换及其保圆性, Riemann 映射定理, 平面位势问题的应用]
+    prerequisites: [c10-identity-maximum-modulus-schwarz, c10-argument-principle-rouche]
+    history: Kline Ch.27
+    references: []
+    aliases: [保角变换]
+retired: []

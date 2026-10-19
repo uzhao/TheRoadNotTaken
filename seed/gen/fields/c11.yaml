@@ -1,0 +1,72 @@
+# 领域 c11「实变函数与测度论」（主干，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c11.yaml -p
+version: 1
+fields:
+  - {id: c11, name: 实变函数与测度论, kind: core, order: 11}
+topics:
+  - id: c11-lebesgue-outer-measure
+    name: Riemann 积分的局限与 Lebesgue 外测度
+    field: c11
+    concepts: [Riemann 积分的局限, Cantor 三分集, Lebesgue 外测度的定义, 外测度的次可加性]
+    prerequisites: [c02-riemann-integral, c02-numerical-series]
+    history: Kline Ch.44
+    references: []
+  - id: c11-sigma-algebras-measures
+    name: σ-代数、可测集与测度空间
+    field: c11
+    concepts: [Carathéodory 条件与可测集, Lebesgue 可测集与 Borel 集, 测度的可数可加性与一般测度空间, Vitali 不可测集]
+    prerequisites: [c11-lebesgue-outer-measure]
+    history: Kline Ch.44
+    references: []
+  - id: c11-measurable-functions
+    name: 可测函数及其收敛性
+    field: c11
+    concepts: [可测函数与简单函数逼近, 几乎处处, 依测度收敛与 Riesz 定理, Egorov 定理与 Lusin 定理]
+    prerequisites: [c11-sigma-algebras-measures]
+    history: Kline Ch.44
+    references: []
+  - id: c11-lebesgue-integral
+    name: Lebesgue 积分的构造与基本性质
+    field: c11
+    concepts: [非负简单函数的积分, 非负可测函数的积分, 一般可积函数与积分的线性性, 与 Riemann 积分的关系]
+    prerequisites: [c11-measurable-functions]
+    history: Kline Ch.44
+    references: []
+  - id: c11-convergence-theorems
+    name: 三大极限定理
+    field: c11
+    concepts: [单调收敛定理, Fatou 引理, 控制收敛定理, 积分号下求导与级数逐项积分]
+    prerequisites: [c11-lebesgue-integral, c02-uniform-convergence]
+    history: Kline Ch.44
+    references: []
+    aliases: [单调收敛、Fatou 引理、控制收敛]
+  - id: c11-product-measures-fubini
+    name: 乘积测度与 Fubini–Tonelli 定理
+    field: c11
+    concepts: [乘积 σ-代数与乘积测度, Tonelli 定理, Fubini 定理, 应用：卷积与分布函数]
+    prerequisites: [c11-convergence-theorems, c03-multiple-integrals]
+    history: Kline Ch.44
+    references: []
+  - id: c11-differentiation-absolute-continuity
+    name: 有界变差函数、绝对连续函数与 Lebesgue 微分定理
+    field: c11
+    concepts: [有界变差函数, Vitali 覆盖引理与单调函数几乎处处可微, 绝对连续函数, Lebesgue 微分定理与微积分基本定理]
+    prerequisites: [c11-convergence-theorems]
+    history: Kline Ch.44
+    references: []
+  - id: c11-lp-spaces
+    name: L^p 空间与完备性
+    field: c11
+    concepts: [Hölder 与 Minkowski 不等式, L^p 空间与范数, Riesz–Fischer 完备性定理, 连续函数的稠密性]
+    prerequisites: [c11-convergence-theorems, c09-completeness-contraction]
+    history: Kline Ch.44
+    references: []
+    aliases: [Riesz–Fischer 定理]
+  - id: c11-radon-nikodym
+    name: 符号测度、Hahn–Jordan 分解与 Radon–Nikodym 定理
+    field: c11
+    concepts: [符号测度与 Hahn 分解, Jordan 分解, 绝对连续与奇异测度, Radon–Nikodym 定理与 Lebesgue 分解]
+    prerequisites: [c11-lp-spaces, c11-differentiation-absolute-continuity]
+    history: Kline Ch.44
+    references: []
+retired: []

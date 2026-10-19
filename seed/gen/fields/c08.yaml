@@ -1,0 +1,72 @@
+# 领域 c08「抽象代数 II：模论、Galois 理论与表示论初步」（主干，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c08.yaml -p
+version: 1
+fields:
+  - {id: c08, name: 抽象代数 II：模论、Galois 理论与表示论初步, kind: core, order: 8}
+topics:
+  - id: c08-modules-free-modules
+    name: 环上的模、子模与自由模
+    field: c08
+    concepts: [模与模同态, 子模与商模, 自由模与秩, Noether 模与 Hilbert 基定理]
+    prerequisites: [c07-ideals-quotient-rings, c05-abstract-vector-spaces]
+    history: Kline Ch.49
+    references: []
+  - id: c08-modules-over-pid
+    name: 主理想整环上的有限生成模结构定理
+    field: c08
+    concepts: [挠模与自由部分, 不变因子分解, 初等因子分解, 有限生成交换群与 Jordan 标准形的统一]
+    prerequisites: [c08-modules-free-modules, c07-factorization-domains, c05-jordan-rational-forms]
+    history: Kline Ch.33, 49
+    references: []
+    aliases: [PID 上的模结构定理]
+  - id: c08-tensor-exterior-algebra
+    name: 张量积与外代数
+    field: c08
+    concepts: [张量积的构造与泛性质, 张量积的基本性质, 对称代数, 外代数与行列式]
+    prerequisites: [c08-modules-free-modules]
+    history: Kline Ch.32, 48
+    references: []
+  - id: c08-field-extensions-splitting
+    name: 域扩张、代数元与分裂域
+    field: c08
+    concepts: [域扩张与扩张次数, 塔律, 代数元与极小多项式, 分裂域与尺规作图不可能性]
+    prerequisites: [c07-factorization-domains, c05-abstract-vector-spaces]
+    history: Kline Ch.31
+    references: []
+  - id: c08-separable-normal-finite-fields
+    name: 可分扩张、正规扩张与有限域
+    field: c08
+    concepts: [重根与形式导数, 可分扩张, 正规扩张, 有限域的结构与 Frobenius 自同构]
+    prerequisites: [c08-field-extensions-splitting]
+    history: Kline Ch.49
+    references: []
+  - id: c08-galois-correspondence
+    name: Galois 群与 Galois 基本定理
+    field: c08
+    concepts: [域自同构群, Galois 扩张, Galois 基本定理, 分圆域与二次扩张的例子]
+    prerequisites: [c08-separable-normal-finite-fields]
+    history: Kline Ch.31
+    references: []
+  - id: c08-solvability-by-radicals
+    name: 可解群与高次方程根式可解性
+    field: c08
+    concepts: [分圆扩张与循环扩张, 根式扩张, 可解群, Abel–Ruffini 定理]
+    prerequisites: [c08-galois-correspondence, c07-finite-groups-sylow]
+    history: Kline Ch.31
+    references: []
+    aliases: [Abel–Ruffini 定理]
+  - id: c08-representations-maschke
+    name: 有限群的线性表示与 Maschke 定理
+    field: c08
+    concepts: [群表示与群代数模, 不变子空间与不可约表示, Maschke 定理, Schur 引理]
+    prerequisites: [c08-modules-free-modules, c07-group-actions-counting, c05-spectral-theorem-polar]
+    history: Hawkins 2000
+    references: []
+  - id: c08-character-theory
+    name: 特征标理论与正交关系
+    field: c08
+    concepts: [特征标及其基本性质, 第一与第二正交关系, 特征标表, 正则表示的分解]
+    prerequisites: [c08-representations-maschke]
+    history: Hawkins 2000
+    references: []
+retired: []

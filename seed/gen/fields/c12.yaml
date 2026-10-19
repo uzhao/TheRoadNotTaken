@@ -1,0 +1,73 @@
+# 领域 c12「泛函分析」（主干，9 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c12.yaml -p
+version: 1
+fields:
+  - {id: c12, name: 泛函分析, kind: core, order: 12}
+topics:
+  - id: c12-normed-banach-spaces
+    name: 赋范线性空间与 Banach 空间
+    field: c12
+    concepts: [范数与赋范空间, 有限维范数的等价性与 Riesz 引理, Banach 空间的例子, 可分性与 Schauder 基初步]
+    prerequisites: [c11-lp-spaces, c09-completeness-contraction, c05-abstract-vector-spaces]
+    history: Kline Ch.46
+    references: []
+  - id: c12-bounded-operators
+    name: 有界线性算子与算子范数
+    field: c12
+    concepts: [有界线性算子与算子范数, 连续性与有界性的等价, 算子空间的完备性, 对偶空间与例子]
+    prerequisites: [c12-normed-banach-spaces, c05-dual-spaces]
+    history: Kline Ch.46
+    references: []
+  - id: c12-hilbert-spaces
+    name: Hilbert 空间、正交投影与正交系
+    field: c12
+    concepts: [内积空间与平行四边形法则, 闭凸集上的最佳逼近, 正交分解, 标准正交基与 Parseval 等式]
+    prerequisites: [c12-normed-banach-spaces, c05-adjoint-normal-operators]
+    history: Kline Ch.46
+    references: []
+  - id: c12-riesz-representation-adjoint
+    name: Hilbert 空间 Riesz 表示定理与伴随算子
+    field: c12
+    concepts: [Riesz 表示定理, Hilbert 伴随算子, 自伴、酉与正规算子, Lax–Milgram 定理初步]
+    prerequisites: [c12-hilbert-spaces, c12-bounded-operators]
+    history: Kline Ch.46
+    references: []
+  - id: c12-hahn-banach
+    name: Hahn–Banach 延拓与分离定理
+    field: c12
+    concepts: [Hahn–Banach 延拓定理, 对偶空间的非平凡性, 凸集的分离定理, 二次对偶与自反空间]
+    prerequisites: [c12-bounded-operators]
+    history: Kline Ch.46
+    references: []
+  - id: c12-baire-uniform-boundedness
+    name: Baire 纲定理与一致有界原理
+    field: c12
+    concepts: [Baire 纲定理, 一致有界原理, 共鸣定理的应用, Fourier 级数发散的例子]
+    prerequisites: [c12-bounded-operators]
+    history: Kline Ch.46
+    references: []
+    aliases: [Banach–Steinhaus 定理]
+  - id: c12-open-mapping-closed-graph
+    name: 开映射定理、逆算子定理与闭图像定理
+    field: c12
+    concepts: [开映射定理, 逆算子定理, 闭算子, 闭图像定理]
+    prerequisites: [c12-baire-uniform-boundedness]
+    history: Kline Ch.46
+    references: []
+  - id: c12-weak-convergence-alaoglu
+    name: 弱收敛、弱*收敛与 Banach–Alaoglu 定理
+    field: c12
+    concepts: [弱拓扑与弱收敛, 弱*拓扑, Banach–Alaoglu 定理, 自反空间中的弱列紧性]
+    prerequisites: [c12-hahn-banach, c09-compactness]
+    history: Kline Ch.46
+    references: []
+  - id: c12-compact-operators-spectral
+    name: 紧算子与自伴紧算子谱定理
+    field: c12
+    concepts: [谱与预解集, 紧算子及其性质, Fredholm 二择一, 紧自伴算子的谱定理]
+    prerequisites: [c12-riesz-representation-adjoint, c12-open-mapping-closed-graph, c09-compactness-metric-heine-borel, 
+          c05-spectral-theorem-polar]
+    history: Kline Ch.45
+    references: []
+    aliases: [Hilbert–Schmidt 定理]
+retired: []

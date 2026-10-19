@@ -1,0 +1,1553 @@
+# 种子骨架 version 1：22 个领域、209 个主题（主干 14 个领域、分支 8 个领域）。
+# 由 theroadnottaken-seed merge 从 seed/gen/fields/*.yaml 拼装；首次启动时复制到数据目录，此后数据目录副本为权威。
+# 校验：theroadnottaken-skeleton seed/skeleton.yaml -p
+version: 1
+fields:
+  - {id: c01, name: 数学语言、集合与数论基础, kind: core, order: 1}
+  - {id: c02, name: 单变量微积分与数学分析基础, kind: core, order: 2}
+  - {id: c03, name: 多元微积分与向量分析, kind: core, order: 3}
+  - {id: c04, name: 线性代数 I：矩阵、方程组与几何直观, kind: core, order: 4}
+  - {id: c05, name: 线性代数 II：抽象空间、算子与标准形, kind: core, order: 5}
+  - {id: c06, name: 常微分方程与动力系统初步, kind: core, order: 6}
+  - {id: c07, name: 抽象代数 I：群论、环与域初步, kind: core, order: 7}
+  - {id: c08, name: 抽象代数 II：模论、Galois 理论与表示论初步, kind: core, order: 8}
+  - {id: c09, name: 度量空间与点集拓扑（含基本群初步）, kind: core, order: 9}
+  - {id: c10, name: 复分析（复变函数）, kind: core, order: 10}
+  - {id: c11, name: 实变函数与测度论, kind: core, order: 11}
+  - {id: c12, name: 泛函分析, kind: core, order: 12}
+  - {id: c13, name: 微分几何与流形初步, kind: core, order: 13}
+  - {id: c14, name: 概率论基础, kind: core, order: 14}
+  - {id: b01, name: 偏微分方程与数学物理方法, kind: branch, order: 1}
+  - {id: b02, name: 数理统计与统计推断, kind: branch, order: 2}
+  - {id: b03, name: 随机过程与马尔可夫链, kind: branch, order: 3}
+  - {id: b04, name: 数值分析（科学计算与微分方程数值解）, kind: branch, order: 4}
+  - {id: b05, name: 数值线性代数与数据矩阵方法（ML 数学）, kind: branch, order: 5}
+  - {id: b06, name: 最优化方法与凸优化, kind: branch, order: 6}
+  - {id: b07, name: 统计建模、回归分析与统计学习, kind: branch, order: 7}
+  - {id: b08, name: 组合数学、图论与计算理论（CS 数学）, kind: branch, order: 8}
+topics:
+  # ---- c01 数学语言、集合与数论基础（主干，10 个主题）
+  - id: c01-logic-and-proof
+    name: 命题逻辑与证明方法
+    field: c01
+    concepts: [命题、蕴含与量词, 逆否命题与反证法, 数学归纳法与强归纳法, 证明的书写规范]
+    prerequisites: []
+    history: Kline Ch.3, 51
+    references: []
+  - id: c01-sets-relations-maps
+    name: 集合、关系与映射
+    field: c01
+    concepts: [集合运算与幂集, 关系与函数的定义, 单射、满射与双射, 逆映射、像与原像]
+    prerequisites: [c01-logic-and-proof]
+    history: Kline Ch.41
+    references: []
+  - id: c01-equivalence-quotient
+    name: 等价关系与商集
+    field: c01
+    concepts: [等价关系与等价类, 集合的划分, 商集与商映射, 容斥原理]
+    prerequisites: [c01-sets-relations-maps]
+    history: Kline Ch.41
+    references: []
+  - id: c01-divisibility-euclid
+    name: 整除与 Euclid 算法
+    field: c01
+    concepts: [带余除法, 最大公因子与 Euclid 算法, Bézout 等式, 线性丢番图方程]
+    prerequisites: [c01-logic-and-proof]
+    history: Kline Ch.4
+    references: []
+  - id: c01-primes-fundamental-theorem
+    name: 素数与算术基本定理
+    field: c01
+    concepts: [素数与合数, 算术基本定理及其证明, Euclid 的素数无穷性证明, 素数分布初探]
+    prerequisites: [c01-divisibility-euclid]
+    history: Kline Ch.4, 34
+    references: []
+  - id: c01-congruence-modular
+    name: 同余与模算术
+    field: c01
+    concepts: [同余及其基本性质, 同余类环 Z_n, 线性同余方程, 中国剩余定理]
+    prerequisites: [c01-divisibility-euclid, c01-equivalence-quotient]
+    history: Kline Ch.34
+    references: []
+  - id: c01-fermat-euler-wilson
+    name: Fermat 小定理、Euler 定理与 Wilson 定理
+    field: c01
+    concepts: [Euler φ 函数, Fermat 小定理与 Euler 定理, Wilson 定理, 模幂运算与 RSA 公钥密码]
+    prerequisites: [c01-congruence-modular, c01-primes-fundamental-theorem]
+    history: Kline Ch.13, 34; Diffie 1988
+    references: []
+  - id: c01-primitive-roots-quadratic-residues
+    name: 原根与二次剩余
+    field: c01
+    concepts: [模 p 乘法群的循环性与原根, 二次剩余与 Legendre 符号, Euler 判别法, 二次互反律]
+    prerequisites: [c01-fermat-euler-wilson]
+    history: Kline Ch.34
+    references: []
+  - id: c01-rationals-irrationals-supremum
+    name: 有理数、无理数与上确界公理
+    field: c01
+    concepts: [√2 与 e 的无理性, 有序域公理, 上确界公理, Archimedes 性质与有理数的稠密性]
+    prerequisites: [c01-sets-relations-maps, c01-primes-fundamental-theorem]
+    history: Kline Ch.3, 41
+    references: []
+  - id: c01-countable-uncountable
+    name: 可数集与不可数集
+    field: c01
+    concepts: [基数比较与 Schröder–Bernstein 定理, 可数集与 Q 的可数性, Cantor 对角线法与 R 的不可数性, 连续统假设简介]
+    prerequisites: [c01-rationals-irrationals-supremum]
+    history: Kline Ch.41
+    references: []
+  # ---- c02 单变量微积分与数学分析基础（主干，14 个主题）
+  - id: c02-real-completeness
+    name: 实数完备性与确界原理
+    field: c02
+    concepts: [Dedekind 分割与 Cauchy 列的直观, 确界存在定理, 区间套定理, 完备性诸等价表述概览]
+    prerequisites: [c01-rationals-irrationals-supremum]
+    history: Kline Ch.41
+    references: []
+  - id: c02-sequence-limits
+    name: 数列极限与收敛准则
+    field: c02
+    concepts: [ε-N 定义, 极限的四则运算与保序性, 夹逼定理, 单调有界定理与数 e]
+    prerequisites: [c02-real-completeness]
+    history: Kline Ch.40
+    references: []
+  - id: c02-subsequences-cauchy
+    name: 子列、Bolzano–Weierstrass 定理与 Cauchy 收敛原理
+    field: c02
+    concepts: [子列与 Bolzano–Weierstrass 定理, 上极限与下极限, Cauchy 收敛原理, 完备性诸命题的等价]
+    prerequisites: [c02-sequence-limits]
+    history: Kline Ch.40
+    references: []
+  - id: c02-function-limits-continuity
+    name: 函数极限与连续函数
+    field: c02
+    concepts: [ε-δ 定义与归结原则, 单侧极限与无穷极限, 连续函数的局部性质, 间断点分类]
+    prerequisites: [c02-sequence-limits]
+    history: Kline Ch.40
+    references: []
+  - id: c02-continuous-on-closed-interval
+    name: 闭区间上连续函数的整体性质
+    field: c02
+    concepts: [介值定理, 有界性与最值定理, 一致连续性, Cantor 定理]
+    prerequisites: [c02-function-limits-continuity, c02-subsequences-cauchy]
+    history: Kline Ch.40
+    references: []
+  - id: c02-derivative-rules
+    name: 导数、微分与求导法则
+    field: c02
+    concepts: [切线与瞬时变化率, 求导法则与链式法则, 反函数与隐函数求导, 高阶导数与 Leibniz 公式]
+    prerequisites: [c02-function-limits-continuity]
+    history: Kline Ch.17
+    references: []
+  - id: c02-mean-value-theorems
+    name: 微分中值定理
+    field: c02
+    concepts: [Fermat 引理与 Rolle 定理, Lagrange 中值定理及其推论, Cauchy 中值定理, Darboux 导数介值定理]
+    prerequisites: [c02-derivative-rules, c02-continuous-on-closed-interval]
+    history: Kline Ch.40
+    references: []
+    aliases: [Rolle、Lagrange、Cauchy 中值定理]
+  - id: c02-taylor-convexity
+    name: L'Hôpital 法则、Taylor 公式与凸函数
+    field: c02
+    concepts: [L'Hôpital 法则, 带 Peano 与 Lagrange 余项的 Taylor 公式, 极值判别, 凸函数与 Jensen 不等式]
+    prerequisites: [c02-mean-value-theorems]
+    history: Kline Ch.20
+    references: []
+  - id: c02-riemann-integral
+    name: Riemann 积分的定义与可积性判别
+    field: c02
+    concepts: [Riemann 和与 Darboux 上下和, 可积的充要条件, 连续函数与单调函数的可积性, 积分的基本性质]
+    prerequisites: [c02-continuous-on-closed-interval]
+    history: Kline Ch.40
+    references: []
+  - id: c02-fundamental-theorem-calculus
+    name: 微积分基本定理与积分计算方法
+    field: c02
+    concepts: [变上限积分与原函数, Newton–Leibniz 公式, 换元积分法与分部积分法, 有理函数积分]
+    prerequisites: [c02-riemann-integral, c02-derivative-rules]
+    history: Kline Ch.17
+    references: []
+  - id: c02-improper-integrals
+    name: 反常积分及其收敛性判别
+    field: c02
+    concepts: [无穷区间上的反常积分, 瑕积分, 比较判别法与绝对收敛, Dirichlet 与 Abel 判别法]
+    prerequisites: [c02-fundamental-theorem-calculus]
+    history: Kline Ch.20
+    references: []
+  - id: c02-numerical-series
+    name: 数项级数收敛性
+    field: c02
+    concepts: [级数收敛与 Cauchy 准则, 正项级数的比值、根值与积分判别法, 交错级数与 Leibniz 判别法, 绝对收敛、条件收敛与 Riemann 重排定理]
+    prerequisites: [c02-subsequences-cauchy, c02-improper-integrals]
+    history: Kline Ch.20, 40
+    references: []
+  - id: c02-uniform-convergence
+    name: 函数项级数与一致收敛
+    field: c02
+    concepts: [逐点收敛与一致收敛, Weierstrass M 判别法, 一致收敛与连续性、积分的交换, 一致收敛与求导的交换]
+    prerequisites: [c02-numerical-series]
+    history: Kline Ch.40
+    references: []
+  - id: c02-power-fourier-series
+    name: 幂级数、解析性与 Fourier 级数初步
+    field: c02
+    concepts: [收敛半径与 Abel 定理, Taylor 级数与解析性, 三角正交系与 Fourier 系数, Fourier 级数的收敛与 Parseval 等式]
+    prerequisites: [c02-uniform-convergence, c02-taylor-convexity]
+    history: Kline Ch.20, 28
+    references: []
+  # ---- c03 多元微积分与向量分析（主干，11 个主题）
+  - id: c03-euclidean-space
+    name: R^n 的欧氏结构、内积与外积
+    field: c03
+    concepts: [范数、内积与 Cauchy–Schwarz 不等式, R^3 中的叉积与混合积, 直线与平面的方程, 柱坐标与球坐标]
+    prerequisites: []
+    history: Kline Ch.32
+    references: []
+  - id: c03-space-curves
+    name: 空间曲线与参数化运动
+    field: c03
+    concepts: [曲线的参数化与弧长, 切向量与弧长参数化, 曲率, 速度与加速度的分解]
+    prerequisites: [c03-euclidean-space, c02-derivative-rules]
+    history: Kline Ch.23
+    references: []
+  - id: c03-multivariable-limits
+    name: 多元函数的极限与连续性
+    field: c03
+    concepts: [R^n 中的开集、闭集与紧集, 多元函数的极限, 重极限与累次极限, 多元连续函数的性质]
+    prerequisites: [c03-euclidean-space, c02-continuous-on-closed-interval]
+    history: Kline Ch.40
+    references: []
+  - id: c03-partial-derivatives-gradient
+    name: 偏导数、全微分与梯度
+    field: c03
+    concepts: [偏导数, 可微性与全微分, 可微、偏导数连续与连续的关系, 方向导数与梯度]
+    prerequisites: [c03-multivariable-limits, c02-derivative-rules]
+    history: Kline Ch.19
+    references: []
+  - id: c03-chain-rule-jacobian
+    name: 复合映射链式法则与 Jacobi 矩阵
+    field: c03
+    concepts: [向量值映射的微分与 Jacobi 矩阵, 复合映射的链式法则, Jacobi 行列式, 多元 Taylor 公式]
+    prerequisites: [c03-partial-derivatives-gradient, c04-linear-maps-matrices, c02-taylor-convexity]
+    history: Kline Ch.19
+    references: []
+  - id: c03-extrema-lagrange
+    name: 多元极值、Hessian 矩阵与 Lagrange 乘子法
+    field: c03
+    concepts: [无约束极值的必要条件, Hessian 矩阵与二阶充分条件, 等式约束极值, Lagrange 乘子法的几何意义]
+    prerequisites: [c03-chain-rule-jacobian, c04-symmetric-positive-definite]
+    history: Kline Ch.24
+    references: []
+  - id: c03-implicit-inverse-function
+    name: 隐函数定理与逆映射定理
+    field: c03
+    concepts: [逆映射定理, 隐函数定理, 隐函数的求导, 局部坐标化的几何意义]
+    prerequisites: [c03-chain-rule-jacobian, c04-determinants]
+    history: Kline Ch.19
+    references: []
+  - id: c03-multiple-integrals
+    name: 重积分与变量替换公式
+    field: c03
+    concepts: [有界域上的二重与三重积分, Fubini 定理与累次积分, 变量替换公式, 极坐标、柱坐标与球坐标下的积分]
+    prerequisites: [c03-chain-rule-jacobian, c02-riemann-integral]
+    history: Kline Ch.19
+    references: []
+  - id: c03-line-integrals
+    name: 曲线积分与保守向量场
+    field: c03
+    concepts: [第一型曲线积分, 第二型曲线积分, 梯度场与路径无关性, 势函数的重构]
+    prerequisites: [c03-space-curves, c03-partial-derivatives-gradient, c02-fundamental-theorem-calculus]
+    history: Kline Ch.28
+    references: []
+  - id: c03-surface-integrals-div-curl
+    name: 曲面积分与散度、旋度算子
+    field: c03
+    concepts: [参数曲面与面积元, 第一型与第二型曲面积分, 通量, 散度与旋度]
+    prerequisites: [c03-multiple-integrals, c03-line-integrals]
+    history: Kline Ch.32
+    references: []
+  - id: c03-green-stokes-gauss
+    name: Green 公式、Stokes 公式与 Gauss 散度定理
+    field: c03
+    concepts: [Green 公式, Gauss 散度定理, Stokes 公式, 外微分形式的统一视角]
+    prerequisites: [c03-surface-integrals-div-curl]
+    history: Kline Ch.28; Katz 1979
+    references: []
+  # ---- c04 线性代数 I：矩阵、方程组与几何直观（主干，10 个主题）
+  - id: c04-gauss-elimination
+    name: 线性方程组与 Gauss 消元法
+    field: c04
+    concepts: [线性方程组与行阶梯形, 主元与解的结构, 初等矩阵与矩阵乘法, 分块矩阵与 LU 分解]
+    prerequisites: []
+    history: Kline Ch.29, 33
+    references: []
+  - id: c04-vector-spaces-subspaces
+    name: 向量空间、子空间与四个基本子空间
+    field: c04
+    concepts: [向量空间与子空间, 列空间与零空间, 行空间与左零空间, 子空间的交与和]
+    prerequisites: [c04-gauss-elimination]
+    history: Kline Ch.32
+    references: []
+  - id: c04-linear-independence-basis
+    name: 线性无关、基与维数
+    field: c04
+    concepts: [线性无关与生成集, 基与维数, 矩阵的秩, 秩-零化度定理]
+    prerequisites: [c04-vector-spaces-subspaces]
+    history: Kline Ch.33
+    references: []
+  - id: c04-linear-maps-matrices
+    name: 线性变换及其矩阵表示
+    field: c04
+    concepts: [线性变换及其矩阵, 旋转、反射与投影, 基变换公式, 相似矩阵]
+    prerequisites: [c04-linear-independence-basis]
+    history: Kline Ch.33
+    references: []
+  - id: c04-determinants
+    name: 行列式及其几何与代数性质
+    field: c04
+    concepts: [行列式的多重线性与反对称性, 行列式与有向体积, Laplace 展开, Cramer 法则与可逆性]
+    prerequisites: [c04-linear-maps-matrices]
+    history: Kline Ch.33
+    references: []
+  - id: c04-inner-product-orthogonality
+    name: 内积、正交性与正交投影
+    field: c04
+    concepts: [标准内积与正交性, 正交补, 正交投影矩阵, 最小二乘法的几何解释]
+    prerequisites: [c04-linear-independence-basis]
+    history: Kline Ch.33
+    references: []
+  - id: c04-gram-schmidt-qr
+    name: Gram–Schmidt 正交化与 QR 分解
+    field: c04
+    concepts: [Gram–Schmidt 正交化, 正交矩阵, QR 分解, 用 QR 分解解最小二乘]
+    prerequisites: [c04-inner-product-orthogonality]
+    history: Schmidt 1907
+    references: []
+  - id: c04-eigenvalues-diagonalization
+    name: 特征值、特征向量与矩阵对角化
+    field: c04
+    concepts: [特征值与特征向量, 特征多项式、迹与行列式, 代数重数与几何重数, 可对角化判据与矩阵幂]
+    prerequisites: [c04-determinants]
+    history: Kline Ch.33
+    references: []
+  - id: c04-symmetric-positive-definite
+    name: 实对称矩阵、Hermite 矩阵与正定二次型
+    field: c04
+    concepts: [实对称矩阵的正交对角化, 主轴定理与二次型, 正定矩阵的等价判据, Sylvester 惯性定理]
+    prerequisites: [c04-eigenvalues-diagonalization, c04-gram-schmidt-qr]
+    history: Kline Ch.33
+    references: []
+  - id: c04-svd-pseudoinverse
+    name: 奇异值分解与伪逆初步
+    field: c04
+    concepts: [奇异值分解的存在性与几何意义, 奇异值与四个基本子空间, 低秩结构与矩阵范数, Moore–Penrose 伪逆]
+    prerequisites: [c04-symmetric-positive-definite]
+    history: Stewart 1993
+    references: []
+    aliases: [SVD]
+  # ---- c05 线性代数 II：抽象空间、算子与标准形（主干，8 个主题）
+  - id: c05-abstract-vector-spaces
+    name: 一般域上的向量空间与商空间
+    field: c05
+    concepts: [一般域上的向量空间, 子空间的直和分解, 商空间, 同构定理]
+    prerequisites: [c04-linear-maps-matrices, c01-equivalence-quotient]
+    history: Kline Ch.32, 49
+    references: []
+  - id: c05-dual-spaces
+    name: 对偶空间与对偶映射
+    field: c05
+    concepts: [线性泛函与对偶空间, 对偶基, 零化子, 对偶映射与转置]
+    prerequisites: [c05-abstract-vector-spaces]
+    history: Kline Ch.46
+    references: []
+  - id: c05-polynomials-minimal-polynomial
+    name: 多项式环与算子极小多项式
+    field: c05
+    concepts: [多项式的带余除法与唯一分解, 零化多项式与 Cayley–Hamilton 定理, 极小多项式, 不变子空间]
+    prerequisites: [c05-abstract-vector-spaces, c04-eigenvalues-diagonalization, c01-divisibility-euclid]
+    history: Kline Ch.33
+    references: []
+  - id: c05-generalized-eigenspaces
+    name: 广义特征子空间与主分解定理
+    field: c05
+    concepts: [广义特征子空间, 主分解定理, 可对角化的充要条件与同时对角化, 幂零算子]
+    prerequisites: [c05-polynomials-minimal-polynomial]
+    history: Kline Ch.33
+    references: []
+  - id: c05-jordan-rational-forms
+    name: Jordan 标准形与有理标准形
+    field: c05
+    concepts: [Jordan 块与 Jordan 标准形, 循环子空间分解与有理标准形, 相似不变量, λ-矩阵与 Smith 标准形]
+    prerequisites: [c05-generalized-eigenspaces]
+    history: Kline Ch.33
+    references: []
+  - id: c05-bilinear-quadratic-forms
+    name: 双线性型与二次型的一般理论
+    field: c05
+    concepts: [双线性型及其矩阵, 对称双线性型与二次型, 合同变换与标准形, 交错型与辛几何初步]
+    prerequisites: [c05-dual-spaces, c04-symmetric-positive-definite]
+    history: Kline Ch.33
+    references: []
+  - id: c05-adjoint-normal-operators
+    name: 有限维内积空间上的伴随算子与正规算子
+    field: c05
+    concepts: [有限维内积空间与 Riesz 表示, 伴随算子, 正规算子, 酉算子与正交算子]
+    prerequisites: [c05-dual-spaces, c04-inner-product-orthogonality]
+    history: Kline Ch.46
+    references: []
+  - id: c05-spectral-theorem-polar
+    name: 有限维谱定理与算子极分解
+    field: c05
+    concepts: [复正规算子的谱定理, 实自伴算子的谱定理, 正算子与平方根, 极分解与奇异值]
+    prerequisites: [c05-adjoint-normal-operators, c05-generalized-eigenspaces]
+    history: Kline Ch.46
+    references: []
+  # ---- c06 常微分方程与动力系统初步（主干，9 个主题）
+  - id: c06-first-order-odes
+    name: 一阶常微分方程与方向场
+    field: c06
+    concepts: [分离变量方程, 一阶线性方程与积分因子, 恰当方程, 方向场与积分曲线]
+    prerequisites: [c02-fundamental-theorem-calculus]
+    history: Kline Ch.21
+    references: []
+  - id: c06-existence-uniqueness
+    name: 初值问题的存在唯一性定理
+    field: c06
+    concepts: [Picard 逐次逼近, Lipschitz 条件与局部存在唯一性, 解的延拓与最大存在区间, 解对初值的连续依赖]
+    prerequisites: [c06-first-order-odes, c02-uniform-convergence]
+    history: Kline Ch.29
+    references: []
+  - id: c06-linear-constant-coefficient
+    name: 二阶与高阶常系数线性微分方程
+    field: c06
+    concepts: [线性微分算子与解空间, Wronski 行列式, 特征方程与实根情形, 复根与重根情形]
+    prerequisites: [c06-first-order-odes, c04-linear-independence-basis, c04-determinants]
+    history: Kline Ch.21
+    references: []
+  - id: c06-nonhomogeneous-oscillations
+    name: 非齐次线性方程解法与振动模型
+    field: c06
+    concepts: [待定系数法, 常数变易法, 阻尼谐振子, 受迫振动与共振]
+    prerequisites: [c06-linear-constant-coefficient]
+    history: Kline Ch.21
+    references: []
+  - id: c06-power-series-frobenius
+    name: 幂级数解法与正则奇点
+    field: c06
+    concepts: [常点处的幂级数解, 正则奇点与 Frobenius 方法, Legendre 方程, Bessel 方程初步]
+    prerequisites: [c06-linear-constant-coefficient, c02-power-fourier-series]
+    history: Kline Ch.21, 29
+    references: []
+  - id: c06-laplace-transform
+    name: Laplace 变换与脉冲响应
+    field: c06
+    concepts: [Laplace 变换及其性质, 阶跃函数与 Dirac δ 函数, 传递函数与脉冲响应, 卷积定理与 Green 函数]
+    prerequisites: [c06-nonhomogeneous-oscillations, c02-improper-integrals]
+    history: Kline Ch.28
+    references: []
+  - id: c06-linear-systems-matrix-exponential
+    name: 一阶线性微分方程组与矩阵指数
+    field: c06
+    concepts: [高阶方程化为一阶系统, 特征值法求解线性系统, 矩阵指数与基解矩阵, 非齐次系统的常数变易]
+    prerequisites: [c06-linear-constant-coefficient, c04-eigenvalues-diagonalization]
+    history: Kline Ch.29
+    references: []
+  - id: c06-phase-plane
+    name: 平面自治系统与相平面分析
+    field: c06
+    concepts: [平面自治系统与平衡点, 平衡点的线性分类, 局部线性化, 相图绘制]
+    prerequisites: [c06-linear-systems-matrix-exponential]
+    history: Kline Ch.29
+    references: []
+  - id: c06-lyapunov-limit-cycles
+    name: Lyapunov 稳定性与极限环初步
+    field: c06
+    concepts: [Lyapunov 函数与直接法, 守恒系统, 极限环与 Poincaré–Bendixson 定理, Lotka–Volterra 模型]
+    prerequisites: [c06-phase-plane]
+    history: Kline Ch.29
+    references: []
+  # ---- c07 抽象代数 I：群论、环与域初步（主干，10 个主题）
+  - id: c07-groups-subgroups-cyclic
+    name: 群的公理、子群与循环群
+    field: c07
+    concepts: [群的定义与基本例子, 子群判据, 元素的阶, 循环群的结构]
+    prerequisites: [c01-congruence-modular]
+    history: Kline Ch.31, 49
+    references: []
+  - id: c07-permutation-groups
+    name: 置换群与对称性
+    field: c07
+    concepts: [对称群与轮换分解, 奇偶置换与交错群, 二面体群, 正多面体的对称群]
+    prerequisites: [c07-groups-subgroups-cyclic]
+    history: Kline Ch.31
+    references: []
+  - id: c07-cosets-lagrange-normal
+    name: 陪集、Lagrange 定理与正规子群
+    field: c07
+    concepts: [陪集分解, 指数与 Lagrange 定理, 正规子群, 单群的概念]
+    prerequisites: [c07-groups-subgroups-cyclic, c01-equivalence-quotient]
+    history: Kline Ch.31
+    references: []
+  - id: c07-quotient-groups-homomorphisms
+    name: 商群、群同态与同构基本定理
+    field: c07
+    concepts: [商群, 群同态的核与像, 第一同构定理, 第二与第三同构定理]
+    prerequisites: [c07-cosets-lagrange-normal]
+    history: Kline Ch.49
+    references: []
+  - id: c07-group-actions-counting
+    name: 群作用、轨道-稳定子定理与计数应用
+    field: c07
+    concepts: [群作用与轨道, 轨道-稳定子定理, 共轭作用与类方程, Burnside 引理与计数]
+    prerequisites: [c07-quotient-groups-homomorphisms, c07-permutation-groups]
+    history: Kline Ch.31
+    references: []
+  - id: c07-finite-groups-sylow
+    name: 有限群结构：有限生成交换群与 Sylow 定理
+    field: c07
+    concepts: [p-群的性质, Sylow 定理, 小阶群的分类, 有限生成交换群与 A_5 的单性]
+    prerequisites: [c07-group-actions-counting]
+    history: Sylow 1872
+    references: []
+  - id: c07-rings-integral-domains
+    name: 环、整环与除环
+    field: c07
+    concepts: [环、交换环与单位元, 零因子、整环与除环, 环的特征, Gauss 整数环与多项式环]
+    prerequisites: [c07-groups-subgroups-cyclic]
+    history: Kline Ch.34, 49
+    references: []
+  - id: c07-ideals-quotient-rings
+    name: 理想、商环与环同态基本定理
+    field: c07
+    concepts: [理想与主理想, 商环, 环同态基本定理, 整环的分式域]
+    prerequisites: [c07-rings-integral-domains, c07-quotient-groups-homomorphisms]
+    history: Kline Ch.34, 49
+    references: []
+  - id: c07-prime-maximal-ideals
+    name: 素理想与极大理想
+    field: c07
+    concepts: [素理想与整环商, 极大理想与域商, 极大理想的存在性与 Zorn 引理, 'Z 与 k[x] 中的理想']
+    prerequisites: [c07-ideals-quotient-rings]
+    history: Kline Ch.49
+    references: []
+  - id: c07-factorization-domains
+    name: 整环中的因子分解：ED、PID 与 UFD
+    field: c07
+    concepts: [Euclid 整环, 主理想整环, 唯一分解整环与 Gauss 引理, Eisenstein 判别法与不可约多项式]
+    prerequisites: [c07-prime-maximal-ideals, c01-primes-fundamental-theorem]
+    history: Kline Ch.34
+    references: []
+    aliases: [Euclid 整环、主理想整环与唯一分解整环]
+  # ---- c08 抽象代数 II：模论、Galois 理论与表示论初步（主干，9 个主题）
+  - id: c08-modules-free-modules
+    name: 环上的模、子模与自由模
+    field: c08
+    concepts: [模与模同态, 子模与商模, 自由模与秩, Noether 模与 Hilbert 基定理]
+    prerequisites: [c07-ideals-quotient-rings, c05-abstract-vector-spaces]
+    history: Kline Ch.49
+    references: []
+  - id: c08-modules-over-pid
+    name: 主理想整环上的有限生成模结构定理
+    field: c08
+    concepts: [挠模与自由部分, 不变因子分解, 初等因子分解, 有限生成交换群与 Jordan 标准形的统一]
+    prerequisites: [c08-modules-free-modules, c07-factorization-domains, c05-jordan-rational-forms]
+    history: Kline Ch.33, 49
+    references: []
+    aliases: [PID 上的模结构定理]
+  - id: c08-tensor-exterior-algebra
+    name: 张量积与外代数
+    field: c08
+    concepts: [张量积的构造与泛性质, 张量积的基本性质, 对称代数, 外代数与行列式]
+    prerequisites: [c08-modules-free-modules]
+    history: Kline Ch.32, 48
+    references: []
+  - id: c08-field-extensions-splitting
+    name: 域扩张、代数元与分裂域
+    field: c08
+    concepts: [域扩张与扩张次数, 塔律, 代数元与极小多项式, 分裂域与尺规作图不可能性]
+    prerequisites: [c07-factorization-domains, c05-abstract-vector-spaces]
+    history: Kline Ch.31
+    references: []
+  - id: c08-separable-normal-finite-fields
+    name: 可分扩张、正规扩张与有限域
+    field: c08
+    concepts: [重根与形式导数, 可分扩张, 正规扩张, 有限域的结构与 Frobenius 自同构]
+    prerequisites: [c08-field-extensions-splitting]
+    history: Kline Ch.49
+    references: []
+  - id: c08-galois-correspondence
+    name: Galois 群与 Galois 基本定理
+    field: c08
+    concepts: [域自同构群, Galois 扩张, Galois 基本定理, 分圆域与二次扩张的例子]
+    prerequisites: [c08-separable-normal-finite-fields]
+    history: Kline Ch.31
+    references: []
+  - id: c08-solvability-by-radicals
+    name: 可解群与高次方程根式可解性
+    field: c08
+    concepts: [分圆扩张与循环扩张, 根式扩张, 可解群, Abel–Ruffini 定理]
+    prerequisites: [c08-galois-correspondence, c07-finite-groups-sylow]
+    history: Kline Ch.31
+    references: []
+    aliases: [Abel–Ruffini 定理]
+  - id: c08-representations-maschke
+    name: 有限群的线性表示与 Maschke 定理
+    field: c08
+    concepts: [群表示与群代数模, 不变子空间与不可约表示, Maschke 定理, Schur 引理]
+    prerequisites: [c08-modules-free-modules, c07-group-actions-counting, c05-spectral-theorem-polar]
+    history: Hawkins 2000
+    references: []
+  - id: c08-character-theory
+    name: 特征标理论与正交关系
+    field: c08
+    concepts: [特征标及其基本性质, 第一与第二正交关系, 特征标表, 正则表示的分解]
+    prerequisites: [c08-representations-maschke]
+    history: Hawkins 2000
+    references: []
+  # ---- c09 度量空间与点集拓扑（含基本群初步）（主干，10 个主题）
+  - id: c09-metric-spaces
+    name: 度量空间、开集与闭集
+    field: c09
+    concepts: [度量公理与例子, 开球、开集与闭集, 内点、聚点、闭包与边界, 度量空间中的收敛与连续]
+    prerequisites: [c02-function-limits-continuity, c03-multivariable-limits]
+    history: Kline Ch.46
+    references: []
+  - id: c09-completeness-contraction
+    name: 完备度量空间与压缩映射原理
+    field: c09
+    concepts: [Cauchy 列与完备性, 完备化, Banach 不动点定理, 在微分方程与积分方程中的应用]
+    prerequisites: [c09-metric-spaces, c02-subsequences-cauchy]
+    history: Kline Ch.46
+    references: []
+  - id: c09-topological-spaces
+    name: 拓扑空间、拓扑基与连续映射
+    field: c09
+    concepts: [拓扑的开集公理, 拓扑基与子基, 连续映射的刻画, 同胚]
+    prerequisites: [c09-metric-spaces]
+    history: Kline Ch.50
+    references: []
+  - id: c09-subspace-product-quotient
+    name: 子空间拓扑、积拓扑与商拓扑
+    field: c09
+    concepts: [子空间拓扑, 积拓扑, 商拓扑, 粘合构造：环面、Möbius 带、Klein 瓶与射影平面]
+    prerequisites: [c09-topological-spaces, c01-equivalence-quotient]
+    history: Kline Ch.50
+    references: []
+  - id: c09-connectedness
+    name: 连通性与道路连通性
+    field: c09
+    concepts: [连通空间及其刻画, 连通性在连续映射下的保持, 连通分支, 道路连通与局部连通]
+    prerequisites: [c09-topological-spaces]
+    history: Kline Ch.50
+    references: []
+  - id: c09-compactness
+    name: 紧致性
+    field: c09
+    concepts: [开覆盖与紧致性, 紧集与闭集, 紧空间上的连续函数, Tychonoff 定理导引]
+    prerequisites: [c09-topological-spaces]
+    history: Kline Ch.40, 50
+    references: []
+    aliases: [Compactness]
+  - id: c09-compactness-metric-heine-borel
+    name: 度量空间中的紧致性与 Heine–Borel 定理
+    field: c09
+    concepts: [紧致、列紧与完全有界的等价, Heine–Borel 定理, Lebesgue 覆盖引理, Arzelà–Ascoli 定理初步]
+    prerequisites: [c09-compactness, c09-completeness-contraction, c02-continuous-on-closed-interval]
+    history: Kline Ch.40, 46
+    references: []
+  - id: c09-separation-axioms-urysohn
+    name: 分离公理与 Urysohn 引理
+    field: c09
+    concepts: [Hausdorff 空间, 正则与正规空间, Urysohn 引理, Tietze 扩张定理]
+    prerequisites: [c09-compactness]
+    history: Kline Ch.50
+    references: []
+  - id: c09-homotopy-fundamental-group
+    name: 道路同伦与基本群
+    field: c09
+    concepts: [映射同伦与道路同伦, 道路乘积与基本群, 基本群的函子性, 同伦等价与形变收缩]
+    prerequisites: [c09-connectedness, c09-subspace-product-quotient, c07-quotient-groups-homomorphisms]
+    history: Kline Ch.50
+    references: []
+    aliases: [π₁]
+  - id: c09-covering-spaces-van-kampen
+    name: 覆叠空间、圆周的基本群与 Seifert–van Kampen 定理初步
+    field: c09
+    concepts: [覆叠空间与提升, 圆周的基本群, Brouwer 不动点定理, Seifert–van Kampen 定理与曲面的基本群]
+    prerequisites: [c09-homotopy-fundamental-group, c09-compactness]
+    history: Kline Ch.50; Dieudonné 1989
+    references: []
+  # ---- c10 复分析（复变函数）（主干，9 个主题）
+  - id: c10-holomorphic-functions
+    name: 复平面、Riemann 球面与全纯函数
+    field: c10
+    concepts: [复平面与 Riemann 球面, 复可微性与全纯函数, Cauchy–Riemann 方程, 调和函数与调和共轭]
+    prerequisites: [c03-partial-derivatives-gradient]
+    history: Kline Ch.27
+    references: []
+    aliases: [Cauchy–Riemann 方程]
+  - id: c10-power-series-elementary-functions
+    name: 复幂级数与初等超越函数
+    field: c10
+    concepts: [复幂级数与收敛圆, 复指数、三角与双曲函数, 多值函数与对数, 支点与支割线]
+    prerequisites: [c10-holomorphic-functions, c02-power-fourier-series]
+    history: Kline Ch.27
+    references: []
+  - id: c10-cauchy-theorem
+    name: 复积分、Cauchy 积分定理与原函数
+    field: c10
+    concepts: [复积分与围道积分, ML 估计, Goursat 定理, 单连通域上的 Cauchy 积分定理与原函数]
+    prerequisites: [c10-holomorphic-functions, c03-line-integrals]
+    history: Kline Ch.27
+    references: []
+  - id: c10-cauchy-formula-analyticity
+    name: Cauchy 积分公式、高阶导数与解析性
+    field: c10
+    concepts: [Cauchy 积分公式, 全纯函数的无穷可微性与幂级数展开, Cauchy 不等式与 Liouville 定理, 代数基本定理与 Morera 定理]
+    prerequisites: [c10-cauchy-theorem, c10-power-series-elementary-functions]
+    history: Kline Ch.27
+    references: []
+  - id: c10-identity-maximum-modulus-schwarz
+    name: 唯一性定理、最大模原理与 Schwarz 引理
+    field: c10
+    concepts: [零点的孤立性与唯一性定理, 解析延拓, 最大模原理, Schwarz 引理与单位圆盘的自同构]
+    prerequisites: [c10-cauchy-formula-analyticity]
+    history: Kline Ch.27
+    references: []
+  - id: c10-laurent-singularities
+    name: Laurent 级数与孤立奇点分类
+    field: c10
+    concepts: [圆环上的 Laurent 展开, 孤立奇点的分类, Casorati–Weierstrass 定理, 亚纯函数]
+    prerequisites: [c10-cauchy-formula-analyticity]
+    history: Kline Ch.27
+    references: []
+  - id: c10-residues
+    name: 留数定理与实定积分计算
+    field: c10
+    concepts: [留数及其计算, 留数定理, 三角积分与有理函数积分, Jordan 引理与含支割线的围道积分]
+    prerequisites: [c10-laurent-singularities, c02-improper-integrals]
+    history: Kline Ch.27
+    references: []
+  - id: c10-argument-principle-rouche
+    name: 辐角原理与 Rouché 定理
+    field: c10
+    concepts: [对数导数与环绕数, 辐角原理, Rouché 定理, 开映射定理]
+    prerequisites: [c10-residues]
+    history: Kline Ch.27
+    references: []
+  - id: c10-conformal-mappings
+    name: 共形映射、Möbius 变换与 Riemann 映射定理
+    field: c10
+    concepts: [保角性与共形映射, Möbius 变换及其保圆性, Riemann 映射定理, 平面位势问题的应用]
+    prerequisites: [c10-identity-maximum-modulus-schwarz, c10-argument-principle-rouche]
+    history: Kline Ch.27
+    references: []
+    aliases: [保角变换]
+  # ---- c11 实变函数与测度论（主干，9 个主题）
+  - id: c11-lebesgue-outer-measure
+    name: Riemann 积分的局限与 Lebesgue 外测度
+    field: c11
+    concepts: [Riemann 积分的局限, Cantor 三分集, Lebesgue 外测度的定义, 外测度的次可加性]
+    prerequisites: [c02-riemann-integral, c02-numerical-series]
+    history: Kline Ch.44
+    references: []
+  - id: c11-sigma-algebras-measures
+    name: σ-代数、可测集与测度空间
+    field: c11
+    concepts: [Carathéodory 条件与可测集, Lebesgue 可测集与 Borel 集, 测度的可数可加性与一般测度空间, Vitali 不可测集]
+    prerequisites: [c11-lebesgue-outer-measure]
+    history: Kline Ch.44
+    references: []
+  - id: c11-measurable-functions
+    name: 可测函数及其收敛性
+    field: c11
+    concepts: [可测函数与简单函数逼近, 几乎处处, 依测度收敛与 Riesz 定理, Egorov 定理与 Lusin 定理]
+    prerequisites: [c11-sigma-algebras-measures]
+    history: Kline Ch.44
+    references: []
+  - id: c11-lebesgue-integral
+    name: Lebesgue 积分的构造与基本性质
+    field: c11
+    concepts: [非负简单函数的积分, 非负可测函数的积分, 一般可积函数与积分的线性性, 与 Riemann 积分的关系]
+    prerequisites: [c11-measurable-functions]
+    history: Kline Ch.44
+    references: []
+  - id: c11-convergence-theorems
+    name: 三大极限定理
+    field: c11
+    concepts: [单调收敛定理, Fatou 引理, 控制收敛定理, 积分号下求导与级数逐项积分]
+    prerequisites: [c11-lebesgue-integral, c02-uniform-convergence]
+    history: Kline Ch.44
+    references: []
+    aliases: [单调收敛、Fatou 引理、控制收敛]
+  - id: c11-product-measures-fubini
+    name: 乘积测度与 Fubini–Tonelli 定理
+    field: c11
+    concepts: [乘积 σ-代数与乘积测度, Tonelli 定理, Fubini 定理, 应用：卷积与分布函数]
+    prerequisites: [c11-convergence-theorems, c03-multiple-integrals]
+    history: Kline Ch.44
+    references: []
+  - id: c11-differentiation-absolute-continuity
+    name: 有界变差函数、绝对连续函数与 Lebesgue 微分定理
+    field: c11
+    concepts: [有界变差函数, Vitali 覆盖引理与单调函数几乎处处可微, 绝对连续函数, Lebesgue 微分定理与微积分基本定理]
+    prerequisites: [c11-convergence-theorems]
+    history: Kline Ch.44
+    references: []
+  - id: c11-lp-spaces
+    name: L^p 空间与完备性
+    field: c11
+    concepts: [Hölder 与 Minkowski 不等式, L^p 空间与范数, Riesz–Fischer 完备性定理, 连续函数的稠密性]
+    prerequisites: [c11-convergence-theorems, c09-completeness-contraction]
+    history: Kline Ch.44
+    references: []
+    aliases: [Riesz–Fischer 定理]
+  - id: c11-radon-nikodym
+    name: 符号测度、Hahn–Jordan 分解与 Radon–Nikodym 定理
+    field: c11
+    concepts: [符号测度与 Hahn 分解, Jordan 分解, 绝对连续与奇异测度, Radon–Nikodym 定理与 Lebesgue 分解]
+    prerequisites: [c11-lp-spaces, c11-differentiation-absolute-continuity]
+    history: Kline Ch.44
+    references: []
+  # ---- c12 泛函分析（主干，9 个主题）
+  - id: c12-normed-banach-spaces
+    name: 赋范线性空间与 Banach 空间
+    field: c12
+    concepts: [范数与赋范空间, 有限维范数的等价性与 Riesz 引理, Banach 空间的例子, 可分性与 Schauder 基初步]
+    prerequisites: [c11-lp-spaces, c09-completeness-contraction, c05-abstract-vector-spaces]
+    history: Kline Ch.46
+    references: []
+  - id: c12-bounded-operators
+    name: 有界线性算子与算子范数
+    field: c12
+    concepts: [有界线性算子与算子范数, 连续性与有界性的等价, 算子空间的完备性, 对偶空间与例子]
+    prerequisites: [c12-normed-banach-spaces, c05-dual-spaces]
+    history: Kline Ch.46
+    references: []
+  - id: c12-hilbert-spaces
+    name: Hilbert 空间、正交投影与正交系
+    field: c12
+    concepts: [内积空间与平行四边形法则, 闭凸集上的最佳逼近, 正交分解, 标准正交基与 Parseval 等式]
+    prerequisites: [c12-normed-banach-spaces, c05-adjoint-normal-operators]
+    history: Kline Ch.46
+    references: []
+  - id: c12-riesz-representation-adjoint
+    name: Hilbert 空间 Riesz 表示定理与伴随算子
+    field: c12
+    concepts: [Riesz 表示定理, Hilbert 伴随算子, 自伴、酉与正规算子, Lax–Milgram 定理初步]
+    prerequisites: [c12-hilbert-spaces, c12-bounded-operators]
+    history: Kline Ch.46
+    references: []
+  - id: c12-hahn-banach
+    name: Hahn–Banach 延拓与分离定理
+    field: c12
+    concepts: [Hahn–Banach 延拓定理, 对偶空间的非平凡性, 凸集的分离定理, 二次对偶与自反空间]
+    prerequisites: [c12-bounded-operators]
+    history: Kline Ch.46
+    references: []
+  - id: c12-baire-uniform-boundedness
+    name: Baire 纲定理与一致有界原理
+    field: c12
+    concepts: [Baire 纲定理, 一致有界原理, 共鸣定理的应用, Fourier 级数发散的例子]
+    prerequisites: [c12-bounded-operators]
+    history: Kline Ch.46
+    references: []
+    aliases: [Banach–Steinhaus 定理]
+  - id: c12-open-mapping-closed-graph
+    name: 开映射定理、逆算子定理与闭图像定理
+    field: c12
+    concepts: [开映射定理, 逆算子定理, 闭算子, 闭图像定理]
+    prerequisites: [c12-baire-uniform-boundedness]
+    history: Kline Ch.46
+    references: []
+  - id: c12-weak-convergence-alaoglu
+    name: 弱收敛、弱*收敛与 Banach–Alaoglu 定理
+    field: c12
+    concepts: [弱拓扑与弱收敛, 弱*拓扑, Banach–Alaoglu 定理, 自反空间中的弱列紧性]
+    prerequisites: [c12-hahn-banach, c09-compactness]
+    history: Kline Ch.46
+    references: []
+  - id: c12-compact-operators-spectral
+    name: 紧算子与自伴紧算子谱定理
+    field: c12
+    concepts: [谱与预解集, 紧算子及其性质, Fredholm 二择一, 紧自伴算子的谱定理]
+    prerequisites: [c12-riesz-representation-adjoint, c12-open-mapping-closed-graph, c09-compactness-metric-heine-borel, 
+          c05-spectral-theorem-polar]
+    history: Kline Ch.45
+    references: []
+    aliases: [Hilbert–Schmidt 定理]
+  # ---- c13 微分几何与流形初步（主干，9 个主题）
+  - id: c13-frenet-curves
+    name: 空间正则曲线与 Frenet–Serret 标架
+    field: c13
+    concepts: [正则曲线与弧长参数化, Frenet 标架, 曲率与挠率, Frenet–Serret 公式与曲线基本定理]
+    prerequisites: [c03-space-curves]
+    history: Kline Ch.23
+    references: []
+  - id: c13-regular-surfaces
+    name: R^3 中的正则曲面与切平面
+    field: c13
+    concepts: [正则曲面与局部坐标卡, 切平面, 曲面间的光滑映射与切映射, 旋转面与直纹面的例子]
+    prerequisites: [c13-frenet-curves, c03-implicit-inverse-function]
+    history: Kline Ch.23
+    references: []
+  - id: c13-first-fundamental-form
+    name: 第一基本形式与内蕴几何
+    field: c13
+    concepts: [第一基本形式, 曲面上的弧长与面积, 等距与共形映射, 内蕴几何的观念]
+    prerequisites: [c13-regular-surfaces, c05-bilinear-quadratic-forms]
+    history: Kline Ch.37
+    references: []
+  - id: c13-gauss-map-curvature
+    name: Gauss 映射、第二基本形式与曲率
+    field: c13
+    concepts: [Gauss 映射与形状算子, 第二基本形式, 主曲率与法曲率, Gauss 曲率与平均曲率]
+    prerequisites: [c13-first-fundamental-form, c05-adjoint-normal-operators]
+    history: Kline Ch.37
+    references: []
+  - id: c13-theorema-egregium
+    name: Gauss 绝妙定理与曲面基本方程
+    field: c13
+    concepts: [Christoffel 符号, Gauss 方程与 Codazzi 方程, Gauss 绝妙定理, 曲面基本定理]
+    prerequisites: [c13-gauss-map-curvature]
+    history: Kline Ch.37
+    references: []
+    aliases: [Theorema Egregium]
+  - id: c13-geodesics-parallel-transport
+    name: 测地线、平行移动与指数映射
+    field: c13
+    concepts: [协变导数与测地曲率, 测地线方程与局部最短性, 平行移动, 指数映射]
+    prerequisites: [c13-theorema-egregium]
+    history: Kline Ch.37, 48
+    references: []
+    aliases: [Geodesics]
+  - id: c13-gauss-bonnet
+    name: Gauss–Bonnet 定理
+    field: c13
+    concepts: [测地三角形的角盈公式, 局部 Gauss–Bonnet 定理, Euler 示性数, 整体 Gauss–Bonnet 定理]
+    prerequisites: [c13-geodesics-parallel-transport, c09-subspace-product-quotient]
+    history: Kline Ch.37, 50
+    references: []
+  - id: c13-smooth-manifolds
+    name: 抽象光滑流形、切丛与向量场
+    field: c13
+    concepts: [光滑图册与流形, 切空间与切丛, 光滑向量场与积分曲线, Lie 括号]
+    prerequisites: [c13-regular-surfaces, c09-topological-spaces]
+    history: Kline Ch.37, 48
+    references: []
+  - id: c13-differential-forms-stokes
+    name: 微分形式、外微分与流形上的 Stokes 定理
+    field: c13
+    concepts: [余切丛与微分形式, 楔积, 外微分与 d²=0, 定向与流形上的 Stokes 定理, de Rham 上同调导引]
+    prerequisites: [c13-smooth-manifolds, c03-green-stokes-gauss, c05-dual-spaces]
+    history: Katz 1985
+    references: []
+  # ---- c14 概率论基础（主干，10 个主题）
+  - id: c14-probability-space
+    name: 概率空间、公理化体系与组合概型
+    field: c14
+    concepts: [样本空间与事件域, Kolmogorov 公理, 概率的基本性质与容斥原理, 古典概型与抽样计数]
+    prerequisites: []
+    history: Kolmogorov 1933; Hald 1990
+    references: []
+  - id: c14-conditional-probability-bayes
+    name: 条件概率、全概率公式、Bayes 公式与独立性
+    field: c14
+    concepts: [条件概率, 乘法公式与全概率公式, Bayes 公式, 事件的独立性]
+    prerequisites: [c14-probability-space]
+    history: Hald 1990
+    references: []
+  - id: c14-discrete-random-variables
+    name: 离散型随机变量与经典分布
+    field: c14
+    concepts: [随机变量与分布函数, 分布列与 Bernoulli、二项分布, 几何分布与无记忆性, Poisson 分布与稀有事件]
+    prerequisites: [c14-conditional-probability-bayes]
+    history: Hald 1990
+    references: []
+  - id: c14-continuous-random-variables
+    name: 连续型随机变量与密度函数
+    field: c14
+    concepts: [概率密度函数, 均匀分布与指数分布, Gamma 分布与正态分布, 随机变量函数的分布]
+    prerequisites: [c14-discrete-random-variables, c02-fundamental-theorem-calculus]
+    history: Stigler 1986
+    references: []
+  - id: c14-expectation-variance
+    name: 数学期望、方差与高阶矩
+    field: c14
+    concepts: [期望及其线性性, 指示变量法, 方差与标准差, 用尾概率积分求期望与高阶矩]
+    prerequisites: [c14-continuous-random-variables, c02-improper-integrals]
+    history: Hald 1990
+    references: []
+  - id: c14-joint-distributions
+    name: 多维随机变量、联合分布与边缘分布
+    field: c14
+    concepts: [联合分布与边缘分布, 随机变量的独立性, 多维变量变换与 Jacobi 行列式, 独立和的卷积公式]
+    prerequisites: [c14-expectation-variance, c03-multiple-integrals]
+    history: Hald 1990
+    references: []
+  - id: c14-covariance-multivariate-normal
+    name: 协方差、相关系数与多元正态分布
+    field: c14
+    concepts: [协方差与相关系数, 协方差矩阵及其半正定性, 多元正态分布, 多元正态的线性变换性质]
+    prerequisites: [c14-joint-distributions, c04-symmetric-positive-definite]
+    history: Stigler 1986
+    references: []
+  - id: c14-conditional-expectation
+    name: 条件分布与条件期望
+    field: c14
+    concepts: [条件分布与条件密度, 条件期望, 重期望公式, 全方差公式]
+    prerequisites: [c14-joint-distributions]
+    history: Hald 1990
+    references: []
+    aliases: [全期望与全方差定律]
+  - id: c14-generating-functions
+    name: 母函数、矩母函数与特征函数
+    field: c14
+    concepts: [概率母函数, 矩母函数, 特征函数, 唯一性定理与连续性定理]
+    prerequisites: [c14-expectation-variance, c02-power-fourier-series]
+    history: Hald 1990
+    references: []
+  - id: c14-lln-clt
+    name: 概率不等式、大数定律与中心极限定理
+    field: c14
+    concepts: [Markov、Chebyshev 与 Jensen 不等式, 依概率收敛与几乎必然收敛, 弱大数定律与强大数定律, 中心极限定理]
+    prerequisites: [c14-generating-functions]
+    history: Stigler 1986; von Plato 1994
+    references: []
+  # ---- b01 偏微分方程与数学物理方法（分支，10 个主题）
+  - id: b01-first-order-pdes-characteristics
+    name: 一阶偏微分方程与特征线法
+    field: b01
+    concepts: [传输方程, 一阶拟线性方程与特征线法, 特征曲线的几何, Burgers 方程与激波的形成]
+    prerequisites: [c03-chain-rule-jacobian, c06-first-order-odes]
+    history: Kline Ch.22
+    references: []
+  - id: b01-classification-well-posedness
+    name: 二阶线性偏微分方程分类与定解问题适定性
+    field: b01
+    concepts: [二阶线性方程的分类, 三大典型方程的物理背景, 定解问题与边界条件, Hadamard 适定性]
+    prerequisites: [b01-first-order-pdes-characteristics]
+    history: Kline Ch.28
+    references: []
+  - id: b01-wave-equation-dalembert
+    name: 一维波动方程：d'Alembert 公式与特征区域
+    field: b01
+    concepts: [d'Alembert 公式, 依赖区间与影响区域, Duhamel 原理, 能量法与唯一性]
+    prerequisites: [b01-classification-well-posedness]
+    history: Kline Ch.22
+    references: []
+  - id: b01-separation-of-variables
+    name: 分离变量法与 Fourier 级数求解有界域问题
+    field: b01
+    concepts: [分离变量法与本征函数展开, 弦振动与有限杆热传导, Dirichlet 与 Neumann 边界条件, 本征频率与驻波]
+    prerequisites: [b01-classification-well-posedness, c06-linear-constant-coefficient, c02-power-fourier-series]
+    history: Kline Ch.22, 28
+    references: []
+  - id: b01-sturm-liouville
+    name: Sturm–Liouville 本征值问题与正交特殊函数
+    field: b01
+    concepts: [Sturm–Liouville 问题与自伴性, 本征值的实性与本征函数的正交性, 本征函数展开的完备性, Bessel 函数与 Legendre 多项式]
+    prerequisites: [b01-separation-of-variables, c06-power-series-frobenius, c12-compact-operators-spectral]
+    history: Kline Ch.29
+    references: []
+  - id: b01-heat-equation-fourier-transform
+    name: 热传导方程：Fourier 变换与热核
+    field: b01
+    concepts: [Fourier 变换及其性质, 热核与基本解, 热方程的卷积解与平滑效应, 极值原理]
+    prerequisites: [b01-separation-of-variables, c02-improper-integrals, c10-residues]
+    history: Kline Ch.28
+    references: []
+  - id: b01-laplace-equation-harmonic
+    name: Laplace 方程与调和函数性质
+    field: b01
+    concepts: [调和函数与平均值性质, 强极值原理, 圆盘上的 Poisson 积分公式, Harnack 不等式]
+    prerequisites: [b01-classification-well-posedness, c10-holomorphic-functions, c03-green-stokes-gauss]
+    history: Kline Ch.28
+    references: []
+  - id: b01-potential-theory-green-functions
+    name: 位势理论与 Green 函数法
+    field: b01
+    concepts: [基本解与 Newton 位势, Green 恒等式, Green 函数与 Dirichlet 问题, 镜像法]
+    prerequisites: [b01-laplace-equation-harmonic]
+    history: Kline Ch.28
+    references: []
+  - id: b01-higher-dimensional-waves
+    name: 高维波动方程：球平均法与 Huygens 原理
+    field: b01
+    concepts: [球平均法, 三维波动方程的 Kirchhoff 公式, Huygens 原理, 二维降维法与波尾现象]
+    prerequisites: [b01-wave-equation-dalembert, b01-potential-theory-green-functions]
+    history: Kline Ch.22
+    references: []
+  - id: b01-variational-principles-weak-solutions
+    name: 变分原理、Euler–Lagrange 方程与弱解导引
+    field: b01
+    concepts: [泛函的一阶变分与 Euler–Lagrange 方程, Dirichlet 原理, 弱导数与 Sobolev 空间导引, 弱解与 Lax–Milgram 定理]
+    prerequisites: [b01-laplace-equation-harmonic, c12-riesz-representation-adjoint, c03-extrema-lagrange]
+    history: Kline Ch.24, 30
+    references: []
+  # ---- b02 数理统计与统计推断（分支，9 个主题）
+  - id: b02-statistical-models-samples
+    name: 统计模型、样本、经验分布与次序统计量
+    field: b02
+    concepts: [统计模型与参数, 样本、统计量与样本矩, 经验分布函数, 次序统计量与分位数]
+    prerequisites: [c14-lln-clt, c14-joint-distributions]
+    history: Hald 1998
+    references: []
+  - id: b02-sampling-distributions
+    name: 正态总体三大抽样分布
+    field: b02
+    concepts: [χ² 分布, t 分布与 F 分布, 正态样本均值与方差的独立性, Cochran 定理]
+    prerequisites: [b02-statistical-models-samples, c14-covariance-multivariate-normal, c04-inner-product-orthogonality]
+    history: Hald 1998
+    references: []
+    aliases: [χ²、t、F 分布]
+  - id: b02-point-estimation-mle
+    name: 点估计：矩估计与极大似然估计
+    field: b02
+    concepts: [矩估计, 似然函数与极大似然估计, 极大似然估计的不变性, 指数族分布]
+    prerequisites: [b02-statistical-models-samples]
+    history: Hald 1998
+    references: []
+    aliases: [MoM, MLE]
+  - id: b02-sufficiency-rao-blackwell
+    name: 充分统计量、完备统计量与 Rao–Blackwell 定理
+    field: b02
+    concepts: [充分统计量与因子分解定理, 完备统计量, Rao–Blackwell 定理, Lehmann–Scheffé 定理与 UMVUE]
+    prerequisites: [b02-point-estimation-mle, c14-conditional-expectation]
+    history: Hald 1998
+    references: []
+  - id: b02-fisher-information-cramer-rao
+    name: 估计量评价、Fisher 信息量与 Cramér–Rao 下界
+    field: b02
+    concepts: [无偏性与均方误差, Fisher 信息量, Cramér–Rao 不等式, 有效估计]
+    prerequisites: [b02-point-estimation-mle]
+    history: Hald 1998
+    references: []
+  - id: b02-asymptotics-mle
+    name: 大样本渐近理论与极大似然估计的渐近正态性
+    field: b02
+    concepts: [相合性, Delta 方法, 极大似然估计的渐近正态性, 渐近有效性]
+    prerequisites: [b02-fisher-information-cramer-rao]
+    history: Hald 1998
+    references: []
+  - id: b02-confidence-intervals
+    name: 区间估计与枢轴量法
+    field: b02
+    concepts: [置信区间与覆盖率, 枢轴量法, 正态总体的精确置信区间, 大样本近似置信区间]
+    prerequisites: [b02-sampling-distributions, b02-asymptotics-mle]
+    history: Hald 1998
+    references: []
+  - id: b02-hypothesis-testing-neyman-pearson
+    name: 假设检验基础、两类错误与 Neyman–Pearson 引理
+    field: b02
+    concepts: [原假设与备择假设, 两类错误与功效函数, p 值, Neyman–Pearson 引理与最优势检验]
+    prerequisites: [b02-sampling-distributions]
+    history: Hald 1998
+    references: []
+  - id: b02-lrt-goodness-of-fit-bayes
+    name: 似然比检验、拟合优度检验与 Bayes 推断
+    field: b02
+    concepts: [似然比检验与 Wilks 定理, χ² 拟合优度检验与独立性检验, 先验与后验, 共轭先验与 Bayes 估计]
+    prerequisites: [b02-hypothesis-testing-neyman-pearson, b02-asymptotics-mle]
+    history: Hald 1998
+    references: []
+    aliases: [LRT]
+  # ---- b03 随机过程与马尔可夫链（分支，8 个主题）
+  - id: b03-markov-chains-transition
+    name: 离散时间马尔可夫链与转移矩阵
+    field: b03
+    concepts: [Markov 性与转移矩阵, n 步转移与 Chapman–Kolmogorov 方程, 分布的演化, 随机游走与排队的例子]
+    prerequisites: [c14-conditional-probability-bayes, c04-eigenvalues-diagonalization]
+    history: von Plato 1994
+    references: []
+    aliases: [DTMC]
+  - id: b03-state-classification-recurrence
+    name: 状态分类：互通、常返与暂留
+    field: b03
+    concepts: [互通类与不可约性, 首达时间与常返、暂留, 常返判据, Pólya 随机游走定理]
+    prerequisites: [b03-markov-chains-transition, c14-generating-functions]
+    history: von Plato 1994
+    references: []
+    aliases: [Recurrence, Transience]
+  - id: b03-stationary-distributions-ergodic
+    name: 平稳分布、正常返与遍历定理
+    field: b03
+    concepts: [周期性, 平稳分布的存在与唯一性, 细致平衡与可逆性, 遍历定理]
+    prerequisites: [b03-state-classification-recurrence]
+    history: von Plato 1994
+    references: []
+  - id: b03-absorbing-chains-branching
+    name: 吸收链、首中时与分支过程
+    field: b03
+    concepts: [吸收概率与平均吸收时间, 赌徒破产问题, Galton–Watson 分支过程, 灭绝概率与母函数]
+    prerequisites: [b03-markov-chains-transition, c14-generating-functions]
+    history: Watson–Galton 1874
+    references: []
+    aliases: [Galton–Watson 过程]
+  - id: b03-poisson-process
+    name: Poisson 过程与更新过程初步
+    field: b03
+    concepts: [Poisson 过程的三种等价定义, 到达间隔与指数分布, 合流与分解, 更新过程初步]
+    prerequisites: [b03-markov-chains-transition, c14-continuous-random-variables]
+    history: von Plato 1994
+    references: []
+  - id: b03-continuous-time-markov-chains
+    name: 连续时间马尔可夫链与生灭过程
+    field: b03
+    concepts: [指数停留时间与速率矩阵, Kolmogorov 向前与向后方程, 生灭过程, M/M/1 排队模型]
+    prerequisites: [b03-poisson-process, b03-stationary-distributions-ergodic]
+    history: von Plato 1994
+    references: []
+    aliases: [CTMC]
+  - id: b03-martingales
+    name: 离散时间鞅与停时定理
+    field: b03
+    concepts: [滤子与适应过程, 鞅的定义与例子, 可选停时定理, 鞅收敛定理初步]
+    prerequisites: [b03-markov-chains-transition, c14-conditional-expectation, c11-radon-nikodym]
+    history: Doob 1953
+    references: []
+    aliases: [Martingales]
+  - id: b03-brownian-motion
+    name: Brown 运动初步
+    field: b03
+    concepts: [Brown 运动的定义与独立正态增量, 路径的连续性与不可微性, 反射原理与首中时, 几何 Brown 运动导引]
+    prerequisites: [b03-martingales, c14-covariance-multivariate-normal]
+    history: von Plato 1994
+    references: []
+    aliases: [Wiener 过程]
+  # ---- b04 数值分析（科学计算与微分方程数值解）（分支，9 个主题）
+  - id: b04-floating-point-conditioning
+    name: 浮点运算、舍入误差、条件数与数值稳定性
+    field: b04
+    concepts: [IEEE 754 浮点数与机器精度, 舍入误差与相近数相减, 问题的条件数, 算法的向后稳定性]
+    prerequisites: [c02-derivative-rules]
+    history: Goldstine 1977
+    references: []
+  - id: b04-root-finding
+    name: 非线性方程求根算法
+    field: b04
+    concepts: [二分法, 不动点迭代与收敛阶, Newton 法及其二次收敛, 割线法与多元 Newton 法]
+    prerequisites: [b04-floating-point-conditioning, c02-taylor-convexity]
+    history: Goldstine 1977
+    references: []
+  - id: b04-polynomial-spline-interpolation
+    name: 多项式插值与分段样条插值
+    field: b04
+    concepts: [Lagrange 与 Newton 插值, 插值余项, Runge 现象与 Chebyshev 节点, 三次样条插值]
+    prerequisites: [b04-floating-point-conditioning, c02-taylor-convexity, c04-gauss-elimination]
+    history: Goldstine 1977
+    references: []
+  - id: b04-orthogonal-polynomials-approximation
+    name: 正交多项式与最佳平方逼近
+    field: b04
+    concepts: [函数空间上的内积与正交性, Legendre 与 Chebyshev 多项式, 三项递推, 最佳平方逼近]
+    prerequisites: [b04-polynomial-spline-interpolation, c04-inner-product-orthogonality, c02-riemann-integral]
+    history: Goldstine 1977
+    references: []
+  - id: b04-numerical-differentiation-integration
+    name: 数值微分与数值积分
+    field: b04
+    concepts: [有限差分与截断误差, 梯形与 Simpson 公式, Richardson 外推, Romberg 积分]
+    prerequisites: [b04-polynomial-spline-interpolation]
+    history: Goldstine 1977
+    references: []
+    aliases: [Newton–Cotes 公式]
+  - id: b04-gauss-quadrature
+    name: Gauss 求积公式
+    field: b04
+    concepts: [代数精度, Gauss 求积的节点与权重, 正交多项式零点与最高代数精度, Gauss–Legendre 与 Gauss–Chebyshev 公式]
+    prerequisites: [b04-orthogonal-polynomials-approximation, b04-numerical-differentiation-integration]
+    history: Goldstine 1977
+    references: []
+  - id: b04-runge-kutta
+    name: 常微分方程数值解：单步法与 Runge–Kutta 法
+    field: b04
+    concepts: [Euler 法与隐式 Euler 法, 局部截断误差与整体收敛阶, Runge–Kutta 方法与 RK4, 步长控制初步]
+    prerequisites: [b04-numerical-differentiation-integration, c06-existence-uniqueness]
+    history: Runge 1895; Kutta 1901
+    references: []
+  - id: b04-multistep-stiffness
+    name: 线性多步法、零稳定性与刚性方程
+    field: b04
+    concepts: [Adams 多步法, 零稳定性与 Dahlquist 等价定理, 绝对稳定域与 A-稳定性, 刚性方程与隐式求解]
+    prerequisites: [b04-runge-kutta, c06-linear-systems-matrix-exponential]
+    history: Dahlquist 1956
+    references: []
+    aliases: [Stiffness]
+  - id: b04-finite-differences-pdes
+    name: 偏微分方程有限差分法初步
+    field: b04
+    concepts: [Poisson 方程的五点差分格式, 热方程的显式格式与 Crank–Nicolson 格式, CFL 条件, von Neumann 稳定性分析]
+    prerequisites: [b04-multistep-stiffness]
+    history: Courant–Friedrichs–Lewy 1928
+    references: []
+  # ---- b05 数值线性代数与数据矩阵方法（ML 数学）（分支，9 个主题）
+  - id: b05-norms-conditioning
+    name: 向量与矩阵范数、条件数与扰动分析
+    field: b05
+    concepts: [向量范数与诱导矩阵范数, Frobenius 范数与谱范数, 条件数, 线性方程组解的扰动界]
+    prerequisites: [c04-svd-pseudoinverse]
+    history: Brezinski 2022
+    references: []
+  - id: b05-lu-cholesky
+    name: 选主元 LU 分解、Cholesky 分解与稀疏直接法
+    field: b05
+    concepts: [列主元 LU 分解与稳定性, Cholesky 分解, 带状与三对角系统的追赶法, 稀疏直接法初步]
+    prerequisites: [b05-norms-conditioning, c04-symmetric-positive-definite]
+    history: Brezinski 2022
+    references: []
+  - id: b05-householder-givens-qr
+    name: Householder 反射、Givens 旋转与最小二乘 QR 算法
+    field: b05
+    concepts: [Householder 反射, Givens 旋转, QR 分解算法, 用 QR 解最小二乘]
+    prerequisites: [b05-norms-conditioning, c04-gram-schmidt-qr]
+    history: Brezinski 2022
+    references: []
+  - id: b05-svd-low-rank-pca
+    name: 奇异值分解、Eckart–Young 低秩逼近与 PCA
+    field: b05
+    concepts: [SVD 的计算与性质, Eckart–Young 低秩逼近定理, 主成分分析, 数据矩阵的中心化与降维]
+    prerequisites: [b05-householder-givens-qr]
+    history: Stewart 1993; Jolliffe 2002
+    references: []
+  - id: b05-eigenvalue-algorithms
+    name: 特征值计算：幂法、反幂法、Rayleigh 商迭代与 QR 算法
+    field: b05
+    concepts: [幂法与反幂法, Rayleigh 商迭代, Hessenberg 化约, 带位移的 QR 算法]
+    prerequisites: [b05-householder-givens-qr, c05-spectral-theorem-polar]
+    history: Brezinski 2022
+    references: []
+  - id: b05-iterative-methods
+    name: 大型稀疏线性系统的定常迭代法
+    field: b05
+    concepts: [Jacobi 与 Gauss–Seidel 迭代, SOR 超松弛, 收敛性与谱半径, 大型稀疏系统的实践]
+    prerequisites: [b05-lu-cholesky]
+    history: Brezinski 2022
+    references: []
+  - id: b05-krylov-conjugate-gradient
+    name: Krylov 子空间方法与共轭梯度法
+    field: b05
+    concepts: [Krylov 子空间, 共轭梯度法, 共轭梯度法的收敛率与条件数, 预条件]
+    prerequisites: [b05-iterative-methods]
+    history: Hestenes–Stiefel 1952
+    references: []
+    aliases: [CG]
+  - id: b05-matrix-calculus-autodiff
+    name: 矩阵微积分与自动微分 / 反向传播
+    field: b05
+    concepts: [标量对向量与矩阵的导数, 迹技巧与常用求导公式, 计算图与自动微分, 反向传播]
+    prerequisites: [b05-norms-conditioning, c03-chain-rule-jacobian]
+    history: Griewank 2012
+    references: []
+  - id: b05-graph-laplacian-spectral
+    name: 图 Laplacian 矩阵、谱聚类与随机矩阵算法初步
+    field: b05
+    concepts: [图 Laplacian 及其半正定性, Fiedler 向量与谱聚类, PageRank 与随机游走, 随机化 SVD 初步]
+    prerequisites: [b05-eigenvalue-algorithms, b05-svd-low-rank-pca]
+    history: Brin–Page 1998
+    references: []
+  # ---- b06 最优化方法与凸优化（分支，9 个主题）
+  - id: b06-convex-sets-functions
+    name: 凸集与凸函数
+    field: b06
+    concepts: [仿射集与凸集, 分离与支撑超平面, 凸函数的一阶与二阶判据, 保凸运算与次梯度]
+    prerequisites: [c03-extrema-lagrange, c04-symmetric-positive-definite]
+    history: Tikhomirov 1990
+    references: []
+  - id: b06-linear-programming-polyhedra
+    name: 线性规划标准形、多面体顶点与基本可行解
+    field: b06
+    concepts: [线性规划建模与标准形, 凸多面体与极点, 基本可行解, 线性规划基本定理]
+    prerequisites: [b06-convex-sets-functions, c04-linear-independence-basis]
+    history: Dantzig 1982
+    references: []
+    aliases: [LP]
+  - id: b06-simplex-method
+    name: 单纯形法
+    field: b06
+    concepts: [基变换与枢轴旋转, 检验数与最优判据, 退化与 Bland 规则, 两阶段法]
+    prerequisites: [b06-linear-programming-polyhedra]
+    history: Dantzig 1982
+    references: []
+    aliases: [Simplex Algorithm]
+  - id: b06-lp-duality
+    name: 线性规划对偶理论、互补松弛与灵敏度分析
+    field: b06
+    concepts: [弱对偶与强对偶定理, Farkas 引理, 互补松弛与影子价格, 零和博弈与 Minimax 定理]
+    prerequisites: [b06-simplex-method]
+    history: Dantzig 1982
+    references: []
+  - id: b06-network-flows
+    name: 网络流优化：最短路、最大流最小割与匹配
+    field: b06
+    concepts: [最短路, 最大流最小割定理, 二分匹配与运输问题, 全单模性与整数解]
+    prerequisites: [b06-lp-duality]
+    history: Ford–Fulkerson 1956
+    references: []
+  - id: b06-unconstrained-optimization
+    name: 无约束优化算法：梯度下降、线搜索与 Newton / 拟 Newton 法
+    field: b06
+    concepts: [梯度下降与线搜索, 收敛率与条件数, Newton 法, 拟 Newton 法与 BFGS]
+    prerequisites: [b06-convex-sets-functions, b05-norms-conditioning]
+    history: Cauchy 1847
+    references: []
+  - id: b06-kkt-lagrange-duality
+    name: 约束非线性优化、Lagrange 对偶与 KKT 条件
+    field: b06
+    concepts: [Lagrange 函数与对偶函数, 弱对偶与 Slater 条件, KKT 条件, 对偶的例子：支持向量机与最小二乘]
+    prerequisites: [b06-lp-duality, b06-unconstrained-optimization]
+    history: Kuhn–Tucker 1951
+    references: []
+  - id: b06-stochastic-first-order
+    name: 机器学习一阶优化：SGD、动量法与近端梯度法
+    field: b06
+    concepts: [经验风险最小化, 随机梯度下降及其方差, 动量与 Nesterov 加速, 近端梯度与 ℓ1 正则化]
+    prerequisites: [b06-unconstrained-optimization, b05-matrix-calculus-autodiff]
+    history: Robbins–Monro 1951
+    references: []
+  - id: b06-dynamic-programming
+    name: 动态规划与 Bellman 最优性原理
+    field: b06
+    concepts: [多阶段决策与最优性原理, Bellman 方程, 离散动态规划的例子, Markov 决策过程导引]
+    prerequisites: [c14-conditional-expectation]
+    history: Bellman 1957
+    references: []
+    aliases: [Dynamic Programming]
+  # ---- b07 统计建模、回归分析与统计学习（分支，8 个主题）
+  - id: b07-linear-regression-ols
+    name: 多元线性回归与普通最小二乘几何
+    field: b07
+    concepts: [线性模型与设计矩阵, 最小二乘估计, 帽子矩阵与投影几何, 残差的正交分解]
+    prerequisites: [c04-inner-product-orthogonality, b02-point-estimation-mle]
+    history: Stigler 1986
+    references: []
+    aliases: [OLS]
+  - id: b07-gauss-markov-inference
+    name: Gauss–Markov 定理与正态线性模型精确推断
+    field: b07
+    concepts: [Gauss–Markov 定理与最佳线性无偏估计, 正态线性模型下系数的分布, t 检验与 F 检验, 预测区间]
+    prerequisites: [b07-linear-regression-ols, b02-hypothesis-testing-neyman-pearson, b02-confidence-intervals]
+    history: Hald 1998
+    references: []
+  - id: b07-anova-diagnostics
+    name: 方差分析、模型诊断与多重共线性
+    field: b07
+    concepts: [平方和分解与方差分析, 残差图与模型假设检查, 杠杆值与 Cook 距离, 多重共线性与方差膨胀因子]
+    prerequisites: [b07-gauss-markov-inference]
+    history: Hald 1998
+    references: []
+    aliases: [ANOVA]
+  - id: b07-regularization-bias-variance
+    name: 正则化回归与偏差-方差权衡
+    field: b07
+    concepts: [偏差-方差分解, 岭回归, Lasso 与稀疏性, 正则化参数的选择]
+    prerequisites: [b07-linear-regression-ols, c04-svd-pseudoinverse]
+    history: Hoerl–Kennard 1970; Tibshirani 1996
+    references: []
+  - id: b07-model-selection-cv
+    name: 模型选择与交叉验证
+    field: b07
+    concepts: [训练误差与泛化误差, AIC 与 BIC, 交叉验证, 模型选择的陷阱]
+    prerequisites: [b07-regularization-bias-variance]
+    history: Akaike 1974
+    references: []
+    aliases: [AIC, BIC, CV]
+  - id: b07-glm-logistic
+    name: 广义线性模型与 Logistic 回归
+    field: b07
+    concepts: [指数族与连接函数, Logistic 回归, Poisson 回归, 迭代重加权最小二乘]
+    prerequisites: [b07-gauss-markov-inference, b02-asymptotics-mle]
+    history: Nelder–Wedderburn 1972
+    references: []
+    aliases: [GLM]
+  - id: b07-nonparametric-kernels
+    name: 非参数统计与核方法初步
+    field: b07
+    concepts: [Bootstrap, 核密度估计, 核技巧与再生核 Hilbert 空间直观, 核回归]
+    prerequisites: [b07-regularization-bias-variance]
+    history: Hofmann 2008
+    references: []
+  - id: b07-statistical-learning-lda-svm
+    name: 统计学习基础：线性判别、支持向量机与泛化界直观
+    field: b07
+    concepts: [Bayes 最优分类器与线性判别分析, 最大间隔分类器, 支持向量机的对偶与支持向量, 经验风险最小化与 VC 维直观]
+    prerequisites: [b07-glm-logistic, b07-nonparametric-kernels, c14-covariance-multivariate-normal]
+    history: Vapnik 1998
+    references: []
+    aliases: [LDA, SVM]
+  # ---- b08 组合数学、图论与计算理论（CS 数学）（分支，10 个主题）
+  - id: b08-enumerative-combinatorics
+    name: 枚举组合学：双射证明、二项式恒等式与容斥原理
+    field: b08
+    concepts: [双射证明与组合恒等式, 容斥原理与错排, 鸽巢原理, Ramsey 定理初步]
+    prerequisites: [c01-sets-relations-maps]
+    history: Biggs 1998
+    references: []
+  - id: b08-generating-functions-recurrences
+    name: 生成函数与递推关系
+    field: b08
+    concepts: [普通生成函数, 指数生成函数, 常系数线性递推的求解, Catalan 数与分拆数]
+    prerequisites: [b08-enumerative-combinatorics, c02-power-fourier-series, c04-eigenvalues-diagonalization]
+    history: Biggs 1998
+    references: []
+  - id: b08-graphs-trees-circuits
+    name: 图的基本概念、树、连通性与 Euler / Hamilton 回路
+    field: b08
+    concepts: [图的基本概念与握手定理, 树与 Cayley 公式, Euler 回路, Hamilton 圈与连通度]
+    prerequisites: [b08-enumerative-combinatorics]
+    history: Biggs 1998
+    references: []
+  - id: b08-matchings-hall
+    name: 二分图匹配、Hall 婚姻定理与覆盖
+    field: b08
+    concepts: [二分图与交错路, 增广路算法, Hall 定理, König 定理]
+    prerequisites: [b08-graphs-trees-circuits]
+    history: Biggs 1998
+    references: []
+  - id: b08-planar-graphs-coloring
+    name: 平面图、Euler 多面体公式与图着色
+    field: b08
+    concepts: [平面图与 Euler 公式, Kuratowski 定理, 色数与五色定理, 色多项式]
+    prerequisites: [b08-graphs-trees-circuits]
+    history: Kline Ch.50; Biggs 1998
+    references: []
+  - id: b08-extremal-probabilistic
+    name: 极值图论与概率方法初步
+    field: b08
+    concepts: [Mantel 与 Turán 定理, 概率方法与期望线性性, 删去法, Ramsey 数的下界]
+    prerequisites: [b08-graphs-trees-circuits, c14-expectation-variance]
+    history: Erdős 1947
+    references: []
+  - id: b08-information-coding-theory
+    name: 信息论与编码理论初步
+    field: b08
+    concepts: [Shannon 熵与互信息, KL 散度, 信源编码与信道容量直观, Hamming 码与有限域上的线性码]
+    prerequisites: [b08-enumerative-combinatorics, c14-expectation-variance, c07-rings-integral-domains, 
+          c04-vector-spaces-subspaces]
+    history: Verdú 1998
+    references: []
+  - id: b08-automata-formal-languages
+    name: 形式语言、有限自动机与上下文无关文法
+    field: b08
+    concepts: [DFA 与 NFA 的等价, 正则表达式, 泵引理, 上下文无关文法与下推自动机]
+    prerequisites: [c01-sets-relations-maps]
+    history: Rabin–Scott 1959
+    references: []
+  - id: b08-turing-computability
+    name: Turing 机、可计算性与停机问题不可判定性
+    field: b08
+    concepts: [Turing 机与 Church–Turing 论题, 通用 Turing 机, 停机问题的不可判定性, 归约]
+    prerequisites: [b08-automata-formal-languages, c01-countable-uncountable]
+    history: Turing 1936
+    references: []
+  - id: b08-complexity-godel
+    name: 计算复杂性与 Gödel 不完备性导引
+    field: b08
+    concepts: [P 与 NP, 多项式归约与 Cook–Levin 定理, NP 完全问题, 一阶逻辑完备性与 Gödel 不完备性导引]
+    prerequisites: [b08-turing-computability]
+    history: Kline Ch.51; Cook 1971
+    references: []
+    aliases: [P vs NP]
+retired: []

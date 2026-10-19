@@ -1,0 +1,78 @@
+# 领域 c04「线性代数 I：矩阵、方程组与几何直观」（主干，10 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/c04.yaml -p
+version: 1
+fields:
+  - {id: c04, name: 线性代数 I：矩阵、方程组与几何直观, kind: core, order: 4}
+topics:
+  - id: c04-gauss-elimination
+    name: 线性方程组与 Gauss 消元法
+    field: c04
+    concepts: [线性方程组与行阶梯形, 主元与解的结构, 初等矩阵与矩阵乘法, 分块矩阵与 LU 分解]
+    prerequisites: []
+    history: Kline Ch.29, 33
+    references: []
+  - id: c04-vector-spaces-subspaces
+    name: 向量空间、子空间与四个基本子空间
+    field: c04
+    concepts: [向量空间与子空间, 列空间与零空间, 行空间与左零空间, 子空间的交与和]
+    prerequisites: [c04-gauss-elimination]
+    history: Kline Ch.32
+    references: []
+  - id: c04-linear-independence-basis
+    name: 线性无关、基与维数
+    field: c04
+    concepts: [线性无关与生成集, 基与维数, 矩阵的秩, 秩-零化度定理]
+    prerequisites: [c04-vector-spaces-subspaces]
+    history: Kline Ch.33
+    references: []
+  - id: c04-linear-maps-matrices
+    name: 线性变换及其矩阵表示
+    field: c04
+    concepts: [线性变换及其矩阵, 旋转、反射与投影, 基变换公式, 相似矩阵]
+    prerequisites: [c04-linear-independence-basis]
+    history: Kline Ch.33
+    references: []
+  - id: c04-determinants
+    name: 行列式及其几何与代数性质
+    field: c04
+    concepts: [行列式的多重线性与反对称性, 行列式与有向体积, Laplace 展开, Cramer 法则与可逆性]
+    prerequisites: [c04-linear-maps-matrices]
+    history: Kline Ch.33
+    references: []
+  - id: c04-inner-product-orthogonality
+    name: 内积、正交性与正交投影
+    field: c04
+    concepts: [标准内积与正交性, 正交补, 正交投影矩阵, 最小二乘法的几何解释]
+    prerequisites: [c04-linear-independence-basis]
+    history: Kline Ch.33
+    references: []
+  - id: c04-gram-schmidt-qr
+    name: Gram–Schmidt 正交化与 QR 分解
+    field: c04
+    concepts: [Gram–Schmidt 正交化, 正交矩阵, QR 分解, 用 QR 分解解最小二乘]
+    prerequisites: [c04-inner-product-orthogonality]
+    history: Schmidt 1907
+    references: []
+  - id: c04-eigenvalues-diagonalization
+    name: 特征值、特征向量与矩阵对角化
+    field: c04
+    concepts: [特征值与特征向量, 特征多项式、迹与行列式, 代数重数与几何重数, 可对角化判据与矩阵幂]
+    prerequisites: [c04-determinants]
+    history: Kline Ch.33
+    references: []
+  - id: c04-symmetric-positive-definite
+    name: 实对称矩阵、Hermite 矩阵与正定二次型
+    field: c04
+    concepts: [实对称矩阵的正交对角化, 主轴定理与二次型, 正定矩阵的等价判据, Sylvester 惯性定理]
+    prerequisites: [c04-eigenvalues-diagonalization, c04-gram-schmidt-qr]
+    history: Kline Ch.33
+    references: []
+  - id: c04-svd-pseudoinverse
+    name: 奇异值分解与伪逆初步
+    field: c04
+    concepts: [奇异值分解的存在性与几何意义, 奇异值与四个基本子空间, 低秩结构与矩阵范数, Moore–Penrose 伪逆]
+    prerequisites: [c04-symmetric-positive-definite]
+    history: Stewart 1993
+    references: []
+    aliases: [SVD]
+retired: []

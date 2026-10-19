@@ -1,0 +1,68 @@
+# 领域 b07「统计建模、回归分析与统计学习」（分支，8 个主题）的骨架片段。由 theroadnottaken-seed run 生成（prompt 模板 seed-field.v1.md），可手改；cross 一轮会补跨领域前置，merge 把全部片段拼成 seed/skeleton.yaml。
+# 单独校验：theroadnottaken-skeleton seed/gen/fields/b07.yaml -p
+version: 1
+fields:
+  - {id: b07, name: 统计建模、回归分析与统计学习, kind: branch, order: 7}
+topics:
+  - id: b07-linear-regression-ols
+    name: 多元线性回归与普通最小二乘几何
+    field: b07
+    concepts: [线性模型与设计矩阵, 最小二乘估计, 帽子矩阵与投影几何, 残差的正交分解]
+    prerequisites: [c04-inner-product-orthogonality, b02-point-estimation-mle]
+    history: Stigler 1986
+    references: []
+    aliases: [OLS]
+  - id: b07-gauss-markov-inference
+    name: Gauss–Markov 定理与正态线性模型精确推断
+    field: b07
+    concepts: [Gauss–Markov 定理与最佳线性无偏估计, 正态线性模型下系数的分布, t 检验与 F 检验, 预测区间]
+    prerequisites: [b07-linear-regression-ols, b02-hypothesis-testing-neyman-pearson, b02-confidence-intervals]
+    history: Hald 1998
+    references: []
+  - id: b07-anova-diagnostics
+    name: 方差分析、模型诊断与多重共线性
+    field: b07
+    concepts: [平方和分解与方差分析, 残差图与模型假设检查, 杠杆值与 Cook 距离, 多重共线性与方差膨胀因子]
+    prerequisites: [b07-gauss-markov-inference]
+    history: Hald 1998
+    references: []
+    aliases: [ANOVA]
+  - id: b07-regularization-bias-variance
+    name: 正则化回归与偏差-方差权衡
+    field: b07
+    concepts: [偏差-方差分解, 岭回归, Lasso 与稀疏性, 正则化参数的选择]
+    prerequisites: [b07-linear-regression-ols, c04-svd-pseudoinverse]
+    history: Hoerl–Kennard 1970; Tibshirani 1996
+    references: []
+  - id: b07-model-selection-cv
+    name: 模型选择与交叉验证
+    field: b07
+    concepts: [训练误差与泛化误差, AIC 与 BIC, 交叉验证, 模型选择的陷阱]
+    prerequisites: [b07-regularization-bias-variance]
+    history: Akaike 1974
+    references: []
+    aliases: [AIC, BIC, CV]
+  - id: b07-glm-logistic
+    name: 广义线性模型与 Logistic 回归
+    field: b07
+    concepts: [指数族与连接函数, Logistic 回归, Poisson 回归, 迭代重加权最小二乘]
+    prerequisites: [b07-gauss-markov-inference, b02-asymptotics-mle]
+    history: Nelder–Wedderburn 1972
+    references: []
+    aliases: [GLM]
+  - id: b07-nonparametric-kernels
+    name: 非参数统计与核方法初步
+    field: b07
+    concepts: [Bootstrap, 核密度估计, 核技巧与再生核 Hilbert 空间直观, 核回归]
+    prerequisites: [b07-regularization-bias-variance]
+    history: Hofmann 2008
+    references: []
+  - id: b07-statistical-learning-lda-svm
+    name: 统计学习基础：线性判别、支持向量机与泛化界直观
+    field: b07
+    concepts: [Bayes 最优分类器与线性判别分析, 最大间隔分类器, 支持向量机的对偶与支持向量, 经验风险最小化与 VC 维直观]
+    prerequisites: [b07-glm-logistic, b07-nonparametric-kernels, c14-covariance-multivariate-normal]
+    history: Vapnik 1998
+    references: []
+    aliases: [LDA, SVM]
+retired: []

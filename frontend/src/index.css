@@ -441,3 +441,49 @@ h3 {
   color: var(--muted);
   cursor: pointer;
 }
+
+/* 顶栏下的全局横幅（agy 权限规则缺失） */
+.banner {
+  padding: 0.75rem 1rem;
+  background: var(--learning-bg);
+  border-bottom: 1px solid var(--learning);
+}
+
+.banner p {
+  margin: 0.25rem 0;
+}
+
+.banner pre {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
+.banner-actions button {
+  margin-left: 0.5rem;
+}
+
+.banner-error {
+  color: var(--danger);
+}
+
+/* 顶栏「重试连接」与其事件流 */
+.connection-check {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.connection-log {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.event-log {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}

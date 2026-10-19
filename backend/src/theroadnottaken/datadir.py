@@ -5,11 +5,12 @@
    `proposals.yaml`、写 `.gitignore`（忽略 `jobs/`）、`git init` 并提交首个 commit。
    已存在的文件一律不碰。
 2. 读入并校验骨架（`skeleton.yaml`），不合法抛 `StartupError`，指出位置。
-3. 校验状态文件（`state.json`），不合法同样抛 `StartupError`。
+3. 校验状态文件（`state.json`）与会话映射（`conversations.json`），不合法同样抛 `StartupError`。
 """
 
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 import threading
@@ -17,6 +18,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from theroadnottaken.files import write_json_atomic
 from theroadnottaken.skeleton import Skeleton, SkeletonLoadError, load_skeleton, validate
 from theroadnottaken.state import State, StateError, load_state, save_state
 
@@ -75,6 +77,37 @@ class DataDir:
             _commit_if_staged(self.root, message)
             return new
 
+    @property
+    def conversations_path(self) -> Path:
+        return self.root / CONVERSATIONS_FILE
+
+    def read_conversations(self) -> dict[str, str]:
+        """会话映射：主题 id → 当前主题会话 id。"""
+        try:
+            mapping = json.loads(self.conversations_path.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            raise StartupError(
+                f"会话映射不是合法的 JSON：{self.conversations_path}：{exc}"
+            ) from exc
+        if not isinstance(mapping, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in mapping.items()
+        ):
+            raise StartupError(
+                f"会话映射应为「主题 id → 会话 id」的对象：{self.conversations_path}"
+            )
+        return mapping
+
+    def set_conversation(self, topic: str, conversation_id: str) -> None:
+        """记下主题的当前主题会话（覆盖旧 id），原子写入后提交 git。"""
+        with self._write_lock:
+            mapping = self.read_conversations()
+            if mapping.get(topic) == conversation_id:
+                return
+            mapping[topic] = conversation_id
+            write_json_atomic(self.conversations_path, mapping)
+            _git(self.root, "add", "--", CONVERSATIONS_FILE)
+            _commit_if_staged(self.root, f"记录主题会话：{topic}")
+
 
 def open_data_dir(root: Path, seed_skeleton: Path) -> DataDir:
     """初始化（如需要）并加载数据目录；骨架或状态不合法时抛 `StartupError`。"""
@@ -92,6 +125,7 @@ def open_data_dir(root: Path, seed_skeleton: Path) -> DataDir:
         )
     data_dir = DataDir(root=root, skeleton=skeleton)
     data_dir.read_state()  # 启动时就校验，坏文件不等到第一次请求才发现
+    data_dir.read_conversations()
     return data_dir
 
 

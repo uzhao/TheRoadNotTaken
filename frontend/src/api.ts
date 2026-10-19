@@ -111,3 +111,96 @@ export function putFieldIncluded(fieldId: string, included: boolean): Promise<Fi
     included,
   })
 }
+
+async function json<T>(resp: Response, what: string): Promise<T> {
+  if (!resp.ok) {
+    const body = (await resp.json().catch(() => null)) as { detail?: string } | null
+    throw new Error(body?.detail ?? `${what} → ${resp.status}`)
+  }
+  return (await resp.json()) as T
+}
+
+// ---- agy 权限规则 ----
+
+export interface AgyPermissions {
+  ok: boolean
+  missing: string[]
+  settings_path: string
+  /** 要追加到 settings 的 JSON 片段 */
+  snippet: string
+  /** settings 文件存在但无法解析时的原因（此时后端不会写入） */
+  error: string | null
+}
+
+export async function fetchAgyPermissions(): Promise<AgyPermissions> {
+  return json(await fetch('/api/agy/permissions'), 'GET /api/agy/permissions')
+}
+
+export async function writeAgyPermissions(): Promise<AgyPermissions> {
+  return json(await fetch('/api/agy/permissions', { method: 'POST' }), 'POST /api/agy/permissions')
+}
+
+// ---- 生成任务 ----
+
+export type JobStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled'
+
+export interface Job {
+  id: string
+  kind: string
+  status: JobStatus
+  /** 排队位次（从 1 起），未排队时为 null */
+  position: number | null
+}
+
+export interface JobError {
+  kind: 'agy_error' | 'timeout' | 'exit' | 'no_result' | 'result' | 'spawn'
+  message?: string
+  short_error?: string
+  error_id?: string
+  retryable?: boolean
+}
+
+/** 任务事件流里的事件；`done` 是终止事件，收到后流结束。 */
+export type JobEvent =
+  | { event: 'queued'; data: { position: number } }
+  | { event: 'started'; data: Record<string, never> }
+  | { event: 'conversation'; data: { conversation_id: string } }
+  | { event: 'delta'; data: { text: string } }
+  | { event: 'tool'; data: { step_index: number; name: string; state: 'ACTIVE' | 'DONE' } }
+  | {
+      event: 'done'
+      data: {
+        status: 'succeeded' | 'failed' | 'cancelled'
+        response?: string
+        error?: JobError
+      }
+    }
+
+const JOB_EVENTS = ['queued', 'started', 'conversation', 'delta', 'tool', 'done'] as const
+
+export async function createPingJob(): Promise<Job> {
+  const resp = await fetch('/api/jobs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ kind: 'ping' }),
+  })
+  return json(resp, 'POST /api/jobs')
+}
+
+export async function cancelJob(id: string): Promise<void> {
+  const resp = await fetch(`/api/jobs/${id}`, { method: 'DELETE' })
+  if (!resp.ok && resp.status !== 409) throw new Error(`DELETE /api/jobs/${id} → ${resp.status}`)
+}
+
+/** 订阅任务事件；收到 `done` 后自动关闭。返回取消订阅函数。 */
+export function subscribeJob(id: string, onEvent: (event: JobEvent) => void): () => void {
+  const source = new EventSource(`/api/jobs/${id}/events`)
+  for (const name of JOB_EVENTS) {
+    source.addEventListener(name, (msg) => {
+      const event = { event: name, data: JSON.parse((msg as MessageEvent<string>).data) } as JobEvent
+      if (event.event === 'done') source.close()
+      onEvent(event)
+    })
+  }
+  return () => source.close()
+}

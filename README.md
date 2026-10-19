@@ -61,4 +61,8 @@ uv run --project backend theroadnottaken-seed merge -p       # 拼成 seed/skele
 
 ## 测试约定
 
-后端测试只走一条主缝：真实 FastAPI 应用 + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`，都以 `sample_skeleton` 给出的样例骨架为种子）。后续工单的测试都从这些夹具开始，不新增缝；唯一的例外是骨架阶段独立运行的两个命令——骨架校验脚本与种子骨架生成工具——按命令行方式测试（argv 进、stdout / 退出码 / 文件出），后者的 agent 调用走 `PATH` 上的假 `agy`（夹具在 `backend/tests/test_seedgen_cli.py`）。详见规格的 Testing Decisions。
+后端测试只走一条主缝：真实 FastAPI 应用 + 假 agy + 临时数据目录（夹具在 `backend/tests/conftest.py`：`data_dir`、`client`、`static_client`，都以 `sample_skeleton` 给出的样例骨架为种子，并接好 `fake_agy` 与 `agy_settings`）。后续工单的测试都从这些夹具开始，不新增缝；唯一的例外是骨架阶段独立运行的两个命令——骨架校验脚本与种子骨架生成工具——按命令行方式测试（argv 进、stdout / 退出码 / 文件出），后者的 agent 调用走 `PATH` 上的假 `agy`（夹具在 `backend/tests/test_seedgen_cli.py`）。详见规格的 Testing Decisions。
+
+- `fake_agy`：`PATH` 前置的假 `agy`（`backend/tests/fake_agy.py`），按场景回放 stream-json 事件、在 cwd 写文件、模拟各种故障，并记录收到的命令行与 prompt。场景用 `backend/tests/agy_steps.py` 的步骤函数拼：`fake_agy.script(s.run(s.init("conv-1"), s.text("…"), s.result()))`，读回调用用 `fake_agy.calls()`。
+- `agy_settings`：代替 `~/.gemini/antigravity-cli/settings.json` 的临时路径，缺省不存在。
+- 尚无 HTTP 入口的任务类型（讲义、追问等）暂经 `client.portal.call(client.app.state.jobs.submit, spec)` 提交，事件仍经 SSE 观察；对应路由上线后改走路由。
